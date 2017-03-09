@@ -1,0 +1,169 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+
+<link rel="import" href="rmerp-icons.html">
+
+<link rel="import" href="rmerp-clients.html">
+
+<dom-module id="rmerp-app">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+
+
+      footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #ddd;
+        text-align: center;
+        margin-top: 20px;
+        line-height: 24px;
+        padding: 14px;
+      }
+
+      footer > a {
+        color: var(--app-secondary-color);
+        text-decoration: none;
+      }
+
+      footer > a:hover {
+        text-decoration: underline;
+      }
+
+    </style>
+
+    <app-location route="{{route}}"></app-location>
+    <app-route
+        route="{{route}}"
+        pattern="/:page"
+        data="{{routeData}}"
+        tail="{{subroute}}"></app-route>
+
+    <iron-media-query query="max-width: 767px" query-matches="{{smallScreen}}"></iron-media-query>
+
+    <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="404-warning" role="main">
+      <rmerp-clients name="clients" load-complete="[[loadComplete]]" small-screen="[[smallScreen]]" route="[[subroute]]" offline="[[offline]]"></rmerp-clients>
+      <rmerp-invoices name="invoices" small-screen="[[smallScreen]]" offline="[[offline]]"></rmerp-invoices>
+      <rmerp-404-warning name="404"></rmerp-404-warning>
+    </iron-pages>
+
+    <footer>
+      Made by <a href="https://www.github.com/jlramosr">Jose Ramos</a>
+    </footer>
+
+  </template>
+
+  <script>
+    class RMERPApp extends Polymer.Element {
+
+      static get is() { return 'rmerp-app'; }
+
+      static get properties() {
+        return {
+          page: {
+            type: String,
+            observer: '_pageChanged'
+          },
+        };
+      }
+
+      static get observers() {
+        return [
+          '_routePageChanged(routeData.page)',
+        ];
+      }
+
+      constructor() {
+        super();
+        this.removeAttribute('unresolved');
+      }
+
+      connectedCallback() {
+        super.connectedCallback();
+      }
+
+      ready() {
+        super.ready();
+        //light DOM elements may not have been distributed when ready is called.
+        // When possible, use afterNextRender to defer non-critical
+        // work until after first paint.
+        Polymer.RenderStatus.afterNextRender(this, function() {
+          this.addEventListener(window, 'online', '_notifyNetworkStatus');
+          this.addEventListener(window, 'offline', '_notifyNetworkStatus');
+          console.log("FIRST PAINT EN ready");
+        });
+      }
+
+      _routePageChanged(page) {
+        // Polymer 2.0 will call with `undefined` on initialization.
+        // Ignore until we are properly called with a string.
+        if (page === undefined) {
+          //window.history.pushState({}, null, '/clients');
+          //window.dispatchEvent(new CustomEvent('location-changed'));
+          //this.set('routeData.page', 'clients');
+          return;
+        }
+
+        // If no page was found in the route data, page will be an empty string.
+        // Deault to 'clients' in that case.
+        this.page = page || 'clients';
+      }
+
+      _pageChanged(page) {
+        // Load page import on demand. Show 404 page if fails
+       if (page != null) {
+          // clients route is eagerly loaded
+          if (page == 'clients') {
+            this._pageLoaded();
+          }
+          // other routes are lazy loaded
+          else {
+            // When a load failed, it triggered a 404 which means we need to
+            // eagerly load the 404 page definition
+            var cb = this._pageLoaded.bind(this);
+            Polymer.importHref(
+              this.resolveUrl('rmerp-' + page + '.html'),
+              cb, cb, true);
+          }
+        }
+      }
+
+      _pageLoaded() {
+        this._ensureLazyLoaded();
+      }
+
+      _ensureLazyLoaded() {
+        // load lazy resources after render and set `loadComplete` when done.
+        if (!this.loadComplete) {
+          Polymer.RenderStatus.afterNextRender(this, function() {
+            Polymer.importHref(this.resolveUrl('lazy-resources.html'), function() {
+              //networkStatus
+              //loadComplete=true
+              console.log("FIRST PAINT EN _ensureLazyLoaded");
+            });
+          });
+        }
+      }
+
+      _notifyNetworkStatus() {
+        var oldOffline = this.offline;
+        this.offline =  !navigator.onLine;
+        // Show the snackbar if the user is offline when starting a new session
+        // or if the network status changed.
+        if (this.offline || (!this.offline && oldOffline === true)) {
+        }
+      }
+    }
+
+    window.customElements.define(RMERPApp.is, RMERPApp);
+
+  </script>
+</dom-module>

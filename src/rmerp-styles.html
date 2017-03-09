@@ -1,0 +1,407 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/paper-styles/color.html">
+
+<style is="custom-style">
+  :root {
+    /* colors */
+    --rmerp-primary-color: var(--paper-indigo-500);
+    --rmerp-secondary-color: var(--paper-indigo-900);
+    --rmerp-accent-color: var(--paper-indigo-50);
+    --rmerp-error-color: var(--paper-red-900);
+    --rmerp-background-color: #f2f2f2;
+
+    --rmerp-responsive-large: 820px;
+    --rmerp-responsive-medium: 640px;
+
+    /* override paper-elements theme */
+    --primary-color: var(--rmerp-primary-color);
+    --secondary-color: var(--rmerp-secondary-color);
+    --error-color: var(--rmerp-error-color);
+
+    /* mixins */
+    --unselectable: {
+      -moz-user-select: -moz-none;
+      -khtml-user-select: none;
+      -webkit-user-select: none;
+      -o-user-select: none;
+      user-select: none;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+  }
+</style>
+
+<dom-module id="header-layout-styles">
+  <template>
+    <style>
+
+      /* make the header-layout fit the size of its container */
+      .header-layout {
+        @apply(--layout-vertical);
+        @apply(--layout-fit);
+      }
+
+      .header-layout__header {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background-color: var(--background-toolbar, var(--rmerp-primary-color));
+        color: var(--color-toolbar, #fff);
+      }
+
+      .header-toolbar {
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
+        box-sizing: border-box;
+        height: 60px;
+        padding: 0 16px;
+      }
+
+      .header-toolbar__info {
+        @apply(--layout-horizontal);
+        @apply(--layout-center-center);
+      }
+
+      .header-toolbar__icon {
+        height: 40px;
+        width: 40px;
+        min-width: 40px;
+        color: #fff;
+      }
+
+      .header-toolbar__title {
+        font-size: 22px;
+        font-weight: 600;
+        margin-left: 6px;
+      }
+
+      .header-toolbar__actions {
+        margin-left: auto;
+      }
+
+      .header-toolbar__button {
+        position: relative;    
+        display: inline-block;
+        cursor: pointer;
+        margin-left: 10px;
+        border: 0;
+        border-radius: 3px;
+        padding: 8px 10px;
+        outline: 0;
+        vertical-align: middle;
+        box-sizing: border-box;
+        color: var(--color-toolbar-button, #fff);
+        background: var(--background-toolbar-button, var(--rmerp-secondary-color));
+        font-family: 'Roboto', sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        text-align: center;
+        text-decoration: none;
+        text-transform: uppercase;
+      }
+
+      .header-layout__content {
+        @apply(--layout-vertical);
+        @apply(--layout-flex);
+        @apply(--layout-fit);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        position: relative;
+        /* create a stacking context so all children are below the header */
+        z-index: 0;
+        margin-top: 60px;
+        /*padding: 20px;*/
+        box-sizing: border-box;
+      }
+
+      /* misc */
+      .header-toolbar__icon[icon="menu"],
+      .header-toolbar__icon[icon="close"] {
+        height: 24px;
+        width: 24px;
+        min-width: 24px;
+        padding: 1px 0 0;
+      }
+
+    </style>
+  </template>
+</dom-module>  
+
+<dom-module id="search-styles">
+  <template>
+    <style>
+      .search {
+        position: relative;
+      }
+
+      .search__input {
+        display: block;
+        width: 100%;
+        vertical-align: middle;
+        border-bottom: 1px solid var(--paper-grey-300);
+        border-radius: 0;
+        padding: 8px 90px 8px 16px;
+        background: var(--paper-grey-100);
+        box-sizing: border-box;
+        box-shadow: 0 0 0 1px rgba(0,0,0,0.12);
+        font-family: 'Roboto', sans-serif;
+        font-size: initial;
+        transition: background 0.16s ease-in-out;
+      }
+
+      .search__input:focus {
+        background: #fff;
+        box-shadow: 0 2px 3px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.12);
+        outline: 0;
+      }
+
+      .search__results {
+        @apply(--layout-vertical);
+        @apply(--layout-center-center);
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        padding: 0 16px;
+        color: var(--rmerp-secondary-color);
+        font-size: 14px;
+        pointer-events: none;
+      }
+    </style>
+  </template>
+</dom-module>
+
+<dom-module id="table-styles">
+  <template>
+    <style>
+
+      .table__item {
+        @apply(--layout-vertical);
+        @apply(--layout-left);
+        max-height: 80px; 
+        padding: 20px;
+        cursor: pointer;
+        border-bottom: 1px solid var(--paper-grey-300);
+      }
+
+      .table__item:nth-child(odd) {
+        background: #fff;
+      }
+
+      .table__item:nth-child(even) {
+        background: #fdfdfd;
+      }
+
+      .table__item:hover {
+        background: var(--rmerp-accent-color);
+      }
+
+      .table__item--last-child {
+        border-bottom: none;
+      }
+
+      .table__item--primary-text {
+        font-size: 18px;
+      }
+
+      .table__item--secondary-text {
+        font-size: 12px;
+        color: var(--paper-grey-500);
+      }
+
+    </style>
+  </template>
+</dom-module>
+
+<dom-module id="form-styles">
+  <template>
+    <style>
+      .form {
+        padding: 8px 16px;
+      }
+
+      .form__line {
+        @apply(--layout-horizontal);
+        @apply(--layout-flex);
+      }
+
+      .form__line--last-child {
+        position: relative;
+        margin-right: 0;
+      }
+
+      .form__item {
+        @apply(--layout-flex);
+        position: relative;
+        margin-right: 16px;
+      }
+
+      .form__icon {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        height: 48px;
+        width: 48px;
+        opacity: 0.1;
+        color: var(--rmerp-secondary-color);
+      }
+
+      .form__input {
+        --paper-input-container-label: {
+          color: var(--paper-grey-700);
+          font-size: 16px;
+        }
+        --paper-input-container-disabled: {
+          opacity: 0.8;
+        }
+        --paper-input-container-underline-disabled: {
+          border-bottom: 1px solid var(--paper-grey-300);
+        }
+        --paper-input-container-label-floating: {
+          color: var(--rmerp-primary-color);
+          font-size: 20px;
+        }
+      }
+
+      .form__radio-group {
+        --paper-radio-group-item-padding: 0px;
+        margin: 8px 12px;
+        font-size: 14px;
+      }
+
+      .form__radio-button {
+        margin-left: 12px;
+        --paper-radio-button-checked-color: var(--rmerp-secondary-color);
+        --paper-radio-button-size: 24px;
+        --paper-radio-button-label-spacing: 4px;
+      }
+    </style>
+  </template>
+</dom-module>
+
+<dom-module id="menu-styles">
+  <template>
+    <style>
+      .menu {
+        border-radius: 3px;
+        border: 1px solid var(--paper-grey-300);
+        margin-top: 30px;
+      }
+      
+      .menu__item {
+        border-bottom: 1px solid var(--paper-grey-200);
+        padding: 10px;
+      }
+
+      a.menu__item {
+        display: block;
+      }
+
+      .menu__item:hover {
+        background: var(--paper-grey-50);
+      }
+    </style>
+  </template>
+</dom-module>
+
+<dom-module id="button-styles">
+  <template>
+    <style>
+
+      .button {
+        -webkit-appearance: none;
+        background: none;
+        border-radius: 3px;
+        border: 1px solid var(--paper-grey-300);
+        box-sizing: border-box;
+        color: initial;
+        cursor: pointer;
+        display: inline-block;
+        font-size: 13px;
+        margin: 0;
+        min-width: 60px;
+        outline: none;
+        padding: 8px 10px;
+        position: relative;
+        text-align: center;
+        text-decoration: none;
+        text-transform: uppercase;
+      }
+
+      .button:hover {
+        background: var(--paper-grey-200);
+      }
+
+      .button--primary {
+        background-color: var(--rmerp-primary-color);        
+        border: 0;
+        color: white;
+        font-weight: 600;
+      }
+
+      .button--secondary {
+        background-color: var(--rmerp-secondary-color);
+        border: 0;
+        color: white;
+        font-weight: 600;
+      }
+
+    </style>
+  </template>
+</dom-module>
+
+<dom-module id="drawer-menu-styles">
+  <template>
+    <style>
+      .drawer__header {
+        @apply(--layout-horizontal);
+        @apply(--layout-center);
+        color: var(--paper-grey-800);
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        height: 31px;
+        padding: 0 20px;
+
+        border: 1px solid var(--paper-grey-200);
+        border-left: none;
+        border-right: none;
+        margin-top: -1px;
+      }
+
+      .drawer__header--first {
+        border-top: none;
+        margin-top: 0;
+      }
+
+      .drawer__selector {
+        display: block;
+        padding-bottom: 12px;
+      }
+      
+      .drawer__link {
+        @apply(--layout);
+        @apply(--layout-center);
+        color: var(--paper-grey-700);
+        cursor: pointer;
+        font-size: 14px;
+        padding: 8px 20px;
+        text-decoration: none;
+      }
+
+      .drawer__link:hover {
+        background: var(--paper-grey-50);
+      }
+
+      .drawer__link.iron-selected {
+        font-weight: 500;
+        color: var(--rmerp-primary-color) !important;
+      }
+
+    </style>
+  </template>
+</dom-module>

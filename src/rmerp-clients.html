@@ -1,0 +1,86 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="rmerp-data.html">
+
+<link rel="import" href="rmerp-clients-list.html">
+
+<dom-module id="rmerp-clients">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <rmerp-data data="{{data}}" url="/clients" loading="{{loading}}"></rmerp-data>
+
+    <app-location route="{{route}}"></app-location>
+    <app-route
+        route="{{route}}"
+        pattern="/:page"
+        data="{{routeData}}"
+        tail="{{subroute}}"></app-route>
+
+    <iron-pages role="main" selected="[[page]]" attr-for-selected="name" selected-attribute="visible" fallback-selection="404">
+      <rmerp-clients-list name="list" data="{{data}}" load-complete="[[loadComplete]]" small-screen="[[smallScreen]]" route="[[subroute]]" offline="[[offline]]"></rmerp-clients-list>
+      <rmerp-clients-settings name="propiedades" small-screen="[[smallScreen]]" offline="[[offline]]"></rmerp-clients-settings>
+      <rmerp-404-warning name="404"></rmerp-404-warning>
+    </iron-pages>
+
+  </template>
+
+  <script>
+
+    class RMERPClients extends Polymer.Element {
+
+      static get is() { 
+        return 'rmerp-clients'; 
+      }
+
+      static get properties() {
+        return {
+          page: {
+            type: String,
+            reflectToAttribute: true,
+            observer: '_pageChanged',
+          },
+        };
+      }
+
+      static get observers() {
+        return [
+          '_routePageChanged(routeData.page)',
+        ];
+      }
+
+      _routePageChanged(page) {
+        // Polymer 2.0 will call with `undefined` on initialization.
+        // Ignore until we are properly called with a string.
+        if (page === undefined) {
+          return;
+        }
+
+        // If no page was found in the route data, page will be an empty string.
+        // Deault to 'view1' in that case.
+        this.page = page || 'list';
+      }
+
+      _pageChanged(page) {
+        // Load page import on demand. Show 404 page if fails
+        /*var resolvedPageUrl = this.resolveUrl('rmerp-clients-' + page + '.html');
+        Polymer.importHref(
+            resolvedPageUrl,
+            null,
+            this._showPage404.bind(this),
+            true);*/
+      }
+
+      _showPage404() {
+        this.page = '404-warning';
+      }
+    }
+
+    window.customElements.define(RMERPClients.is, RMERPClients);
+
+  </script>
+</dom-module>
