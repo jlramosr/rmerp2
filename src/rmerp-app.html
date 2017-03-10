@@ -15,8 +15,6 @@
         display: block;
       }
 
-
-
       footer {
         position: absolute;
         bottom: 0;
@@ -49,8 +47,8 @@
 
     <iron-media-query query="max-width: 767px" query-matches="{{smallScreen}}"></iron-media-query>
 
-    <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="404-warning" role="main">
-      <rmerp-clients name="clients" load-complete="[[loadComplete]]" small-screen="[[smallScreen]]" route="[[subroute]]" offline="[[offline]]"></rmerp-clients>
+    <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="404" role="main">
+      <rmerp-clients name="clients" load-complete="[[loadComplete]]" small-screen="[[smallScreen]]" route="{{subroute}}" offline="[[offline]]"></rmerp-clients>
       <rmerp-invoices name="invoices" small-screen="[[smallScreen]]" offline="[[offline]]"></rmerp-invoices>
       <rmerp-404-warning name="404"></rmerp-404-warning>
     </iron-pages>
@@ -68,10 +66,13 @@
 
       static get properties() {
         return {
+
           page: {
             type: String,
+            reflectToAttribute: true,
             observer: '_pageChanged'
-          },
+          }
+
         };
       }
 
@@ -92,33 +93,33 @@
 
       ready() {
         super.ready();
-        //light DOM elements may not have been distributed when ready is called.
+        // Light DOM elements may not have been distributed when ready is called.
         // When possible, use afterNextRender to defer non-critical
         // work until after first paint.
         Polymer.RenderStatus.afterNextRender(this, function() {
           this.addEventListener(window, 'online', '_notifyNetworkStatus');
           this.addEventListener(window, 'offline', '_notifyNetworkStatus');
-          console.log("FIRST PAINT EN ready");
         });
       }
 
-      _routePageChanged(page) {
+      _routePageChanged(routeDataPage) {
         // Polymer 2.0 will call with `undefined` on initialization.
         // Ignore until we are properly called with a string.
-        if (page === undefined) {
-          //window.history.pushState({}, null, '/clients');
-          //window.dispatchEvent(new CustomEvent('location-changed'));
-          //this.set('routeData.page', 'clients');
+        if (routeDataPage === undefined) {
           return;
         }
 
-        // If no page was found in the route data, page will be an empty string.
-        // Deault to 'clients' in that case.
-        this.page = page || 'clients';
+        // Redirect if there is no page
+        if (!routeDataPage) {
+          this.set('routeData.page', 'clients');
+          return;
+        }
+
+        // Default Page
+        this.page = routeDataPage || 'clients';
       }
 
       _pageChanged(page) {
-        // Load page import on demand. Show 404 page if fails
        if (page != null) {
           // clients route is eagerly loaded
           if (page == 'clients') {
@@ -128,10 +129,9 @@
           else {
             // When a load failed, it triggered a 404 which means we need to
             // eagerly load the 404 page definition
+            const resolvedPageUrl = this.resolveUrl('rmerp-' + page + '.html');
             var cb = this._pageLoaded.bind(this);
-            Polymer.importHref(
-              this.resolveUrl('rmerp-' + page + '.html'),
-              cb, cb, true);
+            Polymer.importHref(resolvedPageUrl, cb, cb, true);
           }
         }
       }
@@ -144,13 +144,16 @@
         // load lazy resources after render and set `loadComplete` when done.
         if (!this.loadComplete) {
           Polymer.RenderStatus.afterNextRender(this, function() {
-            Polymer.importHref(this.resolveUrl('lazy-resources.html'), function() {
-              //networkStatus
-              //loadComplete=true
-              console.log("FIRST PAINT EN _ensureLazyLoaded");
-            });
+            const resolvedLazyResourcesUrl = this.resolveUrl('lazy-resources.html');
+            var cb = this._finishLoaded.bind(this);
+            Polymer.importHref(resolvedLazyResourcesUrl, cb);
           });
         }
+      }
+
+      _finishLoaded() {
+        this._notifyNetworkStatus();
+        this.loadComplete = true;
       }
 
       _notifyNetworkStatus() {

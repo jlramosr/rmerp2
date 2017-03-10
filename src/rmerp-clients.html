@@ -14,16 +14,16 @@
 
     <rmerp-data data="{{data}}" url="/clients" loading="{{loading}}"></rmerp-data>
 
-    <app-location route="{{route}}"></app-location>
     <app-route
         route="{{route}}"
-        pattern="/:page"
+        pattern="/:client_id"
         data="{{routeData}}"
         tail="{{subroute}}"></app-route>
 
-    <iron-pages role="main" selected="[[page]]" attr-for-selected="name" selected-attribute="visible" fallback-selection="404">
+    <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="404" role="main">
       <rmerp-clients-list name="list" data="{{data}}" load-complete="[[loadComplete]]" small-screen="[[smallScreen]]" route="[[subroute]]" offline="[[offline]]"></rmerp-clients-list>
-      <rmerp-clients-settings name="propiedades" small-screen="[[smallScreen]]" offline="[[offline]]"></rmerp-clients-settings>
+      <rmerp-clients-overview name="overview"></rmerp-clients-overview>
+      <rmerp-clients-settings name="settings" small-screen="[[smallScreen]]" offline="[[offline]]"></rmerp-clients-settings>
       <rmerp-404-warning name="404"></rmerp-404-warning>
     </iron-pages>
 
@@ -39,45 +39,87 @@
 
       static get properties() {
         return {
+
+          id: {
+            type: String,
+            reflectToAttribute: true,
+            observer: '_idChanged',
+          },
+
           page: {
             type: String,
             reflectToAttribute: true,
             observer: '_pageChanged',
-          },
+          }
+
         };
       }
 
       static get observers() {
         return [
-          '_routePageChanged(routeData.page)',
+          /*'_routeIdPageChanged(routeData.id, routeData.page)'*/
+          '_routeIdChanged(routeData)'
         ];
       }
 
-      _routePageChanged(page) {
-        // Polymer 2.0 will call with `undefined` on initialization.
-        // Ignore until we are properly called with a string.
-        if (page === undefined) {
+      /*_routeIdPageChanged(routeDataId, routeDataPage) {
+        console.log("_routeIdPageChanged", this.routeData, routeDataId, routeDataPage);
+        if (!routeDataId) {
+          this.set('routeData.page', '');
+          this.page = 'list';
           return;
         }
 
-        // If no page was found in the route data, page will be an empty string.
-        // Deault to 'view1' in that case.
-        this.page = page || 'list';
+        if (routeDataId && !routeDataPage) {
+          this.set('routeData.page', 'overview');
+          return;
+        }
+
+        this.id = routeDataId || '';
+        this.page = routeDataPage || 'overview';
+      }*/
+
+      _routeIdChanged(routeDataId) {
+        console.log("_routeIdChanged", this.routeData, routeDataId);
+        if (routeDataId === undefined) {
+          return;
+        }
+
+        if (!routeDataId) {
+          this.set('routeData.page', '');
+          this.page = 'list';
+          return;
+        }
+
+        if (routeDataId) {
+          this.set('routeData.page', 'overview');
+          return;
+        }
+
+        this.id = routeDataId || '';
+        this.page = 'overview';
+      }
+
+      _idChanged(id) {
       }
 
       _pageChanged(page) {
-        // Load page import on demand. Show 404 page if fails
-        /*var resolvedPageUrl = this.resolveUrl('rmerp-clients-' + page + '.html');
-        Polymer.importHref(
-            resolvedPageUrl,
-            null,
-            this._showPage404.bind(this),
-            true);*/
+        if (page != null) {
+          var resolvedPageUrl = this.resolveUrl('rmerp-clients-' + page + '.html');
+          if (page === '404-warning') {
+            resolvedPageUrl = this.resolveUrl('rmerp-' + page + '.html');
+          }
+          // clients route is eagerly loaded
+          if (page === 'list') {
+          }
+          else {
+            // When a load failed, it triggered a 404 which means we need to
+            // eagerly load the 404 page definition
+            Polymer.importHref(resolvedPageUrl, null, null, true);
+          }
+        }
       }
 
-      _showPage404() {
-        this.page = '404-warning';
-      }
     }
 
     window.customElements.define(RMERPClients.is, RMERPClients);
