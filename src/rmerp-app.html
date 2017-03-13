@@ -4,10 +4,6 @@
 <link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 
-<link rel="import" href="rmerp-icons.html">
-
-<link rel="import" href="rmerp-clients.html">
-
 <dom-module id="rmerp-app">
   <template>
     <style>
@@ -62,7 +58,9 @@
   <script>
     class RMERPApp extends Polymer.Element {
 
-      static get is() { return 'rmerp-app'; }
+      static get is() { 
+        return 'rmerp-app'; 
+      }
 
       static get properties() {
         return {
@@ -78,7 +76,8 @@
 
       static get observers() {
         return [
-          '_routePageChanged(routeData.page)',
+          '_routePathChanged(route.path)',
+          '_routeDataPageChanged(routeData.page)'
         ];
       }
 
@@ -102,7 +101,13 @@
         });
       }
 
-      _routePageChanged(routeDataPage) {
+      _routePathChanged(routePath) {
+        if (routePath.slice(-1) !== '/') {
+          this.set('route.path', this.route.path + '/');
+        }
+      }
+
+      _routeDataPageChanged(routeDataPage) {
         // Polymer 2.0 will call with `undefined` on initialization.
         // Ignore until we are properly called with a string.
         if (routeDataPage === undefined) {
@@ -110,9 +115,9 @@
         }
 
         // Redirect if there is no page
-        if (!routeDataPage) {
-          this.set('routeData.page', 'clients');
-          return;
+        if (routeDataPage === '') {
+          window.history.pushState({}, null, 'clients/');
+          window.dispatchEvent(new CustomEvent('location-changed'));
         }
 
         // Default Page
@@ -120,19 +125,10 @@
       }
 
       _pageChanged(page) {
-       if (page != null) {
-          // clients route is eagerly loaded
-          if (page == 'clients') {
-            this._pageLoaded();
-          }
-          // other routes are lazy loaded
-          else {
-            // When a load failed, it triggered a 404 which means we need to
-            // eagerly load the 404 page definition
-            const resolvedPageUrl = this.resolveUrl('rmerp-' + page + '.html');
-            var cb = this._pageLoaded.bind(this);
-            Polymer.importHref(resolvedPageUrl, cb, cb, true);
-          }
+        if (page != null) {
+          const resolvedPageUrl = this.resolveUrl('rmerp-' + page + '.html');
+          var cb = this._pageLoaded.bind(this);
+          Polymer.importHref(resolvedPageUrl, cb, cb, true);
         }
       }
 

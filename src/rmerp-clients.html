@@ -1,4 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
 
 <link rel="import" href="rmerp-data.html">
 
@@ -16,12 +17,12 @@
 
     <app-route
         route="{{route}}"
-        pattern="/:client_id"
+        pattern="/:client_id/:client_page"
         data="{{routeData}}"
         tail="{{subroute}}"></app-route>
 
-    <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="404" role="main">
-      <rmerp-clients-list name="list" data="{{data}}" load-complete="[[loadComplete]]" small-screen="[[smallScreen]]" route="[[subroute]]" offline="[[offline]]"></rmerp-clients-list>
+    <iron-pages selected="[[clientPage]]" attr-for-selected="name" fallback-selection="404" role="main">
+      <rmerp-clients-list name="list" data="{{data}}" load-complete="[[loadComplete]]" small-screen="[[smallScreen]]" offline="[[offline]]"></rmerp-clients-list>
       <rmerp-clients-overview name="overview"></rmerp-clients-overview>
       <rmerp-clients-settings name="settings" small-screen="[[smallScreen]]" offline="[[offline]]"></rmerp-clients-settings>
       <rmerp-404-warning name="404"></rmerp-404-warning>
@@ -40,16 +41,14 @@
       static get properties() {
         return {
 
-          id: {
+          clientId: {
             type: String,
-            reflectToAttribute: true,
-            observer: '_idChanged',
+            observer: '_clientIdChanged'
           },
 
-          page: {
+          clientPage: {
             type: String,
-            reflectToAttribute: true,
-            observer: '_pageChanged',
+            observer: '_clientPageChanged'
           }
 
         };
@@ -57,68 +56,46 @@
 
       static get observers() {
         return [
-          /*'_routeIdPageChanged(routeData.id, routeData.page)'*/
-          '_routeIdChanged(routeData)'
+          '_routeIdPageChanged(routeData.client_id, routeData.client_page)'
         ];
       }
 
-      /*_routeIdPageChanged(routeDataId, routeDataPage) {
-        console.log("_routeIdPageChanged", this.routeData, routeDataId, routeDataPage);
-        if (!routeDataId) {
-          this.set('routeData.page', '');
-          this.page = 'list';
-          return;
+      _routeIdPageChanged(routeDataClientId, routeDataClientPage) {
+        var page;
+
+        if (!routeDataClientId) {
+          window.history.pushState({}, null, '/');
+          window.dispatchEvent(new CustomEvent('location-changed'));
+          page = 'list';
         }
 
-        if (routeDataId && !routeDataPage) {
-          this.set('routeData.page', 'overview');
-          return;
+        if (routeDataClientId !== '' && routeDataClientPage === '') {
+          window.history.pushState({}, null, '/clients/' + routeDataClientId + '/overview/');
+          window.dispatchEvent(new CustomEvent('location-changed'));
+          page = 'overview';
         }
 
-        this.id = routeDataId || '';
-        this.page = routeDataPage || 'overview';
-      }*/
+        this.clientId = routeDataClientId || null;
+        this.clientPage = routeDataClientPage || page;
 
-      _routeIdChanged(routeDataId) {
-        console.log("_routeIdChanged", this.routeData, routeDataId);
-        if (routeDataId === undefined) {
-          return;
-        }
-
-        if (!routeDataId) {
-          this.set('routeData.page', '');
-          this.page = 'list';
-          return;
-        }
-
-        if (routeDataId) {
-          this.set('routeData.page', 'overview');
-          return;
-        }
-
-        this.id = routeDataId || '';
-        this.page = 'overview';
       }
 
-      _idChanged(id) {
+       _clientIdChanged(id) {
+        console.log("_clientIdChanged", id);
+       }
+
+      _clientPageChanged(page) {
+        console.log("_clientPageChanged", page);
+        var href;
+
+        if (page === '404-warning') {
+          href = this.resolveUrl('rmerp-' + page + '.html');
+        } else {
+          href = this.resolveUrl('rmerp-clients-' + page + '.html');
+        }
+        Polymer.importHref(href, null, null, true);
       }
 
-      _pageChanged(page) {
-        if (page != null) {
-          var resolvedPageUrl = this.resolveUrl('rmerp-clients-' + page + '.html');
-          if (page === '404-warning') {
-            resolvedPageUrl = this.resolveUrl('rmerp-' + page + '.html');
-          }
-          // clients route is eagerly loaded
-          if (page === 'list') {
-          }
-          else {
-            // When a load failed, it triggered a 404 which means we need to
-            // eagerly load the 404 page definition
-            Polymer.importHref(resolvedPageUrl, null, null, true);
-          }
-        }
-      }
 
     }
 

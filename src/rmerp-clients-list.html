@@ -2,7 +2,6 @@
 <link rel="import" href="../bower_components/iron-list/iron-list.html">
 
 <link rel="import" href="rmerp-styles.html">
-<link rel="import" href="rmerp-icons.html">
 
 <dom-module id="rmerp-clients-list">
   <template>
@@ -25,7 +24,7 @@
 
           <div class="header-toolbar__actions">
             <template is="dom-if" if="[[smallScreen]]">
-              <paper-icon-button on-tap="_newItemTapped" class="header-toolbar__icon" icon="add"></paper-icon-button>
+              <paper-icon-button on-tap="_newItemTapped" class="header-toolbar__icon" icon="rmerp-icons:add"></paper-icon-button>
             </template>
             <template is="dom-if" if="[[!smallScreen]]">
               <button on-tap="_newItemTapped" class="header-toolbar__button">
@@ -42,15 +41,15 @@
           <input id="searchInput" class="search__input" on-keyup="_searchInputKeyup" placeholder="Buscar">
           <div class="search__results">[[_computedTotalResults(_filteredData)]]</div>
         </div>
-        HOLAAAAAAAAAAAAA
-        <!--<iron-list id="ironList" items="[[_filteredData]]" max-physical-count="30">
+        
+        <iron-list id="ironList" items="[[_filteredData]]" max-physical-count="30">
           <template>
             <div class$="table__item [[_computeItemClass(index, data.length)]]" on-tap="_editItemTapped">
               <span class="table__item--primary-text">[[item.name]]</span>
               <span class="table__item--secondary-text">[[item.address]]</span>
             </div>
           </template>
-        </iron-list>-->
+        </iron-list>
 
       </div>
 
@@ -92,10 +91,6 @@
         ];
       }
 
-      ready() {
-        super.ready();
-      }
-
       _dataChanged(data, loadComplete) {
         this.dataArray =  Object.keys(data).map(function(key) {
           return data[key];   
@@ -121,8 +116,7 @@
             this.dataArray, this.searchValue, {key: 'name'});
         } else {
           this._filteredData = this.dataArray;
-        }
-                
+        } 
       }
 
       _computedTotalResults(_filteredData) {
@@ -135,14 +129,18 @@
           return;
         }
 
-        this._clientOverlay = this.create('rmerp-clients-overlay', {
-          opened: true,
+        const overlay = document.createElement('rmerp-clients-new-overlay');
+        overlay.open();
+
+        this._clientOverlay = overlay;
+        console.log(this, this._clientOverlay);
+          /*opened: true,
           clients: this.data,
           smallScreen: this.smallScreen,
           onDetach: _ => {
             this._clientOverlay = null;
           }
-        });
+        });*/
       }
 
       _editItemTapped(event) {
@@ -150,7 +148,7 @@
           return;
         }
 
-        this._clientOverlay = this.create('rmerp-clients-overlay', {
+        this._clientOverlay = this.create('rmerp-clients-new-overlay', {
           opened: true,
           readOnly: true,
           client: event.model.item,

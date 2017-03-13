@@ -1,0 +1,42 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/iron-list/iron-list.html">
+
+<dom-module id="rmerp-clients-settings">
+  <template>
+
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    CLIENT SETTINGS
+
+  </template>
+
+  <script>
+
+    class RMERPClientsSettings extends Polymer.Element {
+
+      static get is() { 
+        return 'rmerp-clients-settings'; 
+      }
+
+      static get properties() {
+        return {
+          
+
+        }
+      }
+
+      static get observers() {
+        return [
+        ];
+      }
+
+    }
+
+    window.customElements.define(RMERPClientsSettings.is, RMERPClientsSettings);
+
+  </script>
+</dom-module>
