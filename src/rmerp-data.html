@@ -3,6 +3,7 @@
 <link rel="import" href="../bower_components/polymerfire/polymerfire.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-app.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
 
 
 <dom-module id="rmerp-data">
@@ -16,9 +17,16 @@
       api-key="AIzaSyDgZxxPgit5IE1YPQwAKgF84ARH3egnoKg"></firebase-app>
 
     <firebase-document
+      id="query"
       app-name="rmerp"
-      path="[[url]]"
-      data="{{data}}"></firebase-document>
+      path="/[[collection]]"
+      data="{{itemsObjectData}}"></firebase-document>
+
+    <firebase-document
+      id="document"
+      app-name="rmerp"
+      path="/[[collection]]/[[itemId]]"
+      data="{{itemData}}"></firebase-document>
 
     <!--<firebase-auth id="auth" user="{{user}}" provider="google" on-error="handleError"></firebase-auth>-->
 
@@ -34,14 +42,30 @@
 
       static get properties() {
         return {
-          data: {
-            type: Object,
-            notify: true
-          },
 
-          url: String
+          collection: String,
+
+          itemId: String,
+
+          itemsObjectData: Object,
+
+          data: {
+            type: Array,
+            notify: true,
+            computed: '_computeData(itemsObjectData)'
+          }
+
         }
       }
+
+      _computeData(itemsObjectData) {
+        return Object.keys(itemsObjectData).map(function(key) {
+          var object = itemsObjectData[key];
+          object.id = key;
+          return object;   
+        });
+      }
+
     }
 
     window.customElements.define(RMERPData.is, RMERPData);

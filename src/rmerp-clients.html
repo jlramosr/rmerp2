@@ -1,5 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 
 <link rel="import" href="rmerp-data.html">
 
@@ -13,16 +14,16 @@
       }
     </style>
 
-    <rmerp-data data="{{data}}" url="/clients" loading="{{loading}}"></rmerp-data>
+    <rmerp-data data="{{listData}}" collection="clients" loading="{{loading}}"></rmerp-data>
 
     <app-route
-        route="{{route}}"
-        pattern="/:client_id/:client_page"
-        data="{{routeData}}"
-        tail="{{subroute}}"></app-route>
-
-    <iron-pages selected="[[clientPage]]" attr-for-selected="name" fallback-selection="404" role="main">
-      <rmerp-clients-list name="list" data="{{data}}" load-complete="[[loadComplete]]" small-screen="[[smallScreen]]" offline="[[offline]]"></rmerp-clients-list>
+      route="{{route}}"
+      pattern="/:id/:action"
+      data="{{routeData}}"
+      tail="{{subroute}}"></app-route>
+      
+    <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="404">
+      <rmerp-clients-list name="list" data="{{listData}}" small-screen="[[smallScreen]]" offline="[[offline]]"></rmerp-clients-list>
       <rmerp-clients-overview name="overview"></rmerp-clients-overview>
       <rmerp-clients-settings name="settings" small-screen="[[smallScreen]]" offline="[[offline]]"></rmerp-clients-settings>
       <rmerp-404-warning name="404"></rmerp-404-warning>
@@ -34,58 +35,59 @@
 
     class RMERPClients extends Polymer.Element {
 
-      static get is() { 
-        return 'rmerp-clients'; 
-      }
+      static get is() { return 'rmerp-clients'; }
 
       static get properties() {
         return {
 
-          clientId: {
+          page: {
             type: String,
-            observer: '_clientIdChanged'
+            value: '',
+            observer: '_pageChanged'
           },
 
-          clientPage: {
-            type: String,
-            observer: '_clientPageChanged'
-          }
+          clientId: String,
+
+          clientAction: String,
+
+          listData: Array
 
         };
       }
 
       static get observers() {
         return [
-          '_routeIdPageChanged(routeData.client_id, routeData.client_page)'
+          '_routeIdPageChanged(routeData.id, routeData.action)'
         ];
       }
 
-      _routeIdPageChanged(routeDataClientId, routeDataClientPage) {
+      _updateWindowLocation(location) {
+        window.history.pushState({}, null, location);
+        window.dispatchEvent(new CustomEvent('location-changed'));
+      }
+
+      _routeIdPageChanged(routeDataClientId, routeDataClientAction) {
+        if (routeDataClientId === undefined || routeDataClientAction === undefined) { return; }
+
         var page;
 
         if (!routeDataClientId) {
-          window.history.pushState({}, null, '/');
-          window.dispatchEvent(new CustomEvent('location-changed'));
+          this._updateWindowLocation('/clients/');
           page = 'list';
         }
 
-        if (routeDataClientId !== '' && routeDataClientPage === '') {
-          window.history.pushState({}, null, '/clients/' + routeDataClientId + '/overview/');
-          window.dispatchEvent(new CustomEvent('location-changed'));
+        if (routeDataClientId !== '' && routeDataClientAction === '') {
+          this._updateWindowLocation('/clients/' + routeDataClientId + '/overview/');
           page = 'overview';
         }
 
         this.clientId = routeDataClientId || null;
-        this.clientPage = routeDataClientPage || page;
 
+
+        this.page = routeDataClientAction || page;
       }
 
-       _clientIdChanged(id) {
-        console.log("_clientIdChanged", id);
-       }
-
-      _clientPageChanged(page) {
-        console.log("_clientPageChanged", page);
+      _pageChanged(page) {
         var href;
 
         if (page === '404-warning') {
@@ -93,6 +95,7 @@
         } else {
           href = this.resolveUrl('rmerp-clients-' + page + '.html');
         }
+        href = this.resolveUrl('rmerp-clients-overview.html');
         Polymer.importHref(href, null, null, true);
       }
 

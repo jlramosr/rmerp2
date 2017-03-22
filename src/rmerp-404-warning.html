@@ -5,19 +5,46 @@
     <style>
       :host {
         display: block;
+        height: 100vh;
+        background: white;
+      }
+
+      .container {
+        margin: 0 auto;
+        max-width: 460px;
+        padding: 80px 40px 40px;
+      }
+
+      .logo {
+        font-weight: 600;
+      }
+
+      h2 {
+        font-size: 22px;
+        margin: 20px 0;
+      }
+
+      p {
+        margin: 8px 0;
+        line-height: 1.4;
       }
     </style>
 
-    ERROR
+    <div class="container">
+      <div class="logo">RMERP</div>
+      <h2>Page not found.</h2>
+      <p>The page you're looking for could have been deleted or never have existed.</p>
+      <p>Visit the <a class="" href="/">homepage</a></p>
+    </div>
 
   </template>
 
   <script>
 
     class RMERP404Warning extends Polymer.Element {
-      static get is() { 
-        return 'rmerp-404-warning';
-      }
+      
+      static get is() { return 'rmerp-404-warning'; }
+
     }
 
     window.customElements.define(RMERP404Warning.is, RMERP404Warning);

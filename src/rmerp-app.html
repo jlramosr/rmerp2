@@ -4,6 +4,8 @@
 <link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 
+<link rel="import" href="rmerp-clients.html">
+
 <dom-module id="rmerp-app">
   <template>
     <style>
@@ -18,6 +20,7 @@
         right: 0;
         background: #ddd;
         text-align: center;
+        font-size: 12px;
         margin-top: 20px;
         line-height: 24px;
         padding: 14px;
@@ -37,15 +40,16 @@
     <app-location route="{{route}}"></app-location>
     <app-route
         route="{{route}}"
-        pattern="/:page"
+        pattern="/:category"
         data="{{routeData}}"
         tail="{{subroute}}"></app-route>
 
-    <iron-media-query query="max-width: 767px" query-matches="{{smallScreen}}"></iron-media-query>
+    <iron-media-query query="max-width: 640px" query-matches="{{smallScreen}}"></iron-media-query>
+    <iron-media-query query="max-width: 1084px" query-matches="{{mediumScreen}}"></iron-media-query>
 
-    <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="404" role="main">
-      <rmerp-clients name="clients" load-complete="[[loadComplete]]" small-screen="[[smallScreen]]" route="{{subroute}}" offline="[[offline]]"></rmerp-clients>
-      <rmerp-invoices name="invoices" small-screen="[[smallScreen]]" offline="[[offline]]"></rmerp-invoices>
+    <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="404">
+      <rmerp-clients name="clients" page="list" route="[[subroute]]" small-screen="[[smallScreen]]" offline="[[offline]]"></rmerp-clients>
+      <rmerp-invoices name="invoices" page="list" offline="[[offline]]"></rmerp-invoices>
       <rmerp-404-warning name="404"></rmerp-404-warning>
     </iron-pages>
 
@@ -58,16 +62,13 @@
   <script>
     class RMERPApp extends Polymer.Element {
 
-      static get is() { 
-        return 'rmerp-app'; 
-      }
+      static get is() { return 'rmerp-app'; }
 
       static get properties() {
         return {
 
           page: {
             type: String,
-            reflectToAttribute: true,
             observer: '_pageChanged'
           }
 
@@ -76,89 +77,42 @@
 
       static get observers() {
         return [
-          '_routePathChanged(route.path)',
-          '_routeDataPageChanged(routeData.page)'
+          /*'_routePathChanged(route.path)',*/
+          '_routeDataPageChanged(routeData.category)'
         ];
       }
 
-      constructor() {
-        super();
-        this.removeAttribute('unresolved');
+      _updateWindowLocation(location) {
+        window.history.pushState({}, null, location);
+        window.dispatchEvent(new CustomEvent('location-changed'));
       }
 
-      connectedCallback() {
-        super.connectedCallback();
-      }
-
-      ready() {
-        super.ready();
-        // Light DOM elements may not have been distributed when ready is called.
-        // When possible, use afterNextRender to defer non-critical
-        // work until after first paint.
-        Polymer.RenderStatus.afterNextRender(this, function() {
-          this.addEventListener(window, 'online', '_notifyNetworkStatus');
-          this.addEventListener(window, 'offline', '_notifyNetworkStatus');
-        });
-      }
-
-      _routePathChanged(routePath) {
-        if (routePath.slice(-1) !== '/') {
-          this.set('route.path', this.route.path + '/');
+      /*_routePathChanged(routePath) {
+        if (routePath.slice(-1) !== '/' && routePath !== 'undefined') {
+          this._updateWindowLocation(this.route.path + '/')
         }
-      }
+      }*/
 
-      _routeDataPageChanged(routeDataPage) {
-        // Polymer 2.0 will call with `undefined` on initialization.
-        // Ignore until we are properly called with a string.
-        if (routeDataPage === undefined) {
+      _routeDataPageChanged(routeDataCategory) {
+        if (routeDataCategory === undefined) { return; }
+
+        // Redirect if there is no page
+        if (routeDataCategory === '') {
+          this._updateWindowLocation('/clients');
           return;
         }
 
-        // Redirect if there is no page
-        if (routeDataPage === '') {
-          window.history.pushState({}, null, 'clients/');
-          window.dispatchEvent(new CustomEvent('location-changed'));
-        }
-
         // Default Page
-        this.page = routeDataPage || 'clients';
+        this.page = routeDataCategory || 'clients';
       }
 
       _pageChanged(page) {
-        if (page != null) {
-          const resolvedPageUrl = this.resolveUrl('rmerp-' + page + '.html');
-          var cb = this._pageLoaded.bind(this);
-          Polymer.importHref(resolvedPageUrl, cb, cb, true);
-        }
+        const resolvedPageUrl = this.resolveUrl('rmerp-' + page + '.html');
+        Polymer.importHref(resolvedPageUrl, null, this._showPage404.bind(this), true);
       }
 
-      _pageLoaded() {
-        this._ensureLazyLoaded();
-      }
-
-      _ensureLazyLoaded() {
-        // load lazy resources after render and set `loadComplete` when done.
-        if (!this.loadComplete) {
-          Polymer.RenderStatus.afterNextRender(this, function() {
-            const resolvedLazyResourcesUrl = this.resolveUrl('lazy-resources.html');
-            var cb = this._finishLoaded.bind(this);
-            Polymer.importHref(resolvedLazyResourcesUrl, cb);
-          });
-        }
-      }
-
-      _finishLoaded() {
-        this._notifyNetworkStatus();
-        this.loadComplete = true;
-      }
-
-      _notifyNetworkStatus() {
-        var oldOffline = this.offline;
-        this.offline =  !navigator.onLine;
-        // Show the snackbar if the user is offline when starting a new session
-        // or if the network status changed.
-        if (this.offline || (!this.offline && oldOffline === true)) {
-        }
+      _showPage404() {
+        this.page = '404-warning';
       }
     }
 
