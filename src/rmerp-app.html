@@ -4,7 +4,8 @@
 <link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 
-<link rel="import" href="rmerp-clients.html">
+<link rel="import" href="rmerp-common.html">
+<link rel="import" href="rmerp-404-warning.html">
 
 <dom-module id="rmerp-app">
   <template>
@@ -48,9 +49,22 @@
     <iron-media-query query="max-width: 1084px" query-matches="{{mediumScreen}}"></iron-media-query>
 
     <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="404">
-      <rmerp-clients name="clients" page="list" route="[[subroute]]" small-screen="[[smallScreen]]" offline="[[offline]]"></rmerp-clients>
-      <rmerp-invoices name="invoices" page="list" offline="[[offline]]"></rmerp-invoices>
-      <rmerp-404-warning name="404"></rmerp-404-warning>
+
+      <rmerp-clients
+        name="clients"
+        collection="clients"
+        route="[[subroute]]"
+        small-screen="[[smallScreen]]"
+        offline="[[offline]]"></rmerp-clients>
+
+      <rmerp-invoices
+        name="invoices"
+        page="list"
+        offline="[[offline]]"></rmerp-invoices>
+
+      <rmerp-404-warning
+        name="404"></rmerp-404-warning>
+
     </iron-pages>
 
     <footer>
@@ -67,6 +81,8 @@
       static get properties() {
         return {
 
+          defaultCategory: String,
+
           page: {
             type: String,
             observer: '_pageChanged'
@@ -77,43 +93,36 @@
 
       static get observers() {
         return [
-          /*'_routePathChanged(route.path)',*/
-          '_routeDataPageChanged(routeData.category)'
+          '_routePathChanged(route.path)',
+          '_routeDataChanged(routeData)'
         ];
       }
 
-      _updateWindowLocation(location) {
-        window.history.pushState({}, null, location);
-        window.dispatchEvent(new CustomEvent('location-changed'));
+      // force '/' at the end.
+      _routePathChanged(routePath) {
+        if (routePath.slice(-1) !== '/' && routePath !== 'undefined') {
+          RMERPCommon.updateWindowLocation(this.route.path + '/')
+        }
       }
 
-      /*_routePathChanged(routePath) {
-        if (routePath.slice(-1) !== '/' && routePath !== 'undefined') {
-          this._updateWindowLocation(this.route.path + '/')
-        }
-      }*/
+      _routeDataChanged(routeData) {
+        if (routeData.category === undefined) { return; }
 
-      _routeDataPageChanged(routeDataCategory) {
-        if (routeDataCategory === undefined) { return; }
-
-        // Redirect if there is no page
-        if (routeDataCategory === '') {
-          this._updateWindowLocation('/clients');
+        // redirect if there is no page.
+        if (routeData.category === '') {
+          RMERPCommon.updateWindowLocation('/' + this.defaultCategory);
           return;
         }
 
-        // Default Page
-        this.page = routeDataCategory || 'clients';
+        // update page.
+        this.page = routeData.category || this.defaultCategory || '';
       }
 
       _pageChanged(page) {
-        const resolvedPageUrl = this.resolveUrl('rmerp-' + page + '.html');
-        Polymer.importHref(resolvedPageUrl, null, this._showPage404.bind(this), true);
+        const href = this.resolveUrl('rmerp-' + page + '.html');
+        Polymer.importHref(href);
       }
 
-      _showPage404() {
-        this.page = '404-warning';
-      }
     }
 
     window.customElements.define(RMERPApp.is, RMERPApp);

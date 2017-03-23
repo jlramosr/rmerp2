@@ -39,7 +39,7 @@
 
         <div class="search">
           <input id="searchInput" class="search__input" on-keyup="_searchInputKeyup" placeholder="Buscar">
-          <div class="search__results">[[_computedTotalResults(_filteredData)]]</div>
+          <div class="search__results">[[_computedTotalResults(data)]]</div>
         </div>
         
         <iron-list id="ironList" items="[[data]]" max-physical-count="30">

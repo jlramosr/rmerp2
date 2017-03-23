@@ -13,7 +13,7 @@
       }
     </style>
 
-    CLIENT OVERVIEW
+    {{data.id}} {{data.name}} CLIENT OVERVIEW
 
   </template>
 
@@ -27,7 +27,8 @@
 
       static get properties() {
         return {
-          
+
+          data: Object
 
         }
       }

@@ -10,7 +10,7 @@
       }
     </style>
 
-    CLIENT SETTINGS
+    {{data.id}} {{data.name}} CLIENT SETTINGS
 
   </template>
 
@@ -24,7 +24,8 @@
 
       static get properties() {
         return {
-          
+
+          data: Object
 
         }
       }

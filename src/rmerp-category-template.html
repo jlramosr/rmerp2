@@ -1,0 +1,37 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+
+<link rel="import" href="rmerp-category-mixin.html">
+
+<link rel="import" href="rmerp-data.html">
+
+<dom-module id="rmerp-category-template">
+  <template>
+
+    <rmerp-data data="{{listData}}" collection="[[collection]]" loading="{{loading}}"></rmerp-data>
+
+    <app-route
+      route="{{route}}"
+      pattern="/:id/:action"
+      data="{{routeData}}"
+      tail="{{subroute}}"></app-route>
+
+    <iron-pages slot="iron-pages" selected="[[page]]" attr-for-selected="name" fallback-selection="404">
+      <slot name="pages"></slot>
+    </iron-pages>
+    
+  </template>
+
+  <script>
+
+    class RMERPCategoryTemplate extends RMERPCategoryMixin(Polymer.Element) {
+
+      static get is() { return 'rmerp-category-template'; }
+
+    }
+
+    window.customElements.define(RMERPCategoryTemplate.is, RMERPCategoryTemplate);
+
+  </script>
+</dom-module>

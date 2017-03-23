@@ -1,0 +1,15 @@
+<script>
+
+  class RMERPCommon {
+
+    static get updateWindowLocation() {
+      return function(location) {
+        window.history.pushState({}, null, location);
+        window.dispatchEvent(new CustomEvent('location-changed'));
+      }
+    }
+
+  }
+  
+</script>
+

@@ -2,103 +2,56 @@
 <link rel="import" href="../bower_components/app-route/app-route.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 
+<!--<link rel="import" href="rmerp-category-template.html">-->
+<link rel="import" href="rmerp-category-mixin.html">
+
+<link rel="import" href="rmerp-404-warning.html">
 <link rel="import" href="rmerp-data.html">
 
-<link rel="import" href="rmerp-clients-list.html">
-
 <dom-module id="rmerp-clients">
-  <template>
-    <style>
-      :host {
-        display: block;
-      }
-    </style>
 
-    <rmerp-data data="{{listData}}" collection="clients" loading="{{loading}}"></rmerp-data>
+  <template>
+
+    <rmerp-data 
+      collection="[[collection]]"
+      item-id="{{itemId}}"
+      items="{{items}}"
+      item="{{item}}"
+      loading="{{loading}}"></rmerp-data>
 
     <app-route
       route="{{route}}"
       pattern="/:id/:action"
       data="{{routeData}}"
       tail="{{subroute}}"></app-route>
-      
-    <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="404">
-      <rmerp-clients-list name="list" data="{{listData}}" small-screen="[[smallScreen]]" offline="[[offline]]"></rmerp-clients-list>
-      <rmerp-clients-overview name="overview"></rmerp-clients-overview>
-      <rmerp-clients-settings name="settings" small-screen="[[smallScreen]]" offline="[[offline]]"></rmerp-clients-settings>
+
+    <iron-pages slot="iron-pages" selected="[[page]]" attr-for-selected="name" fallback-selection="404">
+      <rmerp-clients-list name="list" data="{{items}}" small-screen="[[smallScreen]]" offline="[[offline]]"></rmerp-clients-list>
+      <rmerp-clients-overview name="overview" data="{{item}}"></rmerp-clients-overview>
+      <rmerp-clients-settings name="settings" data="{{item}}"></rmerp-clients-settings>
       <rmerp-404-warning name="404"></rmerp-404-warning>
     </iron-pages>
 
+    <!--<rmerp-category-template>
+
+      <div slot="pages">
+        <rmerp-clients-list name="list" data="{{listData}}" small-screen="[[smallScreen]]" offline="[[offline]]"></rmerp-clients-list>
+        <rmerp-clients-overview name="overview"></rmerp-clients-overview>
+        <rmerp-clients-settings name="settings" small-screen="[[smallScreen]]" offline="[[offline]]"></rmerp-clients-settings>
+        <rmerp-404-warning name="404"></rmerp-404-warning>
+      </div>
+
+    </rmerp-category-template>-->
+  
+
+    
   </template>
 
   <script>
 
-    class RMERPClients extends Polymer.Element {
+    class RMERPClients extends RMERPCategoryMixin(Polymer.Element) {
 
       static get is() { return 'rmerp-clients'; }
-
-      static get properties() {
-        return {
-
-          page: {
-            type: String,
-            value: '',
-            observer: '_pageChanged'
-          },
-
-          clientId: String,
-
-          clientAction: String,
-
-          listData: Array
-
-        };
-      }
-
-      static get observers() {
-        return [
-          '_routeIdPageChanged(routeData.id, routeData.action)'
-        ];
-      }
-
-      _updateWindowLocation(location) {
-        window.history.pushState({}, null, location);
-        window.dispatchEvent(new CustomEvent('location-changed'));
-      }
-
-      _routeIdPageChanged(routeDataClientId, routeDataClientAction) {
-        if (routeDataClientId === undefined || routeDataClientAction === undefined) { return; }
-
-        var page;
-
-        if (!routeDataClientId) {
-          this._updateWindowLocation('/clients/');
-          page = 'list';
-        }
-
-        if (routeDataClientId !== '' && routeDataClientAction === '') {
-          this._updateWindowLocation('/clients/' + routeDataClientId + '/overview/');
-          page = 'overview';
-        }
-
-        this.clientId = routeDataClientId || null;
-
-
-        this.page = routeDataClientAction || page;
-      }
-
-      _pageChanged(page) {
-        var href;
-
-        if (page === '404-warning') {
-          href = this.resolveUrl('rmerp-' + page + '.html');
-        } else {
-          href = this.resolveUrl('rmerp-clients-' + page + '.html');
-        }
-        href = this.resolveUrl('rmerp-clients-overview.html');
-        Polymer.importHref(href, null, null, true);
-      }
-
 
     }
 

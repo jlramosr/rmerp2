@@ -3,8 +3,6 @@
 <link rel="import" href="../bower_components/polymerfire/polymerfire.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-app.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html">
-<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
-
 
 <dom-module id="rmerp-data">
 
@@ -20,13 +18,13 @@
       id="query"
       app-name="rmerp"
       path="/[[collection]]"
-      data="{{itemsObjectData}}"></firebase-document>
+      data="{{itemsDataObject}}"></firebase-document>
 
     <firebase-document
       id="document"
       app-name="rmerp"
       path="/[[collection]]/[[itemId]]"
-      data="{{itemData}}"></firebase-document>
+      data="{{itemDataObject}}"></firebase-document>
 
     <!--<firebase-auth id="auth" user="{{user}}" provider="google" on-error="handleError"></firebase-auth>-->
 
@@ -45,25 +43,39 @@
 
           collection: String,
 
-          itemId: String,
+          itemsDataObject: Object,
 
-          itemsObjectData: Object,
-
-          data: {
+          items: {
             type: Array,
             notify: true,
-            computed: '_computeData(itemsObjectData)'
+            computed: '_computeItems(itemsDataObject)'
+          },
+
+          itemId: String,
+
+          itemDataObject: Object,
+
+          item: {
+            type: Object,
+            notify: true,
+            computed: '_computeItem(itemDataObject)'
           }
 
         }
       }
 
-      _computeData(itemsObjectData) {
-        return Object.keys(itemsObjectData).map(function(key) {
-          var object = itemsObjectData[key];
+      _computeItems(itemsDataObject) {
+        return Object.keys(itemsDataObject).map(function(key) {
+          var object = itemsDataObject[key];
           object.id = key;
           return object;   
         });
+      }
+
+      _computeItem(itemDataObject) {
+        console.log(itemDataObject, this.itemId);
+        itemDataObject.id = this.itemId;
+        return itemDataObject;
       }
 
     }
