@@ -3,39 +3,29 @@
 
 <link rel="import" href="rmerp-styles.html">
 
+<link rel="import" href="rmerp-view-template.html">
+
 <dom-module id="rmerp-clients-list">
   <template>
 
-    <style include="header-layout-styles search-styles table-styles">
+    <style include="search-styles table-styles">
       :host {
         display: block;
       }
     </style>
 
-    <div class="header-layout">
+    <rmerp-view-template>
+      
+      <iron-icon slot="toolbar-icon" icon="rmerp-icons:supervisor-account"></iron-icon>
+      <span slot="toolbar-title">CLIENTES</span>
 
-      <div class="header-layout__header">
-        <div class="header-toolbar">
-
-          <div class="header-toolbar__info">
-            <iron-icon class="header-toolbar__icon" icon="rmerp-icons:supervisor-account"></iron-icon>
-            <span class="header-toolbar__title">CLIENTES</iron-icon>
-          </div>
-
-          <div class="header-toolbar__actions">
-            <template is="dom-if" if="[[smallScreen]]">
-              <paper-icon-button on-tap="_newItemTapped" class="header-toolbar__icon" icon="rmerp-icons:add"></paper-icon-button>
-            </template>
-            <template is="dom-if" if="[[!smallScreen]]">
-              <button on-tap="_newItemTapped" class="header-toolbar__button">
-                NUEVO CLIENTE
-              </button>
-            </template>
-          </div>
-        </div>
+      <paper-icon-button class="toolbar-right-small-screen" on-tap="_newItemTapped" icon="rmerp-icons:add"></paper-icon-button>
+      <div slot="toolbar-right">
+        sasa
+        <button on-tap="_newItemTapped">NUEVO CLIENTE</button>
       </div>
 
-      <div class="header-layout__content">
+      <div slot="content">
 
         <div class="search">
           <input id="searchInput" class="search__input" on-keyup="_searchInputKeyup" placeholder="Buscar">
@@ -50,10 +40,9 @@
             </a>
           </template>
         </iron-list>
-
       </div>
 
-    </div>
+    </rmerp-view-template>
 
   </template>
 

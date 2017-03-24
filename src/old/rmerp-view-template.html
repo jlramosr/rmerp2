@@ -1,0 +1,68 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="rmerp-styles.html">
+
+<dom-module id="rmerp-view-template">
+  <template>
+
+    <style include="header-layout-styles">
+      :host {
+        display: block;
+      }
+    </style>
+
+    <div class="header-layout">
+
+      <div class="header-layout__header">
+        <div class="header-toolbar">
+
+          <div class="header-toolbar__info">
+
+            <div class="header-toolbar__icon">
+              <slot name="toolbar-icon"></slot>
+            </div>
+
+            <div class="header-toolbar__title">
+              <slot name="toolbar-title"></slot>
+            </div>
+
+          </div>
+
+          <div class="header-toolbar__actions">
+
+            <template is="dom-if" if="[[smallScreen]]">
+              <div class="header-toolbar__icon">
+                <slot name="toolbar-right-small-screen"></slot>
+              </div>
+            </template>
+
+            <template is="dom-if" if="[[!smallScreen]]">
+              <div class="header-toolbar__button">
+                <slot name="toolbar-right"></slot>
+              </div>
+            </template>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="header-layout__content">
+        <slot name="content">
+      </div>
+
+    </div>
+
+  </template>
+
+  <script>
+
+    class RMERPViewTemplate extends Polymer.Element {
+
+      static get is() { return 'rmerp-view-template'; }
+
+    }
+
+    window.customElements.define(RMERPViewTemplate.is, RMERPViewTemplate);
+
+  </script>
+</dom-module>
