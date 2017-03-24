@@ -1,0 +1,113 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="rmerp-data.html">
+<link rel="import" href="rmerp-404-warning.html">
+
+<dom-module id="rmerp-category">
+  <template>
+
+    <rmerp-data
+      collection="[[collection]]"
+      item-id="[[itemId]]"
+      items="{{items}}"
+      item="{{item}}"
+      loading="{{loading}}"></rmerp-data>
+
+    <app-route
+      route="[[route]]"
+      pattern="/:id/:action"
+      data="{{_routeData}}"></app-route>
+
+    <iron-pages selected="[[_page]]" attr-for-selected="name" fallback-selection="404">
+      <slot></slot>
+      <rmerp-404-warning name="404"></rmerp-404-warning>
+    </iron-pages>
+
+  </template>
+  <script>
+
+    class RMERPCategory extends Polymer.Element {
+
+      static get is() { return 'rmerp-category'; }
+
+      static get properties() {
+        return {
+
+          route: Object,
+
+          _routeData: Object,
+
+          _page: {
+            type: String,
+            value: 'list',
+            observer: '_pageChanged'
+          },
+
+          defaultItemAction: {
+            type: String,
+            value: 'overview'
+          },
+
+          collection: String,
+
+          items: {
+            type: Array,
+            notify: true
+          },
+
+          itemId: {
+            type: String,
+            notify: true
+          },
+
+        };
+      }
+
+      static get observers() {
+        return [
+          '_routeDataChanged(routeData)',
+        ];
+      }
+
+      _routeDataChanged(routeData) {
+        if (routeData.id === undefined || routeData.action === undefined) { return; }
+
+        const parentPage = this.route.prefix.split('/')[1];
+        if (parentPage !== this.collection) {
+          return;
+        }
+
+        var page;
+
+        // redirect if there is no id.
+        if (!routeData.id) {
+          RMERPCommon.updateWindowLocation('/' + this.collection);
+          page = 'list';
+        }
+        // redirect if there is no action.
+        if (routeData.id !== '' && routeData.action === '') {
+          RMERPCommon.updateWindowLocation('/' + this.collection +
+                                           '/' + routeData.id +
+                                           '/' + this.defaultItemAction);
+          page = 'overview';
+        }
+
+        // update item id.
+        this.itemId = routeData.id || null;
+
+        // update page.
+        this._page = routeData.action || page;
+      }
+
+      _pageChanged(page) {
+        const href = this.resolveUrl('rmerp-' + this.collection + '-' + page + '.html');
+        Polymer.importHref(href);
+      }
+
+    }
+
+    window.customElements.define(RMERPCategory.is, RMERPCategory);
+
+  </script>
+</dom-module>

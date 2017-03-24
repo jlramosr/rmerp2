@@ -2,56 +2,40 @@
 <link rel="import" href="../bower_components/app-route/app-route.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 
-<!--<link rel="import" href="rmerp-category-template.html">-->
-<link rel="import" href="rmerp-category-mixin.html">
-
-<link rel="import" href="rmerp-404-warning.html">
-<link rel="import" href="rmerp-data.html">
+<link rel="import" href="rmerp-category.html">
 
 <dom-module id="rmerp-clients">
-
   <template>
 
-    <rmerp-data 
-      collection="[[collection]]"
-      item-id="{{itemId}}"
-      items="{{items}}"
-      item="{{item}}"
-      loading="{{loading}}"></rmerp-data>
+    <rmerp-category route="[[route]]" collection="[[collection]]" items={{items}} item={{item}}>
 
-    <app-route
-      route="{{route}}"
-      pattern="/:id/:action"
-      data="{{routeData}}"
-      tail="{{subroute}}"></app-route>
-
-    <iron-pages slot="iron-pages" selected="[[page]]" attr-for-selected="name" fallback-selection="404">
       <rmerp-clients-list name="list" data="{{items}}" small-screen="[[smallScreen]]" offline="[[offline]]"></rmerp-clients-list>
       <rmerp-clients-overview name="overview" data="{{item}}"></rmerp-clients-overview>
       <rmerp-clients-settings name="settings" data="{{item}}"></rmerp-clients-settings>
-      <rmerp-404-warning name="404"></rmerp-404-warning>
-    </iron-pages>
 
-    <!--<rmerp-category-template>
+    </rmerp-category>
 
-      <div slot="pages">
-        <rmerp-clients-list name="list" data="{{listData}}" small-screen="[[smallScreen]]" offline="[[offline]]"></rmerp-clients-list>
-        <rmerp-clients-overview name="overview"></rmerp-clients-overview>
-        <rmerp-clients-settings name="settings" small-screen="[[smallScreen]]" offline="[[offline]]"></rmerp-clients-settings>
-        <rmerp-404-warning name="404"></rmerp-404-warning>
-      </div>
-
-    </rmerp-category-template>-->
-  
-
-    
   </template>
 
   <script>
 
-    class RMERPClients extends RMERPCategoryMixin(Polymer.Element) {
+    class RMERPClients extends Polymer.Element {
 
       static get is() { return 'rmerp-clients'; }
+
+      static get properties() {
+        return {
+
+          route: Object,
+
+          collection: String,
+
+          items: Array,
+
+          itemId: String
+
+        };
+      }
 
     }
 
