@@ -1,18 +1,17 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 
-<link rel="import" href="rmerp-styles.html">
+<link rel="import" href="rmerp-tmpl-category.html">
 
 <dom-module id="rmerp-invoices">
   <template>
-    <style>
-      :host {
-        display: block;
 
-        padding: 10px;
-      }
-    </style>
+    <rmerp-tmpl-category route="[[route]]" collection="invoices" items={{items}} item={{item}}>
 
-    SASA
+      <rmerp-clients-list name="list" data="{{items}}" small-screen="[[smallScreen]]" offline="[[offline]]"></rmerp-clients-list>
+      <rmerp-clients-overview name="overview" data="{{item}}"></rmerp-clients-overview>
+      <rmerp-clients-settings name="settings" data="{{item}}"></rmerp-clients-settings>
+
+    </rmerp-tmpl-category>
 
   </template>
 

@@ -13,27 +13,12 @@
       :host {
         display: block;
       }
-
-      footer {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: #ddd;
-        text-align: center;
-        font-size: 12px;
-        margin-top: 20px;
-        line-height: 24px;
-        padding: 14px;
-      }
-
     </style>
 
     <app-location route="{{route}}"></app-location>
     <app-route
         route="{{route}}"
         pattern="/:category"
-        data="{{routeData}}"
         tail="{{subroute}}"></app-route>
 
     <iron-media-query query="max-width: 640px" query-matches="{{smallScreen}}"></iron-media-query>
@@ -43,8 +28,8 @@
 
       <rmerp-clients
         name="clients"
-        collection="clients"
         route="[[subroute]]"
+        load-complete="[[loadComplete]]"
         small-screen="[[smallScreen]]"
         offline="[[offline]]"></rmerp-clients>
 
@@ -56,10 +41,6 @@
         name="404"></rmerp-404-warning>
 
     </iron-pages>
-
-    <footer>
-      Made by <a href="https://www.github.com/jlramosr">Jose Ramos</a>
-    </footer>
 
   </template>
 
@@ -78,40 +59,38 @@
             observer: '_pageChanged'
           },
 
+          route: {
+            type: Object,
+            observer: '_routeChanged'
+          },
+
           loadComplete: Boolean
 
         };
       }
 
       static get observers() {
-        return [
-          '_routePathChanged(route.path)',
-          '_routeDataChanged(routeData)'
-        ];
+        return [];
       }
 
-      // force '/' at the end.
-      _routePathChanged(routePath) {
-        if (routePath.slice(-1) !== '/' && routePath !== 'undefined') {
-          RMERPCommon.updateWindowLocation(this.route.path + '/')
-        }
-      }
+      _routeChanged(route) {
+        if (route.path == "undefined") { return; }
 
-      _routeDataChanged(routeData) {
-        if (routeData.category === undefined) { return; }
+        var path = route.path.split('/');
+        var category = path[1];
 
         // redirect if there is no page.
-        if (routeData.category === '') {
+        if (category === '') {
           RMERPCommon.updateWindowLocation('/' + this.defaultCategory);
           return;
         }
+
         // update page.
-        this.page = routeData.category || this.defaultCategory || '';
+        this.page = category || this.defaultCategory || '';
       }
 
       _pageChanged(page) {
         const href = this.resolveUrl('rmerp-' + page + '.html');
-
         Polymer.importHref(href, this._ensureLazyLoaded.bind(this), null, true);
       }
 

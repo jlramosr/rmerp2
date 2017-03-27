@@ -2,40 +2,28 @@
 <link rel="import" href="../bower_components/iron-list/iron-list.html">
 
 <link rel="import" href="rmerp-styles.html">
+<link rel="import" href="rmerp-tmpl-view.html">
+<link rel="import" href="rmerp-tmpl-action.html">
 
 <dom-module id="rmerp-clients-list">
   <template>
 
-    <style include="header-layout-styles search-styles table-styles">
+    <style include="content-styles search-styles table-styles">
       :host {
         display: block;
       }
     </style>
 
-    <div class="header-layout">
+    <rmerp-tmpl-view title="CLIENTES" icon="supervisor-account" loading="[[loading]]">
 
-      <div class="header-layout__header">
-        <div class="header-toolbar">
+      <rmerp-tmpl-action
+        slot="action"
+        title="NUEVO CLIENTE"
+        icon="add"
+        on-tap="_newItemTapped"
+        small-screen="[[smallScreen]]"></rmerp-tmpl-action>
 
-          <div class="header-toolbar__info">
-            <iron-icon class="header-toolbar__icon" icon="rmerp-icons:supervisor-account"></iron-icon>
-            <span class="header-toolbar__title">CLIENTES</iron-icon>
-          </div>
-
-          <div class="header-toolbar__actions">
-            <template is="dom-if" if="[[smallScreen]]">
-              <paper-icon-button on-tap="_newItemTapped" class="header-toolbar__icon" icon="rmerp-icons:add"></paper-icon-button>
-            </template>
-            <template is="dom-if" if="[[!smallScreen]]">
-              <button on-tap="_newItemTapped" class="header-toolbar__button">
-                NUEVO CLIENTE
-              </button>
-            </template>
-          </div>
-        </div>
-      </div>
-
-      <div class="header-layout__content">
+      <div slot="content" class="content__list">
 
         <div class="search">
           <input id="searchInput" class="search__input" on-keyup="_searchInputKeyup" placeholder="Buscar">
@@ -44,7 +32,7 @@
         
         <iron-list id="ironList" items="[[data]]" max-physical-count="30">
           <template>
-            <a class$="table__item [[_computeItemClass(index, data.length)]]" href="/clients/[[item.id]]/">
+            <a class$="table__item [[_computeItemClass(index, data.length)]]" href="/clients/[[item.id]]">
               <span class="table__item--primary-text">[[item.name]]</span>
               <span class="table__item--secondary-text">[[item.address]]</span>
             </a>
@@ -53,7 +41,7 @@
 
       </div>
 
-    </div>
+    </rmerp-tmpl-view>
 
   </template>
 
@@ -72,12 +60,9 @@
 
           _filteredData: Array,
 
-          searchValue: String,
+          _searchValue: String,
 
-          loading: {
-            type: Boolean,
-            value: false
-          }
+          loading: Boolean
 
         }
       }
@@ -95,15 +80,15 @@
       }
 
       _searchInputKeyup() {
-        this.searchValue = this.$.searchInput.value.trim();
+        this._searchValue = this.$.searchInput.value.trim();
         this._updateFilteredData();
       }
 
       _updateFilteredData() {
         this._filteredData = [];
-        if (this.searchValue && this.searchValue.length && this.loadComplete) {
+        if (this._searchValue && this._searchValue.length && this.loadComplete) {
           this._filteredData = fuzzaldrinPlus.filter(
-            this.dataArray, this.searchValue, {key: 'name'});
+            this.dataArray, this._searchValue, {key: 'name'});
         } else {
           this._filteredData = this.dataArray;
         } 

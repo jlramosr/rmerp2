@@ -1,16 +1,35 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/iron-list/iron-list.html">
 
+<link rel="import" href="rmerp-styles.html">
+<link rel="import" href="rmerp-tmpl-view.html">
+<link rel="import" href="rmerp-tmpl-action.html">
+
 <dom-module id="rmerp-clients-settings">
   <template>
 
-    <style>
+    <style include="content-styles">
       :host {
         display: block;
       }
     </style>
 
-    {{data.id}} {{data.name}} CLIENT SETTINGS
+    <rmerp-tmpl-view id="view" title="{{data.name}}" back-icon="arrow-back" back-path="/clients" loading="[[loading]]">
+
+      <rmerp-tmpl-action
+        slot="action"
+        title="VISTAZO"
+        href="/clients/[[data.id]]/overview"
+        icon="visibility"
+        small-screen="[[smallScreen]]"></rmerp-tmpl-action>
+
+      <div slot="content" class="content__form">
+
+        SETTINGS {{data.id}}
+
+      </div>
+
+    </rmerp-tmpl-view>
 
   </template>
 

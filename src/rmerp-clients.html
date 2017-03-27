@@ -2,18 +2,23 @@
 <link rel="import" href="../bower_components/app-route/app-route.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 
-<link rel="import" href="rmerp-category.html">
+<link rel="import" href="rmerp-tmpl-category.html">
 
 <dom-module id="rmerp-clients">
   <template>
 
-    <rmerp-category route="[[route]]" collection="[[collection]]" items={{items}} item={{item}}>
+    <rmerp-tmpl-category
+      route="[[route]]"
+      collection="clients" 
+      items={{items}} 
+      item={{item}}
+      loading="{{loading}}">
 
-      <rmerp-clients-list name="list" data="{{items}}" small-screen="[[smallScreen]]" offline="[[offline]]"></rmerp-clients-list>
-      <rmerp-clients-overview name="overview" data="{{item}}"></rmerp-clients-overview>
-      <rmerp-clients-settings name="settings" data="{{item}}"></rmerp-clients-settings>
+      <rmerp-clients-list name="list" data="{{items}}" small-screen="[[smallScreen]]" loading="[[loading]]"></rmerp-clients-list>
+      <rmerp-clients-overview name="overview" data="{{item}}" small-screen="[[smallScreen]]" loading="[[loading]]"></rmerp-clients-overview>
+      <rmerp-clients-settings name="settings" data="{{item}}" small-screen="[[smallScreen]]" loading="[[loading]]"></rmerp-clients-settings>
 
-    </rmerp-category>
+    </rmerp-tmpl-category>
 
   </template>
 
@@ -32,7 +37,9 @@
 
           items: Array,
 
-          itemId: String
+          itemId: String,
+
+          loading: Boolean
 
         };
       }

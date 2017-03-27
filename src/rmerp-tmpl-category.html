@@ -1,10 +1,12 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+
+<link rel="import" href="rmerp-common.html">
 <link rel="import" href="rmerp-data.html">
 <link rel="import" href="rmerp-404-warning.html">
 
-<dom-module id="rmerp-category">
+<dom-module id="rmerp-tmpl-category">
   <template>
 
     <rmerp-data
@@ -16,8 +18,7 @@
 
     <app-route
       route="[[route]]"
-      pattern="/:id/:action"
-      data="{{_routeData}}"></app-route>
+      pattern="/:id/:action"></app-route>
 
     <iron-pages selected="[[_page]]" attr-for-selected="name" fallback-selection="404">
       <slot></slot>
@@ -27,16 +28,17 @@
   </template>
   <script>
 
-    class RMERPCategory extends Polymer.Element {
+    class RMERPTmplCategory extends Polymer.Element {
 
-      static get is() { return 'rmerp-category'; }
+      static get is() { return 'rmerp-tmpl-category'; }
 
       static get properties() {
         return {
 
-          route: Object,
-
-          _routeData: Object,
+          route: {
+            type: Object,
+            observer: '_routeChanged'
+          },
 
           _page: {
             type: String,
@@ -61,43 +63,48 @@
             notify: true
           },
 
+          item: {
+            type: Object,
+            notify: true
+          },
+
+          loading: {
+            type: Boolean,
+            notify: true
+          },
+
         };
       }
 
       static get observers() {
-        return [
-          '_routeDataChanged(routeData)',
-        ];
       }
 
-      _routeDataChanged(routeData) {
-        if (routeData.id === undefined || routeData.action === undefined) { return; }
-
-        const parentPage = this.route.prefix.split('/')[1];
+      _routeChanged(route) {
+        const parentPage = route.prefix.split('/')[1];
         if (parentPage !== this.collection) {
+          this.itemId = null;
           return;
         }
 
-        var page;
+        var path = route.path.split('/');
 
-        // redirect if there is no id.
-        if (!routeData.id) {
-          RMERPCommon.updateWindowLocation('/' + this.collection);
-          page = 'list';
-        }
+        var id = path[1];
+        var action = path[2];
+
         // redirect if there is no action.
-        if (routeData.id !== '' && routeData.action === '') {
+        if (id && id !== '' && !action) {
           RMERPCommon.updateWindowLocation('/' + this.collection +
-                                           '/' + routeData.id +
+                                           '/' + id +
                                            '/' + this.defaultItemAction);
-          page = 'overview';
+          return;
         }
 
         // update item id.
-        this.itemId = routeData.id || null;
+        this.itemId = id || null;
 
         // update page.
-        this._page = routeData.action || page;
+        this._page = action || 'list';
+
       }
 
       _pageChanged(page) {
@@ -107,7 +114,7 @@
 
     }
 
-    window.customElements.define(RMERPCategory.is, RMERPCategory);
+    window.customElements.define(RMERPTmplCategory.is, RMERPTmplCategory);
 
   </script>
 </dom-module>

@@ -20,6 +20,7 @@
     "paper-input": "PolymerElements/paper-input#2.0-preview",
     "paper-radio-group": "PolymerElements/paper-radio-group#2.0-preview",
     "paper-radio-button": "PolymerElements/paper-radio-button#2.0-preview",
+    "paper-spinner": "PolymerElements/paper-spinner#2.0-preview",
     "polymer": "Polymer/polymer#2.0.0-rc.3",
     "polymerfire": "firebase/polymerfire#2.0-preview"
   },

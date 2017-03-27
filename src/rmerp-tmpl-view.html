@@ -1,0 +1,99 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-spinner/paper-spinner-lite.html">
+
+<link rel="import" href="rmerp-styles.html">
+
+<dom-module id="rmerp-tmpl-view">
+  <template>
+
+    <style include="header-layout-styles show-styles">
+      :host {
+        display: block;
+      }
+
+      paper-spinner-lite {
+        --paper-spinner-color: var(--spinner-color, var(--secondary-color));
+        position: absolute;
+        margin: auto;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 100px;
+        height: 100px;
+        opacity: 0.7;
+      }
+    </style>
+
+    <paper-spinner-lite active="{{loading}}"></paper-spinner-lite>
+
+    <div class="header-layout">
+      <div class="header-layout__header">
+      
+        <div class="header-toolbar">
+
+          <div class="header-toolbar__info">
+            <a href$="[[backPath]]" hidden$="[[!backIcon]]">
+              <iron-icon class="header-toolbar__icon--back" icon$="rmerp-icons:[[backIcon]]"></iron-icon>
+            </a>
+            <iron-icon class="header-toolbar__icon" icon$="rmerp-icons:[[icon]]" hidden$=[[!icon]]></iron-icon>
+            <span class="header-toolbar__title">{{title}}</iron-icon>
+          </div>
+
+          <div class="header-toolbar__actions">
+            <slot name="action"></slot>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="header-layout__content">
+        <slot name="content"></slot>
+      </div>
+
+    </div>
+
+  </template>
+
+  <script>
+
+    class RMERPTmplView extends Polymer.Element {
+
+      static get is() { return 'rmerp-tmpl-view'; }
+
+      static get properties() {
+        return {
+
+          title: String,
+
+          icon: {
+            type: String,
+            value: ''
+          },
+
+          backIcon: {
+            type: String,
+            value: ''
+          },
+
+          backPath: {
+            type: String,
+            value: ''
+          },
+
+          loading: Boolean,
+        
+        }
+      
+      }
+
+      /*_backTapped(event) {
+        this.dispatchEvent(new CustomEvent('back-tapped', {detail: {}}));
+      }*/
+
+    }
+
+    window.customElements.define(RMERPTmplView.is, RMERPTmplView);
+
+  </script>
+</dom-module>

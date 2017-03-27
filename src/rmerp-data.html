@@ -48,7 +48,8 @@
           items: {
             type: Array,
             notify: true,
-            computed: '_computeItems(itemsDataObject)'
+            computed: '_computeItems(itemsDataObject)',
+            observer: '_itemsChanged',
           },
 
           itemId: String,
@@ -58,7 +59,14 @@
           item: {
             type: Object,
             notify: true,
-            computed: '_computeItem(itemDataObject)'
+            computed: '_computeItem(itemDataObject)',
+            observer: '_itemChanged',
+          },
+
+          loading: {
+            type: Boolean,
+            notify: true,
+            value: true
           }
 
         }
@@ -73,9 +81,22 @@
       }
 
       _computeItem(itemDataObject) {
-        console.log(itemDataObject, this.itemId);
         itemDataObject.id = this.itemId;
         return itemDataObject;
+      }
+
+      _itemsChanged(items, oldItems) {
+        this.loading = true;
+        if (oldItems) {
+          this.loading = false;
+        }
+      }
+
+      _itemChanged(item, oldItem) {
+        this.loading = true;
+        if (this.itemId && oldItem) {
+          this.loading = false;
+        }
       }
 
     }
