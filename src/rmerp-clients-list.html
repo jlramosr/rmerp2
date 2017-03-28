@@ -2,8 +2,8 @@
 <link rel="import" href="../bower_components/iron-list/iron-list.html">
 
 <link rel="import" href="rmerp-styles.html">
-<link rel="import" href="rmerp-tmpl-view.html">
-<link rel="import" href="rmerp-tmpl-action.html">
+<link rel="import" href="rmerp-tmpl-header-layout.html">
+<link rel="import" href="rmerp-button.html">
 
 <dom-module id="rmerp-clients-list">
   <template>
@@ -14,25 +14,25 @@
       }
     </style>
 
-    <rmerp-tmpl-view title="CLIENTES" icon="supervisor-account" loading="[[loading]]">
+    <rmerp-tmpl-header-layout title="CLIENTES" icon="supervisor-account">
 
-      <rmerp-tmpl-action
+      <rmerp-button
         slot="action"
         title="NUEVO CLIENTE"
         icon="add"
-        on-tap="_newItemTapped"
-        small-screen="[[smallScreen]]"></rmerp-tmpl-action>
+        on-click="_newItemTapped"
+        small="[[smallScreen]]"></rmerp-button>
 
       <div slot="content" class="content__list">
 
         <div class="search">
-          <input id="searchInput" class="search__input" on-keyup="_searchInputKeyup" placeholder="Buscar">
-          <div class="search__results">[[_computedTotalResults(data)]]</div>
+          <input id="searchInput" class="search__input" on-keyup="_searchInputKeyup" value="{{searchValue}}" placeholder="Buscar">
+          <div class="search__results">[[_computedTotalResults(_filteredData)]]</div>
         </div>
         
-        <iron-list id="ironList" items="[[data]]" max-physical-count="30">
-          <template>
-            <a class$="table__item [[_computeItemClass(index, data.length)]]" href="/clients/[[item.id]]">
+        <iron-list id="ironList" items="[[_filteredData]]" max-physical-count="30">
+          <template id="template">
+            <a class$="table__item [[_computeItemClass(index, _filteredData.length)]]" href="/clients/[[item.id]]">
               <span class="table__item--primary-text">[[item.name]]</span>
               <span class="table__item--secondary-text">[[item.address]]</span>
             </a>
@@ -41,7 +41,7 @@
 
       </div>
 
-    </rmerp-tmpl-view>
+    </rmerp-tmpl-header-layout>
 
   </template>
 
@@ -58,19 +58,62 @@
           
           data: Array,
 
-          _filteredData: Array,
+          _filteredData: {
+            type: Array,
+            computed: '_computeFilteredData(data, _searchValue)'
+          },
 
-          _searchValue: String,
+          _searchValue: {
+            type: String,
+            value: ''
+          },
 
-          loading: Boolean
+          smallScreen: { 
+            type: Boolean,
+            observer: '_smallScreenChanged'
+          },
+
+          _clientOverlay: {
+            type: Object,
+            value: null
+          },
+
+          loadComplete: Boolean
 
         }
       }
 
-      static get observers() {
-        return [
-          '_smallScreenChanged(smallScreen)'
-        ];
+      ready() {
+        super.ready();
+        this._firstResize(this.$.ironList);
+      }
+
+      _firstResize(ironList) {
+        var times = 0;
+        var resizeIntervalId = setInterval(_ => {
+          times += 1;
+          if (times > 100) {
+            clearInterval(resizeIntervalId);
+          }
+          ironList.notifyResize();
+        }, 1);
+      }
+
+      _computeFilteredData(data, _searchValue) {
+        var _filteredData = [];
+        if (_searchValue && _searchValue && this.loadComplete) {
+          _filteredData = fuzzaldrin.filter(
+            data, _searchValue, {key: 'name'});
+        } else {
+          _filteredData = data;
+        }
+        console.log(_filteredData);
+        this.$.ironList.notifyResize();
+        return _filteredData;
+      }
+
+      _searchInputKeyup() {
+        this._searchValue = this.$.searchInput.value.trim();
       }
 
       _smallScreenChanged(smallScreen) {
@@ -79,48 +122,25 @@
         }
       }
 
-      _searchInputKeyup() {
-        this._searchValue = this.$.searchInput.value.trim();
-        this._updateFilteredData();
-      }
-
-      _updateFilteredData() {
-        this._filteredData = [];
-        if (this._searchValue && this._searchValue.length && this.loadComplete) {
-          this._filteredData = fuzzaldrinPlus.filter(
-            this.dataArray, this._searchValue, {key: 'name'});
-        } else {
-          this._filteredData = this.dataArray;
-        } 
-      }
-
-      _computedTotalResults(_filteredData) {
-        const length = _filteredData.length || '0';
-        return length + ' results';
-      }
-
       _newItemTapped() {
         if (this._clientOverlay) {
           return;
         }
-
-        const overlay = document.createElement('rmerp-clients-new-overlay');
+        window.overlay = document.createElement('rmerp-clients-new-overlay');
         overlay.open();
-
+        overlay.addEventListener('overlay-closed', _ => {
+          this._clientOverlay = null;
+        });
         this._clientOverlay = overlay;
-        console.log(this, this._clientOverlay);
-          /*opened: true,
-          clients: this.data,
-          smallScreen: this.smallScreen,
-          onDetach: _ => {
-            this._clientOverlay = null;
-          }
-        });*/
       }
 
       _editItemTapped(event) {
-        console.log("HOLAAAAAAAAAAA");
         console.log(event.model.item);
+      }
+
+      _computedTotalResults(_filteredData) {
+        const length = _filteredData.length || '0';
+        return length + ' resultados';
       }
 
       _computeItemClass(index, itemsLength) {

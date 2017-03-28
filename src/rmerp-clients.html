@@ -1,24 +1,22 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../bower_components/app-route/app-route.html">
-<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 
-<link rel="import" href="rmerp-tmpl-category.html">
+<link rel="import" href="rmerp-tmpl-category-route.html">
+<link rel="import" href="rmerp-clients-list.html">
 
 <dom-module id="rmerp-clients">
   <template>
 
-    <rmerp-tmpl-category
+    <rmerp-tmpl-category-route
       route="[[route]]"
       collection="clients" 
       items={{items}} 
-      item={{item}}
-      loading="{{loading}}">
+      item={{item}}>
 
-      <rmerp-clients-list name="list" data="{{items}}" small-screen="[[smallScreen]]" loading="[[loading]]"></rmerp-clients-list>
-      <rmerp-clients-overview name="overview" data="{{item}}" small-screen="[[smallScreen]]" loading="[[loading]]"></rmerp-clients-overview>
-      <rmerp-clients-settings name="settings" data="{{item}}" small-screen="[[smallScreen]]" loading="[[loading]]"></rmerp-clients-settings>
+      <rmerp-clients-list name="list" data="{{items}}" small-screen="[[smallScreen]]" load-complete="[[loadComplete]]"></rmerp-clients-list>
+      <rmerp-clients-overview name="overview" data="{{item}}" small-screen="[[smallScreen]]"></rmerp-clients-overview>
+      <rmerp-clients-settings name="settings" data="{{item}}" small-screen="[[smallScreen]]"></rmerp-clients-settings>
 
-    </rmerp-tmpl-category>
+    </rmerp-tmpl-category-route>
 
   </template>
 
@@ -37,11 +35,18 @@
 
           items: Array,
 
+          item: Object,
+
           itemId: String,
 
-          loading: Boolean
+          smallScreen: Boolean
 
         };
+      }
+
+      ready() {
+        super.ready();
+        //debugger;
       }
 
     }

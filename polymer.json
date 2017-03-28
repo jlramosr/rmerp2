@@ -8,7 +8,7 @@
     "src/rmerp-clients-overview.html",
     "src/rmerp-clients-settings",
 
-    "src/rmerp-invoices.html",
+    "src/rmerp-invoices.html"
   ],
   "sources": [
     "src/**/*",

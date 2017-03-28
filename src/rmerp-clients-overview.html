@@ -1,8 +1,8 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 
 <link rel="import" href="rmerp-styles.html">
-<link rel="import" href="rmerp-tmpl-view.html">
-<link rel="import" href="rmerp-tmpl-action.html">
+<link rel="import" href="rmerp-tmpl-header-layout.html">
+<link rel="import" href="rmerp-button.html">
 
 <dom-module id="rmerp-clients-overview">
   <template>
@@ -13,14 +13,14 @@
       }
     </style>
 
-    <rmerp-tmpl-view id="view" title="{{data.name}}" back-icon="arrow-back" back-path="/clients" loading="[[loading]]">
+    <rmerp-tmpl-header-layout title="{{data.name}}" back-icon="arrow-back" back-path="/clients" loading="[[loading]]">
 
-      <rmerp-tmpl-action
+      <rmerp-button
         slot="action"
         title="PREFERENCIAS"
         href="/clients/[[data.id]]/settings"
         icon="settings"
-        small-screen="[[smallScreen]]"></rmerp-tmpl-action>
+        small="[[smallScreen]]"></rmerp-button>
 
       <div slot="content" class="content__form">
 
@@ -28,7 +28,7 @@
 
       </div>
 
-    </rmerp-tmpl-view>
+    </rmerp-tmpl-header-layout>
 
   </template>
 
@@ -36,9 +36,7 @@
 
     class RMERPClientsOverview extends Polymer.Element {
 
-      static get is() { 
-        return 'rmerp-clients-overview'; 
-      }
+      static get is() { return 'rmerp-clients-overview'; }
 
       static get properties() {
         return {

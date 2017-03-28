@@ -6,6 +6,9 @@
 
 <link rel="import" href="rmerp-common.html">
 <link rel="import" href="rmerp-404-warning.html">
+<link rel="import" href="rmerp-backend-connection.html">
+
+<link rel="import" href="rmerp-clients.html">
 
 <dom-module id="rmerp-app">
   <template>
@@ -24,7 +27,9 @@
     <iron-media-query query="max-width: 640px" query-matches="{{smallScreen}}"></iron-media-query>
     <iron-media-query query="max-width: 1084px" query-matches="{{mediumScreen}}"></iron-media-query>
 
-    <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="404">
+    <rmerp-backend-connection></rmerp-backend-connection>
+
+    <iron-pages selected="[[_page]]" attr-for-selected="name" fallback-selection="404">
 
       <rmerp-clients
         name="clients"
@@ -35,10 +40,12 @@
 
       <rmerp-invoices
         name="invoices"
+        route="[[subroute]]"
+        load-complete="[[loadComplete]]"
+        small-screen="[[smallScreen]]"
         offline="[[offline]]"></rmerp-invoices>
 
-      <rmerp-404-warning
-        name="404"></rmerp-404-warning>
+      <rmerp-404-warning name="404"></rmerp-404-warning>
 
     </iron-pages>
 
@@ -54,7 +61,7 @@
 
           defaultCategory: String,
 
-          page: {
+          _page: {
             type: String,
             observer: '_pageChanged'
           },
@@ -86,18 +93,24 @@
         }
 
         // update page.
-        this.page = category || this.defaultCategory || '';
+        this._page = category || this.defaultCategory || '';
       }
 
-      _pageChanged(page) {
-        const href = this.resolveUrl('rmerp-' + page + '.html');
-        Polymer.importHref(href, this._ensureLazyLoaded.bind(this), null, true);
+      _pageChanged(_page) {
+        if (_page == this.defaultCategory) {
+          this._ensureLazyLoaded();
+        }
+        else {
+          const href = this.resolveUrl('rmerp-' + _page + '.html');
+          Polymer.importHref(href, this._ensureLazyLoaded(), null, true);
+        }
       }
 
      _ensureLazyLoaded() {
         // load lazy resources after render and set `loadComplete` when done.
         if (!this.loadComplete) {
           Polymer.RenderStatus.afterNextRender(this, _ => {
+            
             Polymer.importHref(this.resolveUrl('lazy-resources.html'), _ => {
               this.loadComplete = true;
               // Load pre-caching Service Worker
@@ -105,6 +118,8 @@
                 navigator.serviceWorker.register('/service-worker.js');
               }
             });
+
+
           });
         }
       }

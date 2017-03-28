@@ -65,7 +65,6 @@
       }
 
       .header-toolbar__icon {
-        cursor: pointer;
         height: 40px;
         width: 40px;
         min-width: 40px;
@@ -91,27 +90,6 @@
         @apply(--layout-horizontal);
         @apply(--layout-center-center);
         margin-left: auto;
-      }
-
-      .header-toolbar__button {
-        position: relative;    
-        display: inline-block;
-        cursor: pointer;
-        margin-left: 10px;
-        border: 0;
-        border-radius: 3px;
-        padding: 8px 10px;
-        outline: 0;
-        vertical-align: middle;
-        box-sizing: border-box;
-        color: var(--color-toolbar-button, #fff);
-        background: var(--background-toolbar-button, var(--rmerp-primary-soft-color));
-        font-family: 'Roboto', sans-serif;
-        font-size: 13px;
-        font-weight: 400;
-        text-align: center;
-        text-decoration: none;
-        text-transform: uppercase;
       }
 
       .header-layout__content {
@@ -150,7 +128,47 @@
       }
 
       .content__list {
+        @apply(--layout-vertical);
+        @apply(--layout-fit);
         padding: 0;
+      }
+
+      iron-list {
+        height: 100vh;
+      }
+    </style>
+  </template>
+</dom-module>
+
+<dom-module id="button-styles">
+  <template>
+    <style>
+      .button--text {
+        position: relative;    
+        display: inline-block;
+        cursor: pointer;
+        margin-left: 10px;
+        border: 0;
+        border-radius: 3px;
+        padding: 8px 10px;
+        outline: 0;
+        vertical-align: middle;
+        box-sizing: border-box;
+        color: var(--color-button, #fff);
+        background: var(--background-button, var(--rmerp-primary-soft-color));
+        font-family: 'Roboto', sans-serif;
+        font-size: 13px;
+        font-weight: 400;
+        text-align: center;
+        text-decoration: none;
+        text-transform: uppercase;
+      }
+
+      .button--icon {
+        height: 40px;
+        width: 40px;
+        min-width: 40px;
+        color: var(--color-icon, #fff);
       }
     </style>
   </template>
@@ -343,52 +361,6 @@
       .menu__item:hover {
         background: var(--paper-grey-50);
       }
-    </style>
-  </template>
-</dom-module>
-
-<dom-module id="button-styles">
-  <template>
-    <style>
-
-      .button {
-        -webkit-appearance: none;
-        background: none;
-        border-radius: 3px;
-        border: 1px solid var(--paper-grey-300);
-        box-sizing: border-box;
-        color: initial;
-        cursor: pointer;
-        display: inline-block;
-        font-size: 13px;
-        margin: 0;
-        min-width: 60px;
-        outline: none;
-        padding: 8px 10px;
-        position: relative;
-        text-align: center;
-        text-decoration: none;
-        text-transform: uppercase;
-      }
-
-      .button:hover {
-        background: var(--paper-grey-200);
-      }
-
-      .button--primary {
-        background-color: var(--rmerp-primary-color);        
-        border: 0;
-        color: white;
-        font-weight: 600;
-      }
-
-      .button--secondary {
-        background-color: var(--rmerp-secondary-color);
-        border: 0;
-        color: white;
-        font-weight: 600;
-      }
-
     </style>
   </template>
 </dom-module>

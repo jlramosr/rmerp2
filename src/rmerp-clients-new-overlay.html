@@ -1,13 +1,15 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/overlay-container/overlay-container.html">
-<link rel="import" href="../bower_components/overlay-container/overlay-mixin.html">
+<link rel="import" href="../bower_components/overlay-container/animated-overlay-mixin.html">
 
 <link rel="import" href="rmerp-styles.html">
+<link rel="import" href="rmerp-tmpl-header-layout.html">
+<link rel="import" href="rmerp-button.html">
 
 <dom-module id="rmerp-clients-new-overlay">
   <template>
 
-    <style include="header-layout-styles form-styles">
+    <style include="content-styles form-styles">
       :host {
         position: absolute;
         bottom: 0;
@@ -26,208 +28,184 @@
       }
     </style>
 
-    <div class="header-layout">
+    <rmerp-tmpl-header-layout id="layout" title="NUEVO CLIENTE" back-icon="close">
 
-      <div class="header-layout__header">
+      <rmerp-button
+        slot="action"
+        title="CREAR"
+        icon="done"
+        on-tap="_submitTapped"
+        small="[[smallScreen]]"></rmerp-button>
 
-        <div class="header-toolbar">
+      <div slot="content" class="content__form">
 
-          <div class="header-toolbar__info">
-            <paper-icon-button on-tap="close" class="header-toolbar__icon" icon="rmerp-icons:close"></paper-icon-button>
-            <span class="header-toolbar__title">[[_computeToolbarTitle(client, readOnly)]]</span>
+        <paper-radio-group selected="individual" class="client-type form__radio-group">
+          <paper-radio-button
+            name="individual"
+            checked="{{client.individual}}"
+            disabled="[[readOnly]]"
+            noink
+            class="form__radio-button">Particular</paper-radio-button>
+          <paper-radio-button
+            name="corporate"
+            checked="{{client.corporate}}"
+            disabled="[[readOnly]]"
+            noink
+            class="form__radio-button">Empresa</paper-radio-button>
+        </paper-radio-group>
+
+        <div class$="[[_computeClassLine(smallScreen)]]">
+
+          <div class="form__item">
+            <iron-icon
+              class="form__icon"
+              hidden$="[[!_computeShowNamePersonIcon(client.individual,smallScreen)]]"  
+              disabled$="[[readOnly]]"
+              icon="person"></iron-icon>
+            <iron-icon
+              class="form__icon"
+              hidden$="[[!client.corporate]]" 
+              disabled$="[[readOnly]]"
+              icon="domain"></iron-icon>
+            <paper-input always-float-label
+              class="form__input"
+              disabled="[[readOnly]]"
+              label="Nombre" 
+              value="{{client.name}}"></paper-input>
           </div>
 
-          <div class="header-toolbar__actions">
-
-            <template is="dom-if" if="[[smallScreen]]">
-              <paper-icon-button on-tap="_submitTapped" class="header-toolbar__icon" icon="[[_computeSubmitIcon(client, readOnly)]]"></paper-icon-button>
-            </template>
-
-            <template is="dom-if" if="[[!smallScreen]]">
-              <button on-tap="_submitTapped" class="header-toolbar__button">
-                [[_computeSubmitText(client, readOnly)]]
-              </button>
-            </template>
-
+          <div class="form__item form__line--last-child" hidden$="[[!client.individual]]">
+            <iron-icon
+              class="form__icon"
+              hidden$="[[!_computeShowLastNamePersonIcon(client.individual,smallScreen)]]" 
+              disabled$="[[readOnly]]"
+              icon="person"></iron-icon>
+            <paper-input always-float-label
+              class="form__input" 
+              disabled="[[readOnly]]"
+              label="Apellidos" 
+              value="{{client.lastName}}"></paper-input>
           </div>
+
         </div>
-      </div>
 
-      <div class="header-layout__content">
+        <div class$="[[_computeClassLine(smallScreen)]]">
 
-        <div class="form">
-
-          <paper-radio-group selected="individual" class="client-type form__radio-group">
-            <paper-radio-button
-              name="individual"
-              checked="{{client.individual}}"
+          <div class="form__item">
+            <iron-icon
+              class="form__icon"
+              hidden$="[[!smallScreen]]"
+              disabled$="[[readOnly]]"
+              icon="local-phone"></iron-icon>
+            <paper-input always-float-label
+              class="form__input"
               disabled="[[readOnly]]"
-              noink
-              class="form__radio-button">Particular</paper-radio-button>
-            <paper-radio-button
-              name="corporate"
-              checked="{{client.corporate}}"
+              label="Teléfono" 
+              value="{{client.phone}}"></paper-input>
+          </div>  
+          
+          <div class="form__item form__line--last-child">
+            <iron-icon
+              class="form__icon"
+              hidden$="[[smallScreen]]"
+              disabled$="[[readOnly]]"
+              icon="local-phone"></iron-icon>
+            <paper-input always-float-label
+              class="form__input"
               disabled="[[readOnly]]"
-              noink
-              class="form__radio-button">Empresa</paper-radio-button>
-          </paper-radio-group>
-
-          <div class$="[[_computeClassLine(smallScreen)]]">
-
-            <div class="form__item">
-              <iron-icon
-                class="form__icon"
-                hidden$="[[!_computeShowNamePersonIcon(client.individual,smallScreen)]]"  
-                disabled$="[[readOnly]]"
-                icon="person"></iron-icon>
-              <iron-icon
-                class="form__icon"
-                hidden$="[[!client.corporate]]" 
-                disabled$="[[readOnly]]"
-                icon="domain"></iron-icon>
-              <paper-input always-float-label
-                class="form__input"
-                disabled="[[readOnly]]"
-                label="Nombre" 
-                value="{{client.name}}"></paper-input>
-            </div>
-
-            <div class="form__item form__line--last-child" hidden$="[[!client.individual]]">
-              <iron-icon
-                class="form__icon"
-                hidden$="[[!_computeShowLastNamePersonIcon(client.individual,smallScreen)]]" 
-                disabled$="[[readOnly]]"
-                icon="person"></iron-icon>
-              <paper-input always-float-label
-                class="form__input" 
-                disabled="[[readOnly]]"
-                label="Apellidos" 
-                value="{{client.lastName}}"></paper-input>
-            </div>
-
+              label="Teléfono alternativo"
+              value="{{client.secondaryPhone}}"></paper-input>
           </div>
 
-          <div class$="[[_computeClassLine(smallScreen)]]">
+        </div>
 
-            <div class="form__item">
-              <iron-icon
-                class="form__icon"
-                hidden$="[[!smallScreen]]"
-                disabled$="[[readOnly]]"
-                icon="local-phone"></iron-icon>
-              <paper-input always-float-label
-                class="form__input"
-                disabled="[[readOnly]]"
-                label="Teléfono" 
-                value="{{client.phone}}"></paper-input>
-            </div>  
-            
-            <div class="form__item form__line--last-child">
-              <iron-icon
-                class="form__icon"
-                hidden$="[[smallScreen]]"
-                disabled$="[[readOnly]]"
-                icon="local-phone"></iron-icon>
-              <paper-input always-float-label
-                class="form__input"
-                disabled="[[readOnly]]"
-                label="Teléfono alternativo"
-                value="{{client.secondaryPhone}}"></paper-input>
-            </div>
+        <div class$="[[_computeClassLine(smallScreen)]]">
 
+          <div class="form__item form__line--last-child">
+            <iron-icon
+              class="form__icon" 
+              disabled$="[[readOnly]]"
+              icon="local-post-office"></iron-icon>
+            <paper-input always-float-label
+              class="form__input"
+              disabled="[[readOnly]]"
+              label="Email" 
+              value="{{client.email}}"></paper-input>
           </div>
 
-          <div class$="[[_computeClassLine(smallScreen)]]">
+        </div> 
 
-            <div class="form__item form__line--last-child">
-              <iron-icon
-                class="form__icon" 
-                disabled$="[[readOnly]]"
-                icon="local-post-office"></iron-icon>
-              <paper-input always-float-label
-                class="form__input"
-                disabled="[[readOnly]]"
-                label="Email" 
-                value="{{client.email}}"></paper-input>
-            </div>
+        <div class$="[[_computeClassLine(smallScreen)]]">
 
-          </div> 
-
-          <div class$="[[_computeClassLine(smallScreen)]]">
-
-            <div class="form__item form__line--last-child">
-              <iron-icon
-                class="form__icon"
-                disabled$="[[readOnly]]"
-                icon="place"></iron-icon>
-              <paper-input always-float-label
-                class="form__input"
-                disabled="[[readOnly]]"
-                label="Dirección" 
-                value="{{client.address}}"></paper-input>
-            </div>
-
+          <div class="form__item form__line--last-child">
+            <iron-icon
+              class="form__icon"
+              disabled$="[[readOnly]]"
+              icon="place"></iron-icon>
+            <paper-input always-float-label
+              class="form__input"
+              disabled="[[readOnly]]"
+              label="Dirección" 
+              value="{{client.address}}"></paper-input>
           </div>
 
-          <div class$="[[_computeClassLine(smallScreen)]]">
+        </div>
 
-            <div class="form__item">
-              <paper-input always-float-label
-                class="form__input"
-                disabled="[[readOnly]]"
-                label="Código Postal" 
-                value="{{client.postalcode}}"></paper-input>
-            </div>
+        <div class$="[[_computeClassLine(smallScreen)]]">
 
-            <div class="form__item">
-              <paper-input always-float-label
-                class="form__input"
-                disabled="[[readOnly]]"
-                label="Población" 
-                value="{{client.town}}"></paper-input>
-            </div>
+          <div class="form__item">
+            <paper-input always-float-label
+              class="form__input"
+              disabled="[[readOnly]]"
+              label="Código Postal" 
+              value="{{client.postalcode}}"></paper-input>
+          </div>
 
-            <div class="form__item form__line--last-child">
-              <paper-input always-float-label
-                class="form__input"
-                disabled="[[readOnly]]"
-                label="Provincia" 
-                value="{{client.city}}"></paper-input>
-            </div>
+          <div class="form__item">
+            <paper-input always-float-label
+              class="form__input"
+              disabled="[[readOnly]]"
+              label="Población" 
+              value="{{client.town}}"></paper-input>
+          </div>
 
-          </div> 
+          <div class="form__item form__line--last-child">
+            <paper-input always-float-label
+              class="form__input"
+              disabled="[[readOnly]]"
+              label="Provincia" 
+              value="{{client.city}}"></paper-input>
+          </div>
 
-          <div class$="[[_computeClassLine(smallScreen)]]" style="font-size:3px;">
+        </div> 
 
-            <div class="form__item form__line--last-child">
-              <iron-icon
-                class="form__icon" 
-                disabled$="[[readOnly]]"
-                icon="edit"></iron-icon>
-              <paper-textarea always-float-label
-                class="form__input"
-                disabled="[[readOnly]]"
-                label="Notas" 
-                value="{{client.notes}}"></paper-textarea>
-            </div>
+        <div class$="[[_computeClassLine(smallScreen)]]" style="font-size:3px;">
 
+          <div class="form__item form__line--last-child">
+            <iron-icon
+              class="form__icon" 
+              disabled$="[[readOnly]]"
+              icon="edit"></iron-icon>
+            <paper-textarea always-float-label
+              class="form__input"
+              disabled="[[readOnly]]"
+              label="Notas" 
+              value="{{client.notes}}"></paper-textarea>
           </div>
 
         </div>
 
       </div>
 
-    </div>
+    </rmerp-tmpl-header-layout>
 
   </template>
 
   <script>
 
-    class RMERPClientsNewOverlay extends OverlayMixin(Polymer.Element) {
+    class RMERPClientsNewOverlay extends AnimatedOverlayMixin(Polymer.Element) {
 
-      static get is() { 
-        return 'rmerp-clients-new-overlay'; 
-      }
+      static get is() { return 'rmerp-clients-new-overlay'; }
 
       static get properties() {
         return {
@@ -237,6 +215,16 @@
       static get observers() {
         return [
         ];
+      }
+
+      ready() {
+        super.ready();
+
+        this.$.layout.addEventListener('back-tapped', _ => {
+          this.dispatchEvent(new CustomEvent('overlay-closed', {detail: {}}));
+          this.opened = false;
+        });
+
       }
 
       _validate() {
@@ -252,53 +240,17 @@
       }
 
       _submitTapped() {
-        if (this.client && this.readOnly) {
-          this.readOnly = false;
-        } else {
-          console.log("HECHO");
-          /*if (!this._validate()) {
-            return;
-          }
-          this.loading = true;*/
-
+        console.log("HECHO");
+        /*if (!this._validate()) {
+          return;
         }
-      }
-
-      _deleteTapped(event) {
-        event.preventDefault();
+        this.loading = true;*/
       }
 
       _getParsedFormValues() {
         const usuarios_eolica = this._eolicaGroups.map(g => {
           return g.nombre_cliente_eolica;
         }).filter(x => !!x);
-      }
-
-      _computeToolbarTitle(client, readOnly) {
-        if (!client) {
-          return 'NUEVO CLIENTE';
-        }
-        if (readOnly) {
-          return `${client.name}`;
-        }
-        return `EDITAR ${client.name}`;
-      }
-
-      _computeSubmitIcon(client, readOnly) {
-        if (readOnly) {
-          return 'edit';
-        }
-        return 'done';
-      }
-
-      _computeSubmitText(client, readOnly) {
-        if (!client) {
-          return 'CREAR';
-        }
-        if (readOnly) {
-          return 'EDITAR';
-        }
-        return 'GUARDAR';
       }
 
       _computeClassLine(smallScreen) {
@@ -314,8 +266,6 @@
       _computeShowLastNamePersonIcon(individual, smallScreen) {
         return individual && !smallScreen;
       }
-
-
 
     }
 

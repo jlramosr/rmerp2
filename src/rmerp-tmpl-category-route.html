@@ -1,20 +1,35 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/paper-spinner/paper-spinner-lite.html">
 
 <link rel="import" href="rmerp-common.html">
-<link rel="import" href="rmerp-data.html">
+<link rel="import" href="rmerp-backend-data.html">
 <link rel="import" href="rmerp-404-warning.html">
 
-<dom-module id="rmerp-tmpl-category">
+<dom-module id="rmerp-tmpl-category-route">
   <template>
+    <style>
+      paper-spinner-lite {
+        --paper-spinner-color: var(--spinner-color, var(--secondary-color));
+        position: absolute;
+        margin: auto;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 100px;
+        height: 100px;
+        opacity: 0.7;
+      }
+    </style>
 
-    <rmerp-data
+    <rmerp-backend-data
       collection="[[collection]]"
       item-id="[[itemId]]"
       items="{{items}}"
       item="{{item}}"
-      loading="{{loading}}"></rmerp-data>
+      loading="{{loading}}"></rmerp-backend-data>
 
     <app-route
       route="[[route]]"
@@ -25,12 +40,14 @@
       <rmerp-404-warning name="404"></rmerp-404-warning>
     </iron-pages>
 
+    <paper-spinner-lite active="{{loading}}"></paper-spinner-lite>
+
   </template>
   <script>
 
-    class RMERPTmplCategory extends Polymer.Element {
+    class RMERPTmplCategoryRoute extends Polymer.Element {
 
-      static get is() { return 'rmerp-tmpl-category'; }
+      static get is() { return 'rmerp-tmpl-category-route'; }
 
       static get properties() {
         return {
@@ -79,7 +96,14 @@
       static get observers() {
       }
 
+      ready() {
+        super.ready();
+        //debugger;
+      }
+
       _routeChanged(route) {
+        if (route.path === null && route.prefix === null) { return; }
+
         const parentPage = route.prefix.split('/')[1];
         if (parentPage !== this.collection) {
           this.itemId = null;
@@ -104,17 +128,18 @@
 
         // update page.
         this._page = action || 'list';
-
       }
 
-      _pageChanged(page) {
-        const href = this.resolveUrl('rmerp-' + this.collection + '-' + page + '.html');
-        Polymer.importHref(href);
+      _pageChanged(_page) {
+        if (_page !== 'list') {
+          const href = this.resolveUrl('rmerp-' + this.collection + '-' + _page + '.html');
+          Polymer.importHref(href);
+        }
       }
 
     }
 
-    window.customElements.define(RMERPTmplCategory.is, RMERPTmplCategory);
+    window.customElements.define(RMERPTmplCategoryRoute.is, RMERPTmplCategoryRoute);
 
   </script>
 </dom-module>

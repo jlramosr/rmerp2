@@ -1,18 +1,9 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../bower_components/polymerfire/firebase.html">
-<link rel="import" href="../bower_components/polymerfire/polymerfire.html">
-<link rel="import" href="../bower_components/polymerfire/firebase-app.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html">
 
-<dom-module id="rmerp-data">
+<dom-module id="rmerp-backend-data">
 
   <template>
-
-    <firebase-app
-      name="rmerp"
-      auth-domain="rmerp-19591.firebaseapp.com"
-      database-url="https://rmerp-19591.firebaseio.com"
-      api-key="AIzaSyDgZxxPgit5IE1YPQwAKgF84ARH3egnoKg"></firebase-app>
 
     <firebase-document
       id="query"
@@ -32,11 +23,9 @@
 
   <script>
 
-    class RMERPData extends Polymer.Element {
+    class RMERPBackendData extends Polymer.Element {
 
-      static get is() { 
-        return 'rmerp-data'; 
-      }
+      static get is() { return 'rmerp-backend-data'; }
 
       static get properties() {
         return {
@@ -101,7 +90,7 @@
 
     }
 
-    window.customElements.define(RMERPData.is, RMERPData);
+    window.customElements.define(RMERPBackendData.is, RMERPBackendData);
 
   </script>
 </dom-module>

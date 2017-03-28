@@ -1,0 +1,59 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="rmerp-styles.html">
+
+<dom-module id="rmerp-button">
+  <template>
+
+    <style include="button-styles show-styles">
+      :host {
+        display: block;
+      }
+    </style>
+
+    <template is="dom-if" if="[[small]]">
+      <a href$="[[href]]" hidden$="[[!href]]">
+        <paper-icon-button class="button--icon" icon$="rmerp-icons:[[icon]]"></paper-icon-button>
+      </a>
+      <paper-icon-button class="button--icon" icon$="rmerp-icons:[[icon]]" hidden$="[[href]]"></paper-icon-button>
+    </template>
+
+    <template is="dom-if" if="[[!small]]">
+      <a href$="[[href]]" hidden$="[[!href]]">
+        <button class="button--text">[[title]]</button>
+      </a>
+      <button class="button--text" hidden$="[[href]]">[[title]]</button>
+    </template>
+
+  </template>
+
+  <script>
+
+    class RMERPButton extends Polymer.Element {
+
+      static get is() { return 'rmerp-button'; }
+
+      static get properties() {
+        return {
+
+          title: String,
+
+          icon: String,
+
+          href: {
+            type: String,
+            value: null
+          },
+
+          small: Boolean
+        
+        }
+      
+      }
+
+    }
+
+    window.customElements.define(RMERPButton.is, RMERPButton);
+
+  </script>
+</dom-module>
