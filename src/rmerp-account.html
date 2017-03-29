@@ -1,0 +1,94 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="rmerp-styles.html">
+
+<dom-module id="rmerp-account">
+  <template>
+    <style include="form-styles button-styles">
+      :host {
+        display: block;
+        height: 100vh;
+        background: #fff;
+      }
+
+      .container {
+        margin: 0 auto;
+        max-width: 460px;
+        padding: 80px 40px 40px;
+      }
+
+      .logo {
+        font-weight: 600;
+      }
+
+      iron-icon {
+        color: #000;
+      }
+
+      h2 {
+        font-size: 22px;
+        margin: 20px 0;
+      }
+
+      p {
+        margin: 8px 0;
+        line-height: 1.4;
+      }
+    </style>
+
+    <div class="container">
+      <div class="logo">RMERP</div>
+
+      <input
+        class="form__input"
+        name="email"
+        value="{{_account.email::input}}"
+        placeholder="email"></input>
+      <input 
+        class="form__input"
+        name="password"
+        value="{{_account.password::input}}"
+        placeholder="password"
+        type="password"></input>
+
+
+      <button class="button--text" on-click="_loginTapped">LOGIN</button>
+    </div>
+
+  </template>
+
+  <script>
+
+    class RMERPAccount extends Polymer.Element {
+
+      static get is() { return 'rmerp-account'; }
+
+      static get properties() {
+        return {
+
+          _account: {
+            type: Object,
+            value: {
+              'provider': '',
+              'email': '',
+              'password': ''
+            }
+          }
+  
+        }
+      }
+
+      static get observers() {
+        return [];
+      }
+
+      _loginTapped() {
+        this.dispatchEvent(new CustomEvent('login-tapped', {'detail': {'account': this._account}}));
+      }
+
+    }
+
+    window.customElements.define(RMERPAccount.is, RMERPAccount);
+
+  </script>
+</dom-module>

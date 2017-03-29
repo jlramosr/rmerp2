@@ -2,6 +2,7 @@
 <link rel="import" href="../bower_components/polymerfire/firebase.html">
 <link rel="import" href="../bower_components/polymerfire/polymerfire.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 
 <dom-module id="rmerp-backend-connection">
 
@@ -13,6 +14,15 @@
       database-url="https://rmerp-19591.firebaseio.com"
       api-key="AIzaSyDgZxxPgit5IE1YPQwAKgF84ARH3egnoKg"></firebase-app>
 
+    <firebase-auth
+      id="auth"
+      app-name="rmerp"
+      user="{{user}}"
+      provider="{{provider}}"
+      on-error="_handleError"
+      status-known="{{userStatusKnown}}"
+      signed-in="{{signedIn}}"></firebase-auth>
+
   </template>
 
   <script>
@@ -20,6 +30,47 @@
     class RMERPBackendConnection extends Polymer.Element {
 
       static get is() { return 'rmerp-backend-connection'; }
+
+      static get properties() { 
+        return {
+
+          user: {
+            type: Object,
+            notify: true
+          },
+
+          userStatusKnown: {
+            type: Boolean,
+            notify: true
+          },
+
+          userSignedIn: Boolean,
+
+          provider: {
+            type: String,
+            value: 'password'
+          }
+
+        }
+      }
+
+      _statusKnownChanged(statusKnown) {
+      }
+
+      _signedInChanged(signedIn) {
+      }
+
+      login(email, password) {
+        return this.$.auth.signInWithEmailAndPassword(email, password);
+      }
+
+      logout() {
+        this.$.auth.signOut();
+      }
+
+      _handleError(event) {
+        console.error(event.detail.message);
+      }
 
     }
 

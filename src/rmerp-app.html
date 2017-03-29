@@ -1,12 +1,10 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
-<link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 
 <link rel="import" href="rmerp-common.html">
 <link rel="import" href="rmerp-404-warning.html">
-<link rel="import" href="rmerp-backend-connection.html">
 
 <link rel="import" href="rmerp-clients.html">
 
@@ -20,14 +18,9 @@
 
     <app-location route="{{route}}"></app-location>
     <app-route
-        route="{{route}}"
-        pattern="/:category"
-        tail="{{subroute}}"></app-route>
-
-    <iron-media-query query="max-width: 640px" query-matches="{{smallScreen}}"></iron-media-query>
-    <iron-media-query query="max-width: 1084px" query-matches="{{mediumScreen}}"></iron-media-query>
-
-    <rmerp-backend-connection></rmerp-backend-connection>
+      route="{{route}}"
+      pattern="/:category"
+      tail="{{subroute}}"></app-route>
 
     <iron-pages selected="[[_page]]" attr-for-selected="name" fallback-selection="404">
 

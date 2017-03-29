@@ -1,0 +1,203 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+
+<link rel="import" href="rmerp-common.html">
+<link rel="import" href="rmerp-404-warning.html">
+<link rel="import" href="rmerp-backend-connection.html">
+
+<dom-module id="rmerp-core">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <app-location route="{{route}}"></app-location>
+    <app-route
+      route="{{route}}"
+      pattern="/:mainPage"></app-route>
+
+    <iron-media-query query="max-width: 640px" query-matches="{{smallScreen}}"></iron-media-query>
+    <iron-media-query query="max-width: 1084px" query-matches="{{mediumScreen}}"></iron-media-query>
+
+    <rmerp-backend-connection
+      id="backendConnection"
+      user="{{user}}"
+      user-status-known="{{userStatusKnown}}"></rmerp-backend-connection>
+
+    <!--<iron-pages selected="[[_page]]" attr-for-selected="name" fallback-selection="404">
+
+      <rmerp-app
+        name="app"
+        user="{{user}}"
+        route="[[route]]"
+        medium-screen="[[mediumScreen]]"
+        small-screen="[[smallScreen]]"
+        default-category="clients"></rmerp-app>
+
+      <rmerp-account
+        name="account"
+        id="account"
+        account="{{account}}"
+        medium-screen="[[mediumScreen]]"
+        small-screen="[[smallScreen]]"></rmerp-account>
+
+      <rmerp-404-warning name="404"></rmerp-404-warning>
+
+    </iron-pages>-->
+
+  </template>
+
+  <script>
+    class RMERPCore extends Polymer.Element {
+
+      static get is() { return 'rmerp-core'; }
+
+      static get properties() {
+        return {
+
+          account: Object,
+
+          user: Object,
+
+          userStatusKnown: {
+            type: Boolean,
+            observer: '_userStatusKnownChanged'
+          },
+
+          _page: {
+            type: String,
+            observer: '_pageChanged'
+          },
+
+          route: Object, 
+
+          loadComplete: Boolean
+
+        };
+      }
+
+      static get observers() {
+        return [
+          '_routeChanged(route)'
+        ];
+      }
+
+      ready() {
+        super.ready();
+      }
+
+      _userStatusKnownChanged(userStatusKnown) {
+        if (userStatusKnown) {
+          var page = 'app';
+          if (!this.user) {
+            page = 'account';
+          }
+          console.log(userStatusKnown, this.user, this.route.path);
+          if (this.currentElement) {
+            this.currentElement.remove();
+            this.currentElement = null;
+          }
+
+          var currentElement = document.createElement('rmerp-' + page);
+          currentElement.defaultCategory = 'clients';
+          this.shadowRoot.appendChild(currentElement);
+            
+          this.currentElement = currentElement;
+
+          currentElement.addEventListener('login-tapped', event => {
+            var account = event.detail.account;
+            this.$.backendConnection.login(account.email, account.password).
+              then(response => {
+                RMERPCommon.updateWindowLocation('/');
+                console.log("LOGIN CORRECTO uid=", response.uid);
+              });
+          });
+
+          const href = this.resolveUrl('rmerp-' + page + '.html');
+          Polymer.importHref(href, null, null, true);
+        }
+        
+      }
+
+      _routeChanged(route) {
+        if (route.path == "undefined") { return; }
+        
+        if (this.user) {
+          this._page = 'app';
+          return;
+        }
+
+        var path = route.path.split('/');
+        var mainPage = path[1];
+        var restPath = path[2];
+
+        // redirect to login if there is no main page or there is long account route.
+        if ((restPath && mainPage === 'account') || mainPage === '') {
+          RMERPCommon.updateWindowLocation('/account');
+          return;
+        }
+
+        // update page.
+        this._page = mainPage;
+      }
+
+      _pageChanged(_page) {
+        var user = this.user;
+        if (this.currentElement) {
+          this.currentElement.remove();
+          this.currentElement = null;
+        }
+
+
+
+          var currentElement = document.createElement('rmerp-' + _page);
+          currentElement.route = this.route;
+          currentElement.defaultCategory = 'clients';
+          this.shadowRoot.appendChild(currentElement);
+          
+          this.currentElement = currentElement;
+
+
+          currentElement.addEventListener('login-tapped', event => {
+            var account = event.detail.account;
+            this.$.backendConnection.login(account.email, account.password).
+              then(response => {
+                RMERPCommon.updateWindowLocation('/');
+                console.log("LOGIN CORRECTO uid=", response.uid);
+              });
+          });
+
+        const href = this.resolveUrl('rmerp-' + _page + '.html');
+        Polymer.importHref(href, null, null, true);
+
+      }
+
+      _ensureLazyLoaded() {
+        // load lazy resources after render and set `loadComplete` when done.
+        if (!this.loadComplete) {
+          Polymer.RenderStatus.afterNextRender(this, _ => {
+            
+            Polymer.importHref(this.resolveUrl('lazy-resources.html'), _ => {
+              this.loadComplete = true;
+              // Load pre-caching Service Worker
+              if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/service-worker.js');
+              }
+            });
+
+
+          });
+        }
+      }
+
+    }
+
+    window.customElements.define(RMERPCore.is, RMERPCore);
+
+  </script>
+</dom-module>

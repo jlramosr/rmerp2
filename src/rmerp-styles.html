@@ -296,6 +296,19 @@
       }
 
       .form__input {
+        @apply --layout-flex;
+        border-radius: 3px;
+        padding: 8px;
+        margin: 8px auto;
+        background: transparent;
+        box-sizing: border-box;
+        font-family: 'Lato', sans-serif;
+        font-size: 16px;
+        outline: 0;
+        min-width: 50%;
+      }
+
+      .form__input--paper {
         --paper-input-container-label: {
           color: var(--paper-grey-700);
           font-size: 16px;
@@ -312,13 +325,13 @@
         }
       }
 
-      .form__radio-group {
+      .form__radio-group--paper {
         --paper-radio-group-item-padding: 0px;
         margin: 8px 12px;
         font-size: 14px;
       }
 
-      .form__radio-button {
+      .form__radio-button--paper {
         margin-left: 12px;
         --paper-radio-button-checked-color: var(--rmerp-secondary-color);
         --paper-radio-button-size: 24px;
