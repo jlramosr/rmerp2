@@ -1,11 +1,11 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 
 <link rel="import" href="rmerp-common.html">
 <link rel="import" href="rmerp-404-warning.html">
 
+<!-- default route is eagerly loaded --> 
 <link rel="import" href="rmerp-clients.html">
 
 <dom-module id="rmerp-app">
@@ -16,7 +16,6 @@
       }
     </style>
 
-    <app-location route="{{route}}"></app-location>
     <app-route
       route="{{route}}"
       pattern="/:category"
@@ -31,12 +30,12 @@
         small-screen="[[smallScreen]]"
         offline="[[offline]]"></rmerp-clients>
 
-      <rmerp-invoices
+      <!--<rmerp-invoices
         name="invoices"
         route="[[subroute]]"
         load-complete="[[loadComplete]]"
         small-screen="[[smallScreen]]"
-        offline="[[offline]]"></rmerp-invoices>
+        offline="[[offline]]"></rmerp-invoices>-->
 
       <rmerp-404-warning name="404"></rmerp-404-warning>
 
@@ -86,7 +85,7 @@
         }
 
         // update page.
-        this._page = category || this.defaultCategory || '';
+        this._page = category || '';
       }
 
       _pageChanged(_page) {
@@ -99,19 +98,21 @@
         }
       }
 
-     _ensureLazyLoaded() {
+      _ensureLazyLoaded() {
         // load lazy resources after render and set `loadComplete` when done.
         if (!this.loadComplete) {
           Polymer.RenderStatus.afterNextRender(this, _ => {
-            
+            console.log("HOLAAAA app 3");
+            console.log("AQUI TODAVIA NO SE HA CARGADO EL OVERVIEW")
             Polymer.importHref(this.resolveUrl('lazy-resources.html'), _ => {
+              debugger;
+              console.log("POR AQUIIIII");
               this.loadComplete = true;
               // Load pre-caching Service Worker
               if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('/service-worker.js');
               }
             });
-
 
           });
         }

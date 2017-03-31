@@ -51,6 +51,21 @@
         ];
       }
 
+      connectedCallback() {
+        super.connectedCallback();
+        Polymer.RenderStatus.afterNextRender(this, _ => {
+          console.log("After Next Render connectedCallback overview");
+        });
+        console.log("ConnectedCallback overview");
+      }
+
+      ready() {
+        super.ready();
+        console.log("Ready overview");
+        Polymer.RenderStatus.afterNextRender(this, _ => {
+          console.log("After Next Render ready overview");
+        });
+      }
 
     }
 

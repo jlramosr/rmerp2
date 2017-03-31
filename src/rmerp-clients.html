@@ -1,12 +1,16 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 
 <link rel="import" href="rmerp-tmpl-category-route.html">
+
+<!-- it loads default view eagerly -->
 <link rel="import" href="rmerp-clients-list.html">
+<!--<link rel="import" href="rmerp-clients-overview.html">-->
 
 <dom-module id="rmerp-clients">
   <template>
 
     <rmerp-tmpl-category-route
+      id="categoryTemplate"
       route="[[route]]"
       collection="clients" 
       items={{items}} 
@@ -46,7 +50,26 @@
 
       ready() {
         super.ready();
-        //debugger;
+
+        const href = this.resolveUrl('rmerp-clients-overview.html');
+        Polymer.importHref(href, this._pageLoaded(), null, false);
+      }
+
+      _pageLoaded() {
+        console.log("HOLA");
+        Polymer.RenderStatus.afterNextRender(this, _ => {
+
+          console.log("After Next Render Clients");
+          /*Polymer.importHref(this.resolveUrl('lazy-resources.html'), _ => {
+            console.log("POR AQUIIIII");
+            this.loadComplete = true;
+            // Load pre-caching Service Worker
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.register('/service-worker.js');
+            }
+          });*/
+
+        });
       }
 
     }

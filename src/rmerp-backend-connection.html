@@ -65,7 +65,7 @@
       }
 
       logout() {
-        this.$.auth.signOut();
+        return this.$.auth.signOut();
       }
 
       _handleError(event) {

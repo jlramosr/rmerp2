@@ -96,14 +96,8 @@
       static get observers() {
       }
 
-      ready() {
-        super.ready();
-        //debugger;
-      }
-
       _routeChanged(route) {
         if (route.path === null && route.prefix === null) { return; }
-
         const parentPage = route.prefix.split('/')[1];
         if (parentPage !== this.collection) {
           this.itemId = null;
@@ -131,10 +125,16 @@
       }
 
       _pageChanged(_page) {
+        
         if (_page !== 'list') {
           const href = this.resolveUrl('rmerp-' + this.collection + '-' + _page + '.html');
-          Polymer.importHref(href);
+          console.log(href);
+          Polymer.importHref(href, this._pageLoaded(), null, false);
         }
+      }
+
+      _pageLoaded() {
+        console.log("page loaded de template category");
       }
 
     }

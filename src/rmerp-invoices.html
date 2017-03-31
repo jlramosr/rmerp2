@@ -7,9 +7,13 @@
 
     <rmerp-tmpl-category-route
       route="[[route]]"
-      collection="clients" 
+      collection="invoices" 
       items={{items}} 
       item={{item}}>
+
+      <rmerp-invoices-list name="list" data="{{items}}" small-screen="[[smallScreen]]" load-complete="[[loadComplete]]"></rmerp-invoices-list>
+      <rmerp-invoices-overview name="overview" data="{{item}}" small-screen="[[smallScreen]]"></rmerp-invoices-overview>
+      <rmerp-invoices-settings name="settings" data="{{item}}" small-screen="[[smallScreen]]"></rmerp-invoices-settings>
 
     </rmerp-tmpl-category-route>
 
