@@ -24,7 +24,7 @@
 
       <div slot="content" class="content__form">
 
-        OVERVIEW {{data.id}}
+        OVERVIEW {{data.id}} sadsdsad sda afasdf  OVERVIEW {{data.id}} sadsdsad sdaae afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf
 
       </div>
 
@@ -49,22 +49,6 @@
       static get observers() {
         return [
         ];
-      }
-
-      connectedCallback() {
-        super.connectedCallback();
-        Polymer.RenderStatus.afterNextRender(this, _ => {
-          console.log("After Next Render connectedCallback overview");
-        });
-        console.log("ConnectedCallback overview");
-      }
-
-      ready() {
-        super.ready();
-        console.log("Ready overview");
-        Polymer.RenderStatus.afterNextRender(this, _ => {
-          console.log("After Next Render ready overview");
-        });
       }
 
     }

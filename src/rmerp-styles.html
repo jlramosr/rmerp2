@@ -6,18 +6,24 @@
   :root {
     /* colors */
     --rmerp-primary-color: var(--paper-blue-grey-800);
-    --rmerp-primary-soft-color: var(--paper-blue-grey-600);
+    --rmerp-primary-soft-color: var(--paper-blue-grey-500);
+    --rmerp-primary-light-color: var(--paper-blue-grey-200);
     --rmerp-secondary-color: #DD6F00;
-    --rmerp-accent-color: var(--paper-indigo-50);
+    --rmerp-accent-color: #FFDFCC;
     --rmerp-error-color: var(--paper-red-900);
     --rmerp-background-color: #f2f2f2;
 
-    --rmerp-responsive-small: 640px;
-    --rmerp-responsive-medium: 1084px;
+    --rmerp-responsive-small: 840px;
+    --rmerp-responsive-medium: 1260px;
+
+    --rmerp-side-padding-small: 16px;
+    --rmerp-side-padding-medium: 114px;
+    --rmerp-side-padding-large: 162px;
 
     /* override paper-elements theme */
     --primary-color: var(--rmerp-primary-color);
     --secondary-color: var(--rmerp-secondary-color);
+    --accent-color: var(--rmerp-accent-color);
     --error-color: var(--rmerp-error-color);
 
     /* mixins */
@@ -38,8 +44,8 @@
 
       /* make the header-layout fit the size of its container */
       .header-layout {
-        @apply(--layout-vertical);
-        @apply(--layout-fit);
+        @apply --layout-vertical;
+        @apply --layout-fit;
       }
 
       .header-layout__header {
@@ -52,21 +58,22 @@
       }
 
       .header-toolbar {
-        @apply(--layout-horizontal);
-        @apply(--layout-center-center);
+        @apply --layout-horizontal;
+        @apply --layout-center-center;
         box-sizing: border-box;
         height: 60px;
-        padding: 0 16px;
+        padding: 0 var(--rmerp-side-padding-small);
       }
 
       .header-toolbar__info {
-        @apply(--layout-horizontal);
-        @apply(--layout-center-center);
+        @apply --layout-horizontal;
+        @apply --layout-center;
+        @apply --layout-flex;
+        overflow: hidden;
       }
 
       .header-toolbar__icon {
-        height: 40px;
-        width: 40px;
+        min-height: 40px;
         min-width: 40px;
         color: #fff;
       }
@@ -74,8 +81,7 @@
       .header-toolbar__icon--back {
         cursor: pointer;
         padding: 1px 0 0;
-        height: 24px;
-        width: 24px;
+        min-height: 24px;
         min-width: 24px;
         color: #fff;
       }
@@ -84,18 +90,19 @@
         font-size: 22px;
         font-weight: 400;
         margin-left: 6px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       .header-toolbar__actions {
-        @apply(--layout-horizontal);
-        @apply(--layout-center-center);
-        margin-left: auto;
+        @apply --layout-horizontal;
       }
 
       .header-layout__content {
-        @apply(--layout-vertical);
-        @apply(--layout-flex);
-        @apply(--layout-fit);
+        @apply --layout-vertical;
+        @apply --layout-flex;
+        @apply --layout-fit;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
         position: relative;
@@ -104,6 +111,17 @@
         margin-top: 60px;
         /*padding: 20px;*/
         box-sizing: border-box;
+      }
+
+      @media (min-width: 840px) { 
+        .header-toolbar {
+          padding: 0 var(--rmerp-side-padding-medium);
+        }
+      }
+      @media (min-width: 1260px) { 
+        .header-toolbar {
+          padding: 0 var(--rmerp-side-padding-large);
+        }
       }
 
     </style>
@@ -116,25 +134,37 @@
       .content__form {
         padding: 16px;
       }
-      @media (min-width: 640px) { 
+      @media (min-width: 840px) { 
         .content__form {
-          padding: 24px;
+          padding: var(--rmerp-side-padding-small) 
+                   var(--rmerp-side-padding-medium);
         }
       }
-      @media (min-width: 1084px) { 
+      @media (min-width: 1260px) { 
         .content__form {
-          padding: 24px 56px;
+          padding: var(--rmerp-side-padding-small)
+                   var(--rmerp-side-padding-large);
         }
       }
 
       .content__list {
-        @apply(--layout-vertical);
-        @apply(--layout-fit);
-        padding: 0;
+        @apply --layout-vertical;
+        @apply --layout-fit;
+        overflow-x: hidden;
+        overflow-y: auto;
       }
 
-      iron-list {
-        height: 100vh;
+      @media (min-width: 840px) { 
+        .content__list {
+          padding: var(--rmerp-side-padding-small) 
+                   var(--rmerp-side-padding-medium);
+        }
+      }
+      @media (min-width: 1260px) { 
+        .content__list {
+          padding: var(--rmerp-side-padding-small)
+                   var(--rmerp-side-padding-large);
+        }
       }
     </style>
   </template>
@@ -164,6 +194,10 @@
         text-transform: uppercase;
       }
 
+      .button--text:hover {
+        background: var(--background-button, var(--rmerp-primary-light-color));
+      }
+
       .button--icon {
         height: 40px;
         width: 40px;
@@ -184,10 +218,10 @@
       .search__input {
         display: block;
         width: 100%;
-        vertical-align: middle;
         border-bottom: 1px solid var(--paper-grey-300);
         border-radius: 0;
         padding: 8px 90px 8px 16px;
+        vertical-align: middle;
         background: var(--paper-grey-100);
         box-sizing: border-box;
         box-shadow: 0 0 0 1px rgba(0,0,0,0.12);
@@ -203,8 +237,8 @@
       }
 
       .search__results {
-        @apply(--layout-vertical);
-        @apply(--layout-center-center);
+        @apply --layout-vertical;
+        @apply --layout-center-center;
         position: absolute;
         top: 0;
         right: 0;
@@ -214,6 +248,24 @@
         font-size: 14px;
         pointer-events: none;
       }
+
+      @media (min-width: 840px) { 
+        .search__input {
+          margin-bottom: 16px;
+        }
+        .search__results {
+          padding-bottom: 16px;
+        }
+      }
+      @media (min-width: 1260px) { 
+        .search__input {
+          margin-bottom: 16px;
+        }
+        .search__results {
+          padding-bottom: 16px;
+        }
+      }   
+
     </style>
   </template>
 </dom-module>
@@ -223,8 +275,8 @@
     <style>
 
       .table__item {
-        @apply(--layout-vertical);
-        @apply(--layout-left);
+        @apply --layout-horizontal;
+        @apply --layout-center;
         text-decoration: none;
         max-height: 80px; 
         padding: 20px;
@@ -248,14 +300,35 @@
         border-bottom: none;
       }
 
+      .table__item__detail {
+        @apply --layout-vertical;
+        @apply --layout-flex;
+        overflow: hidden;
+      }
+
       .table__item--primary-text {
         font-size: 18px;
         color: var(--primary-color);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       .table__item--secondary-text {
         font-size: 12px;
         color: var(--paper-grey-500);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .table__item--menu-icon {
+        --paper-icon-button: {
+          color: var(--primary-color);
+          min-height: 40px;
+          min-width: 40px;
+          opacity: 0.8;
+        }
       }
 
     </style>
@@ -296,19 +369,6 @@
       }
 
       .form__input {
-        @apply --layout-flex;
-        border-radius: 3px;
-        padding: 8px;
-        margin: 8px auto;
-        background: transparent;
-        box-sizing: border-box;
-        font-family: 'Lato', sans-serif;
-        font-size: 16px;
-        outline: 0;
-        min-width: 50%;
-      }
-
-      .form__input--paper {
         --paper-input-container-label: {
           color: var(--paper-grey-700);
           font-size: 16px;
@@ -325,17 +385,30 @@
         }
       }
 
-      .form__radio-group--paper {
+      .form__radio-group {
         --paper-radio-group-item-padding: 0px;
         margin: 8px 12px;
         font-size: 14px;
       }
 
-      .form__radio-button--paper {
+      .form__radio-button {
         margin-left: 12px;
         --paper-radio-button-checked-color: var(--rmerp-secondary-color);
         --paper-radio-button-size: 24px;
         --paper-radio-button-label-spacing: 4px;
+      }
+
+      .form__input--simple {
+        @apply --layout-flex;
+        border-radius: 3px;
+        padding: 8px;
+        margin: 8px auto;
+        background: transparent;
+        box-sizing: border-box;
+        font-family: 'Lato', sans-serif;
+        font-size: 16px;
+        outline: 0;
+        min-width: 50%;
       }
     </style>
   </template>
@@ -373,6 +446,26 @@
 
       .menu__item:hover {
         background: var(--paper-grey-50);
+      }
+    </style>
+  </template>
+</dom-module>
+
+<dom-module id="spinner-styles">
+  <template>
+    <style>
+      paper-spinner-lite {
+        --paper-spinner-color: var(--spinner-color, var(--secondary-color));
+        --paper-spinner-stroke-width: 1px;
+        position: absolute;
+        margin: auto;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 100px;
+        height: 100px;
+        opacity: 0.7;
       }
     </style>
   </template>

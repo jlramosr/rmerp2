@@ -20,8 +20,8 @@
     <app-location route="{{route}}"></app-location>
     <app-route route="[[route]]"></app-route>
 
-    <iron-media-query query="max-width: 640px" query-matches="{{smallScreen}}"></iron-media-query>
-    <iron-media-query query="max-width: 1084px" query-matches="{{mediumScreen}}"></iron-media-query>
+    <iron-media-query query="max-width: 840px" query-matches="{{smallScreen}}"></iron-media-query>
+    <iron-media-query query="max-width: 1260px" query-matches="{{mediumScreen}}"></iron-media-query>
 
     <rmerp-backend-connection
       id="backendConnection"
@@ -72,38 +72,33 @@
         ];
       }
 
-      _appendElement(page) {
+      _prepareElement(page) {
         if (this._currentElement) {
           this._currentElement.remove();
           this._currentElement = null;
         }
 
-        var currentElement = document.createElement('rmerp-' + page);
+        this._currentElement = document.createElement('rmerp-' + page);
         
         // common properties.
-        currentElement.route = this.route;
-        currentElement.smallScreen = this.smallScreen;
-        currentElement.mediumScreen = this.mediumScreen;
+        this._currentElement.route = this.route;
+        this._currentElement.smallScreen = this.smallScreen;
+        this._currentElement.mediumScreen = this.mediumScreen;
+      }
 
-        this.shadowRoot.appendChild(currentElement);
-        this._currentElement = currentElement;
-
+      _appendElement(page) {
+        this.shadowRoot.appendChild(this._currentElement);
         const href = this.resolveUrl('rmerp-' + page + '.html');
         Polymer.importHref(href, null, null, true);
-
-        // common listeners
-        this._currentElement.addEventListener('element-rendered', event => {
-          console.log("HOLA");
-          this._ensureLazyLoaded();
-        });
-
       }
 
       _appendAppElement() {
-        this._appendElement('app');
+        this._prepareElement('app');
 
         // local properties.
-        this._currentElement.defaultCategory = 'clients';
+        this._currentElement.defaultCategory = 'dashboard';
+
+        this._appendElement('app');
 
         // local listeners.
         this._currentElement.addEventListener('logout-tapped', event => {
@@ -113,12 +108,15 @@
               console.log("LOGOUT CORRECTO uid=", response.uid);
             });
         });
+  
       }
 
       _appendGuessElement() {
-        this._appendElement('account')
+        this._prepareElement('account');
 
         // local properties.
+
+        this._appendElement('account');
 
         // local listeners.
         this._currentElement.addEventListener('login-tapped', event => {
@@ -129,9 +127,11 @@
               console.log("LOGIN CORRECTO uid=", response.uid);
             });
         });
+ 
       }
 
       _appendErrorElement() {
+        this._prepareElement('404-warning');
         this._appendElement('404-warning');
       }
 

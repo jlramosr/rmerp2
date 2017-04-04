@@ -9,19 +9,7 @@
 
 <dom-module id="rmerp-tmpl-category-route">
   <template>
-    <style>
-      paper-spinner-lite {
-        --paper-spinner-color: var(--spinner-color, var(--secondary-color));
-        position: absolute;
-        margin: auto;
-        left: 0;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        width: 100px;
-        height: 100px;
-        opacity: 0.7;
-      }
+    <style include="spinner-styles">
     </style>
 
     <rmerp-backend-data
@@ -59,8 +47,7 @@
 
           _page: {
             type: String,
-            value: 'list',
-            observer: '_pageChanged'
+            //observer: '_pageChanged'
           },
 
           defaultItemAction: {
@@ -124,18 +111,22 @@
         this._page = action || 'list';
       }
 
-      _pageChanged(_page) {
-        
+      /*_pageChanged(_page) {
         if (_page !== 'list') {
           const href = this.resolveUrl('rmerp-' + this.collection + '-' + _page + '.html');
-          console.log(href);
-          Polymer.importHref(href, this._pageLoaded(), null, false);
+          Polymer.importHref(href, this._ensureLazyLoaded(), null, false);
         }
       }
 
-      _pageLoaded() {
-        console.log("page loaded de template category");
-      }
+      _ensureLazyLoaded() {
+        // load lazy resources after render and set `loadComplete` when done.
+        Polymer.RenderStatus.afterNextRender(this, _ => {
+          console.log("HOLA category");
+          Polymer.importHref(this.resolveUrl('lazy-resources.html'), _ => {
+            console.log("SASA");
+          });
+        });
+      }*/
 
     }
 

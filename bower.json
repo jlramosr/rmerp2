@@ -23,7 +23,9 @@
     "paper-radio-button": "PolymerElements/paper-radio-button#2.0-preview",
     "paper-spinner": "PolymerElements/paper-spinner#2.0-preview",
     "polymer": "Polymer/polymer#2.0.0-rc.3",
-    "polymerfire": "firebase/polymerfire#2.0-preview"
+    "polymerfire": "firebase/polymerfire#2.0-preview",
+    "iron-resizable-behavior": "PolymerElements/iron-resizable-behavior#2.0-preview",
+    "paper-dialog": "PolymerElements/paper-dialog#2.0-preview"
   },
   "devDependencies": {
     "web-component-tester": "6.0.0-prerelease.5"

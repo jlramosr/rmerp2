@@ -1,0 +1,77 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../bower_components/paper-spinner/paper-spinner-lite.html">
+
+<link rel="import" href="rmerp-styles.html">
+<link rel="import" href="rmerp-tmpl-header-layout.html">
+<link rel="import" href="rmerp-button.html">
+
+<dom-module id="rmerp-dashboard">
+  <template>
+
+    <style include="content-styles table-styles spinner-styles">
+      :host {
+        display: block;
+      }
+    </style>
+
+    <rmerp-tmpl-header-layout title="ERP">
+
+      <div slot="content" class="content__list">
+
+        <iron-list id="ironList" items="[[_data]]" max-physical-count="30">
+          <template id="template">
+            <a class="table__item" href="/[[item.slug]]">
+              <div class="table__item__detail">
+                <span class="table__item--primary-text">[[item.name]]</span>
+                <span class="table__item--secondary-text">[[item.description]]</span>
+              </div>
+            </a>
+          </template>
+        </iron-list>
+
+        <paper-spinner-lite active="{{_loading}}"></paper-spinner-lite>
+
+      </div>
+
+    </rmerp-tmpl-header-layout>
+
+  </template>
+
+  <script>
+
+    class RMERPDashboard extends Polymer.Element {
+
+      static get is() { return 'rmerp-dashboard'; }
+
+      static get properties() {
+        return {
+
+          _loading: Boolean,
+
+          _data: {
+            type: Array,
+            value: [
+              {'name': 'Clients', 'slug': 'clients', 'description': 'Clients'},
+              {'name': 'Invoices', 'slug': 'invoices', 'description': 'Invoices'},
+            ],
+            observer: '_dataChanged',
+            readOnly: true
+          },
+
+        }
+      }
+
+      _dataChanged(data, oldData) {
+        this._loading = true;
+        if (data.length) {
+         this._loading = false;
+        }
+      }
+
+    }
+
+    window.customElements.define(RMERPDashboard.is, RMERPDashboard);
+
+  </script>
+</dom-module>

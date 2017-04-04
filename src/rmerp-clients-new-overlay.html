@@ -1,5 +1,4 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../bower_components/overlay-container/overlay-container.html">
 <link rel="import" href="../bower_components/overlay-container/animated-overlay-mixin.html">
 
 <link rel="import" href="rmerp-styles.html">
@@ -23,8 +22,8 @@
       }
 
       .client-type {
-        @apply(--layout-horizontal);
-        @apply(--layout-end-justified);
+        @apply --layout-horizontal;
+        @apply --layout-end-justified;
       }
     </style>
 
@@ -209,22 +208,37 @@
 
       static get properties() {
         return {
+
+          positionTarget: {
+            type: Object,
+            value: window
+          }
+
         };
       }
 
-      static get observers() {
-        return [
-        ];
+      constructor() {
+        super();
+        this._backTapped = this._backTapped.bind(this);
       }
 
-      ready() {
-        super.ready();
+      connectedCallback() {
+        super.connectedCallback();
+        this._toggleListeners({enable: true});
+      }
 
-        this.$.layout.addEventListener('back-tapped', _ => {
-          this.dispatchEvent(new CustomEvent('overlay-closed', {detail: {}}));
-          this.opened = false;
-        });
+      disconnectedCallback() {
+        super.disconnectedCallback();
+        this._toggleListeners({enable: false});
+      }
 
+      _toggleListeners({enable}) {
+        const m = enable ? 'addEventListener' : 'removeEventListener';
+        this.$.layout[m]('back-tapped', this._backTapped);
+      }
+
+      _backTapped() {
+        this.opened = false;
       }
 
       _validate() {

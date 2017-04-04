@@ -1,0 +1,221 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
+
+<link rel="import" href="rmerp-styles.html">
+
+<dom-module id="rmerp-menu-dropdown">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      a, a:visited, a:hover, a:visited, a:active {
+        text-decoration: none;
+        color: var(--menu-dropdown-color, --rmerp-primary-soft-color);
+      }
+
+      .dialog {
+        padding: 0;
+        background: var(--menu-dropdown-background-color, #fdfdfd);
+        color: var(--menu-dropdown-color, --rmerp-primary-soft-color);
+        width: var(--menu-dropdown-width, 120px);
+        overflow: hidden;
+      }
+
+      .dialog__actions {
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      .dialog__row {
+        @apply --layout-horizontal;
+        @apply --layout-left;
+        @apply --layout-center;
+        cursor: pointer;
+        padding: 8px;
+        font-size: 12px;
+        border-top: 1px solid var(--rmerp-primary-light-color);
+        font-weight: 200;
+      }
+
+      .dialog__row:hover {
+        background: var(--rmerp-primary-light-color);
+        color: var(--rmerp-primary-color);
+        font-weight: 400;
+      }
+
+      .dialog__row:first-child {
+        border-top: 0;
+      }
+
+      .dialog__icon {
+        margin-right: 6px;
+        height: 18px;
+        width: 18px;
+        opacity: 0.7;
+      }
+    </style>
+
+    <paper-dialog id="dialog" class="dialog" position-target="[[hostTarget]]">
+      <div class="dialog__actions">
+        <template is="dom-repeat" items="[[actions]]" as="action">
+
+          <template is="dom-if" if="[[action.href]]">
+
+            <a class="dialog__row"
+              href$="[[_computeActionHref(collection, item.id, action.href)]]"
+              on-tap="_actionTapped">
+
+              <iron-icon class="dialog__icon" icon$="rmerp-icons:[[action.icon]]"></iron-icon>
+              {{action.label}}
+
+            </a>
+
+          </template>
+
+          <template is="dom-if" if="[[!action.href]]">
+
+            <div class="dialog__row" on-tap="_actionTapped">
+              <iron-icon class="dialog__icon" icon$="rmerp-icons:[[action.icon]]"></iron-icon>
+              {{action.label}}
+            </div>
+            
+          </template>
+
+        </template>
+
+      </div>
+    </paper-dialog>
+
+  </template>
+  <script>
+
+    class RMERPMenuDropdown extends Polymer.mixinBehaviors([
+      Polymer.IronResizableBehavior,
+    ], Polymer.Element) {
+
+      static get is() { return 'rmerp-menu-dropdown'; }
+
+      static get properties() {
+        return {
+
+          actions: Array,
+
+          collection: String,
+
+          item: Object,
+
+          hostTarget: Object,
+
+          opened: {
+            type: Boolean,
+            value: false,
+            notify: true,
+            observer: '_openedChanged'
+          },
+
+          numberOptions: {
+            type: Number,
+            computed: '_computeNumberOptions(opened)'
+          }
+
+        };
+      }
+
+      constructor() {
+        super();
+        this._windowScrolled = this._windowScrolled.bind(this);
+        this._dialogOpened = this._dialogOpened.bind(this);
+        this._dialogClosed = this._dialogClosed.bind(this);
+        this._windowResized = this._windowResized.bind(this);
+      }
+
+      connectedCallback() {
+        super.connectedCallback();
+        this._toggleListeners({enable: true});
+      }
+
+      disconnectedCallback() {
+        super.disconnectedCallback();
+        this._toggleListeners({enable: false});
+      }
+
+      _toggleListeners({enable}) {
+        const m = enable ? 'addEventListener' : 'removeEventListener';
+        window[m]('scroll', this._windowScrolled); // don't trigger why??
+        this[m]('iron-overlay-opened', this._dialogOpened);
+        this[m]('iron-overlay-closed', this._dialogClosed);
+      }
+
+      _windowResized(event) {
+        if (this.opened) {
+          this._updatePositions();
+        }
+      }
+
+      _windowScrolled() {
+        if (this.opened) {
+          this.opened = false;
+        }
+      }
+
+      _dialogOpened(event) {
+        this.addEventListener('iron-resize', this._windowResized);
+      }
+
+      _dialogClosed(event) {
+        this.removeEventListener('iron-resize', this._windowResized);
+      }
+
+      open() {
+        this.opened = true;
+      }
+
+      close() {
+        this.opened = false;
+      }
+
+      _openedChanged(opened) {
+        if (opened) {
+          this._updatePositions();
+        }
+        this.$.dialog.opened = opened;
+      }
+
+      _updatePositions() {
+        const rect = this.hostTarget.getBoundingClientRect();
+
+        const rightSpace = document.body.offsetWidth -  rect.left;
+        const bottomSpace = document.body.offsetHeight -  rect.top;
+
+        this.$.dialog.horizontalAlign = rightSpace < 180 ? "right" : "left";
+        this.$.dialog.verticalAlign = bottomSpace < this.numberOptions * 50 ? "bottom" : "top";
+        this.$.dialog.horizontalOffset = -12;
+        this.$.dialog.verticalOffset = -4;
+      }
+
+      _actionTapped(event) {
+        this.$.dialog.opened = false;
+        const nameAction = event.model.__data.action.name;
+        this.dispatchEvent(new CustomEvent('item-action-tapped', {'detail': {'action': nameAction}}));
+      }
+
+      _computeActionHref(collection, itemId, actionHref) {
+        return "/" + collection + "/" + itemId + '/' + actionHref;
+      }
+
+      _computeNumberOptions(opened) {
+        if (opened) {
+          return this.shadowRoot.querySelectorAll('.dialog__row').length;
+        }
+        return 0;
+      }
+
+    }
+
+    window.customElements.define(RMERPMenuDropdown.is, RMERPMenuDropdown);
+
+  </script>
+</dom-module>

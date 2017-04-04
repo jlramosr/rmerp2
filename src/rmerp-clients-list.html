@@ -23,18 +23,27 @@
         on-click="_newItemTapped"
         small="[[smallScreen]]"></rmerp-button>
 
-      <div slot="content" class="content__list">
+      <div id="content" slot="content" class="content__list">
 
         <div class="search">
           <input id="searchInput" class="search__input" on-keyup="_searchInputKeyup" value="{{searchValue}}" placeholder="Buscar">
           <div class="search__results">[[_computedTotalResults(_filteredData)]]</div>
         </div>
-        
-        <iron-list id="ironList" items="[[_filteredData]]" max-physical-count="30">
-          <template id="template">
+
+        <iron-list id="ironList" scroll-target="content" items="[[_filteredData]]" max-physical-count="5">
+          <template>
             <a class$="table__item [[_computeItemClass(index, _filteredData.length)]]" href="/clients/[[item.id]]">
-              <span class="table__item--primary-text">[[item.name]]</span>
-              <span class="table__item--secondary-text">[[item.address]]</span>
+              <div class="table__item__detail">
+                <span class="table__item--primary-text">[[item.name]]</span>
+                <span class="table__item--secondary-text">[[item.address]]</span>
+              </div>
+              <paper-icon-button
+                id$="menuIcon-[[index]]"
+                class="table__item--menu-icon"
+                noink
+                tabindex="-1"
+                icon="rmerp-icons:more"
+                on-click="_menuItemTapped"></paper-icon-button>
             </a>
           </template>
         </iron-list>
@@ -42,6 +51,23 @@
       </div>
 
     </rmerp-tmpl-header-layout>
+
+    <!-- Lazy Creations -->
+    <template is="dom-if" if="[[loadComplete]]">
+
+      <!--<rmerp-menu-dropdown 
+        actions="[[itemActions]]"
+        collection="clients"></rmerp-menu-dropdown>-->
+      
+      <paper-dialog id="dialogDeleteItem" class="dialog">
+        Are you sure you want to delete this [[itemName]]?
+        <div class="buttons">
+          <paper-button class="dialog__button" dialog-dismiss>Cancel</paper-button>
+          <paper-button class="dialog__button" dialog-confirm autofocus>Accept</paper-button>
+        </div>
+      </paper-dialog>
+
+    </template>
 
   </template>
 
@@ -58,6 +84,17 @@
           
           data: Array,
 
+          itemActions: {
+            type: Array,
+            value: _ => {
+              return [
+                {name: 'overview', label: 'Vistazo', icon: 'visibility', href: 'overview'},
+                {name: 'settings', label: 'Preferencias', icon: 'settings', href: 'settings'},
+                {name: 'delete', label: 'Eliminar', icon: 'delete'},
+              ]
+            }
+          },
+
           _filteredData: {
             type: Array,
             computed: '_computeFilteredData(data, _searchValue)'
@@ -73,7 +110,7 @@
             observer: '_smallScreenChanged'
           },
 
-          _clientOverlay: {
+          _overlay: {
             type: Object,
             value: null
           },
@@ -83,9 +120,9 @@
         }
       }
 
-      ready() {
-        super.ready();
-        this._firstResize(this.$.ironList);
+      connectedCallback() {
+        super.connectedCallback();
+        //this._firstResize(this.$.ironList);
       }
 
       _firstResize(ironList) {
@@ -115,21 +152,58 @@
       }
 
       _smallScreenChanged(smallScreen) {
-        if (this._clientOverlay) {
-          this._clientOverlay.smallScreen = smallScreen;
+        if (this._overlay) {
+          this._overlay.smallScreen = smallScreen;
         }
       }
 
       _newItemTapped() {
-        if (this._clientOverlay) {
-          return;
+        if (this._overlay) {
+          this._overlay.remove();
+          this._overlay = null;
         }
-        window.overlay = document.createElement('rmerp-clients-new-overlay');
+
+        const overlay = document.createElement('rmerp-clients-new-overlay');
         overlay.open();
+
+        this._overlay = overlay;
+
         overlay.addEventListener('overlay-closed', _ => {
-          this._clientOverlay = null;
+          this._overlay = null;
         });
-        this._clientOverlay = overlay;
+      }
+
+      _menuItemTapped(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const itemIndex = event.model.__data.index;
+        const item = this._filteredData[itemIndex];
+
+        if (this._overlay) {
+          const overlayItem = this._overlay.item;
+          this._overlay.remove();
+          this._overlay = null;
+          if (overlayItem.id == item.id) {
+            return;
+          }
+        }
+
+        var dialog = document.createElement('rmerp-menu-dropdown');
+        this.shadowRoot.appendChild(dialog);
+
+        dialog.hostTarget = event.currentTarget;
+        dialog.collection = 'clients';
+        dialog.actions = this.itemActions;
+        dialog.item = item;
+        dialog.open();
+
+        this._overlay = dialog;
+
+        dialog.addEventListener('item-action-tapped', event => {
+          const action = event.detail.action;
+          console.log(action);
+        });
       }
 
       _editItemTapped(event) {
