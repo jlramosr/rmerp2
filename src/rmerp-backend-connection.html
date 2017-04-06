@@ -31,7 +31,7 @@
 
       static get is() { return 'rmerp-backend-connection'; }
 
-      static get properties() { 
+      static get properties() {
         return {
 
           user: {
@@ -44,8 +44,6 @@
             notify: true
           },
 
-          userSignedIn: Boolean,
-
           provider: {
             type: String,
             value: 'password'
@@ -54,14 +52,11 @@
         }
       }
 
-      _statusKnownChanged(statusKnown) {
-      }
-
-      _signedInChanged(signedIn) {
-      }
-
-      login(email, password) {
-        return this.$.auth.signInWithEmailAndPassword(email, password);
+      login(account) {
+        if (account.provider == '' || account.provider == 'password') {
+          return this.$.auth.signInWithEmailAndPassword(account.email, account.password);
+        }
+        return this.$.auth.signInWithPopup(account.provider);
       }
 
       logout() {

@@ -1,6 +1,6 @@
 {
   "entrypoint": "index.html",
-  "shell": "src/rmerp-app.html",
+  "shell": "src/rmerp-shell.html",
   "fragments": [
     "src/rmerp-clients.html",
     "src/rmerp-clients-list",

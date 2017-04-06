@@ -16,9 +16,8 @@
         right: 0;
         top: 0;
         background: #fff;
-        --background-toolbar: var(--paper-indigo-900);
-        --background-toolbar-button: var(--paper-indigo-100);
-        --color-toolbar-button: #000;
+        --background-toolbar: var(--rmerp-primary-soft-color);
+        --background-button-hover: var(--rmerp-primary-soft-color);
       }
 
       .client-type {
@@ -32,7 +31,7 @@
       <rmerp-button
         slot="action"
         title="CREAR"
-        icon="done"
+        icon="send"
         on-tap="_submitTapped"
         small="[[smallScreen]]"></rmerp-button>
 
@@ -255,6 +254,7 @@
 
       _submitTapped() {
         console.log("HECHO");
+        RMERPCommon.showMessage('Cliente creado satisfactoriamente', 'success');
         /*if (!this._validate()) {
           return;
         }

@@ -3,46 +3,47 @@
 <link rel="import" href="../bower_components/app-route/app-route.html">
 <link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 
 <link rel="import" href="rmerp-common.html">
 <link rel="import" href="rmerp-backend-connection.html">
+<link rel="import" href="rmerp-styles.html">
 
 <link rel="import" href="rmerp-app.html">
 
-<dom-module id="rmerp-core">
+<dom-module id="rmerp-shell">
   <template>
-    <style>
-      :host {
-        display: block;
-      }
-    </style>
+    <style include="toast-styles"></style>
 
     <app-location route="{{route}}"></app-location>
     <app-route route="[[route]]"></app-route>
 
-    <iron-media-query query="max-width: 840px" query-matches="{{smallScreen}}"></iron-media-query>
-    <iron-media-query query="max-width: 1260px" query-matches="{{mediumScreen}}"></iron-media-query>
+    <iron-media-query query="max-width: 640px" query-matches="{{smallScreen}}"></iron-media-query>
+    <iron-media-query query="max-width: 1084px" query-matches="{{mediumScreen}}"></iron-media-query>
 
     <rmerp-backend-connection
       id="backendConnection"
       user="{{user}}"
       user-status-known="{{userStatusKnown}}"></rmerp-backend-connection>
 
+    <paper-toast vertical-align="top" horizontal-align="right" raised duration="5000"></paper-toast>
+
   </template>
 
   <script>
-    class RMERPCore extends Polymer.Element {
+    class RMERPShell extends Polymer.Element {
 
-      static get is() { return 'rmerp-core'; }
+      static get is() { return 'rmerp-shell'; }
 
       static get properties() {
         return {
 
           _currentElement: Object,
 
-          account: Object,
-
-          user: Object,
+          user: {
+            type: Object,
+            observer: '_userChanged'
+          },
 
           userStatusKnown: Boolean,
 
@@ -61,7 +62,10 @@
             observer: '_mediumScreenChanged'
           },
 
-          loadComplete: Boolean
+          loadComplete: {
+            type: Boolean,
+            observer: '_loadCompleteChanged'
+          },
 
         };
       }
@@ -70,6 +74,27 @@
         return [
           '_userStatusKnownChanged(user, userStatusKnown)'
         ];
+      }
+
+
+      constructor() {
+        super();
+        this._showToast = this._showToast.bind(this);
+      }
+
+      connectedCallback() {
+        super.connectedCallback();
+        this._toggleListeners({enable: true});
+      }
+
+      disconnectedCallback() {
+        super.disconnectedCallback();
+        this._toggleListeners({enable: false});
+      }
+
+      _toggleListeners({enable}) {
+        const m = enable ? 'addEventListener' : 'removeEventListener';
+        document[m]('show-message', this._showToast);
       }
 
       _prepareElement(page) {
@@ -82,8 +107,11 @@
         
         // common properties.
         this._currentElement.route = this.route;
+        this._currentElement.user = this.user;
         this._currentElement.smallScreen = this.smallScreen;
         this._currentElement.mediumScreen = this.mediumScreen;
+        this._currentElement.loadComplete = this.loadComplete;
+        
       }
 
       _appendElement(page) {
@@ -105,13 +133,16 @@
           this.$.backendConnection.logout().
             then(response => {
               RMERPCommon.updateWindowLocation('/account');
-              console.log("LOGOUT CORRECTO uid=", response.uid);
+              RMERPCommon.showMessage('LOGOUT CORRECTO uid=' + response.uid + '.', 'success');
+            }).
+            catch(response => {
+              RMERPCommon.showMessage(response.message, 'error');
             });
         });
   
       }
 
-      _appendGuessElement() {
+      _appendGuestElement() {
         this._prepareElement('account');
 
         // local properties.
@@ -120,11 +151,13 @@
 
         // local listeners.
         this._currentElement.addEventListener('login-tapped', event => {
-          var account = event.detail.account;
-          this.$.backendConnection.login(account.email, account.password).
+          this.$.backendConnection.login(event.detail.account).
             then(response => {
               RMERPCommon.updateWindowLocation('/');
-              console.log("LOGIN CORRECTO uid=", response.uid);
+              RMERPCommon.showMessage('LOGIN CORRECTO uid=' + response.uid + '.', 'success');
+            }).
+            catch(response => {
+              RMERPCommon.showMessage(response.message, 'error');
             });
         });
  
@@ -140,27 +173,32 @@
 
         // app page load if there is user log in
         if (user) {
-          this._appendAppElement();
+          this._appendAppElement();          
           return;
         }
+
+        const possibleLogoutPaths = [
+          '', 'dashboard', 'clients', 'invoices', 'account'
+        ];
 
         var path = this.route.path.split('/');
         var mainPage = path[1];
         var restPath = path[2];
 
         // error page load.
-        if (mainPage !== '' && mainPage !== 'account') {
+        if (!possibleLogoutPaths.includes(mainPage)) {
           this._appendErrorElement();
           return;
         }
 
         // redirect to login if there is no main page or there is long account route.
-        if ((restPath && mainPage === 'account') || mainPage === '') {
+        if ((restPath && possibleLogoutPaths.includes(mainPage)) || 
+            (possibleLogoutPaths.includes(mainPage)) && mainPage != 'account') {
           RMERPCommon.updateWindowLocation('/account');
         }
 
-        // guess page load.
-        this._appendGuessElement();  
+        // guest page load.
+        this._appendGuestElement();  
 
       }
 
@@ -168,6 +206,13 @@
         // databinding.
         if (this._currentElement) {
           this._currentElement.route = route;
+        }
+      }
+
+      _userChanged(user) {
+        // databinding.
+        if (this._currentElement) {
+          this._currentElement.user = user;
         }
       }
 
@@ -185,26 +230,31 @@
         }
       }
 
-      _ensureLazyLoaded() {
-        // load lazy resources after render and set `loadComplete` when done.
-        if (!this.loadComplete) {
-          Polymer.RenderStatus.afterNextRender(this, _ => {
-            console.log("HOLAAAA core");
-            Polymer.importHref(this.resolveUrl('lazy-resources.html'), _ => {
-              this.loadComplete = true;
-              // Load pre-caching Service Worker
-              if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/service-worker.js');
-              }
-            });
+      _loadCompleteChanged(loadComplete) {
+        // databinding.
+        if (this._currentElement) {
+          this._currentElement.loadComplete = loadComplete;
+        }
+      }
 
-          });
+      _showToast(event) {
+        const toast = this.shadowRoot.querySelector('paper-toast');
+        const message = event.detail.message;
+        const type = event.detail.type;
+        if (toast) {
+          if (toast.opened) toast.close();
+          if (type == 'error') toast.className = 'toast--error';
+          else if (type == 'warning') toast.className = 'toast--warning';
+          else if (type == 'success') toast.className = 'toast--success';
+          else toast.className = 'toast--info';
+          toast.text = message;
+          toast.open();
         }
       }
 
     }
 
-    window.customElements.define(RMERPCore.is, RMERPCore);
+    window.customElements.define(RMERPShell.is, RMERPShell);
 
   </script>
 </dom-module>

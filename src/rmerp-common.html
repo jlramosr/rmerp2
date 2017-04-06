@@ -2,9 +2,19 @@
 
   window.RMERPCommon = {
 
-    updateWindowLocation: function(location) {
+    updateWindowLocation(location) {
       window.history.pushState({}, null, location);
       window.dispatchEvent(new CustomEvent('location-changed'));
+    },
+
+    showMessage(message, type) {
+      if (!message) {
+        if (type == 'error' || type == 'warning') { message = 'An unknown error has occurred.'; }
+        else { message = 'Everything turned out well.'; }
+      }
+      document.dispatchEvent(new CustomEvent('show-message', {
+        detail: {message: message || '', type: type || ''}
+      }));
     }
 
   };

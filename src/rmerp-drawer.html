@@ -1,0 +1,209 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<dom-module id="cp-drawer-user-menu">
+  <template>
+    <style include="drawer-menu-styles select-styles">
+      :host {
+        display: block;
+        font-size: 14px;
+      }
+      
+      [hidden] {
+        display: none !important; 
+      }
+
+      .collapse-header {
+        @apply(--layout-horizontal);
+        @apply(--layout-center);
+        border-bottom: 1px solid var(--paper-grey-200);
+        padding: 10px 20px 9px;
+      }
+
+      .collapse-header-details {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .toggle-button {
+        color: var(--paper-grey-800);
+        margin-left: auto;
+        margin-right: -10px;
+        min-height: 40px;
+        min-width: 40px;
+      }
+
+      .toggle-button:hover {
+        color: var(--paper-grey-700);
+      }
+
+      .collapse-header cp-thumbnail {
+        height: 28px;
+        margin-right: 15px;
+        min-height: 28px;
+        min-width: 28px;
+        width: 28px;
+      }
+
+      .collapse-content {
+        display: none;
+      }
+
+      .drawer-menu {
+        border-bottom: 1px solid var(--paper-grey-200);
+        padding: 8px 0;
+      }
+
+      .environment {
+        background: var(--paper-grey-200);
+        border-radius: 2px;
+        color: var(--paper-grey-800);
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 600;
+        margin-top: 6px;
+        padding: 2px 6px;
+        text-transform: uppercase;
+      }
+      .environment.produccion {
+        background: var(--paper-red-400) !important;
+        color: white !important;
+      }
+
+      .environment.current {
+        display: none;
+      }
+
+      .environment-menu {
+        padding: 20px;
+      }
+
+      .environment-menu p {
+        color: var(--paper-grey-700);
+        margin: 10px 0;
+      }
+
+      .environment-menu select {
+        font-size: 14px;
+      }
+    </style>
+
+    <div class="collapse-header">
+      <cp-thumbnail src="[[user.iconURL]]?sz=50"></cp-thumbnail>
+      <div class="collapse-header-details">
+        <div>[[_computeUserEmail(user.username)]]</div>
+        <div class$="[[_computeEnvironmentClass(environment)]]">{{environment}}</div>
+      </div>
+      <paper-icon-button class="toggle-button" icon="[[_computeToggleIcon(opened)]]" on-tap="_toggleCollapse"></paper-icon-button>    
+    </div>
+
+    <div id="collapseContent" class="collapse-content">
+      <div class="drawer-menu">
+        <a class="drawer__link" on-tap="_signOutTapped">
+          <span>Sign out</span>
+        </a>
+      </div>
+
+      <cp-environment id="cpEnvironment" environment="{{environment}}"></cp-environment>
+      <div class="environment-menu" hidden$="[[_isProduction(environment)]]">
+        Select environment
+        <p>Send all requests to a specific environment.</p>
+        <select id="environmentSelect" class="select" on-change="_environmentSelectChanged">
+          <option value="local">Local</option>
+          <option value="maqueta">Maqueta</option>
+          <option value="preproduccion">Preproducción</option>
+        </select>
+      </div>
+    </div>
+
+  </template>
+</dom-module>
+
+<script>
+(function() {
+  'use strict';
+
+  Polymer({
+
+    is: 'cp-drawer-user-menu',
+
+    properties: {
+
+      environment: {
+        type: String,
+        observer: '_environmentChanged'
+      },
+
+      user: Object,
+
+      opened: {
+        type: Boolean,
+        notify: true,
+        value: false,
+        reflectToAttribute: true,
+        observer: '_openedChanged'
+      }
+
+    },
+    
+    _toggleCollapse() {
+      this.opened = !this.opened; 
+    },
+
+    _openedChanged(opened) {
+      this.$.collapseContent.style.display = opened ? 'block' : 'none';
+ 
+      if (opened) {
+        this.$.collapseContent.animate([
+          {opacity: 0},
+          {opacity: 1}
+        ], {
+          duration: 180
+        });
+      }
+    },
+
+    _signOutTapped() {
+      this.fire('sign-out');
+      this.opened = false;
+    },
+
+    _environmentSelectChanged(event) {
+      const environment = event.target.value;
+
+      if (environment !== 'produccion') {
+        this.$.cpEnvironment.update(environment);
+      }
+    },
+
+    _isProduction(environment) {
+      return environment === 'produccion';
+    },
+
+    _environmentChanged(environment) {
+      if (environment !== 'produccion') {
+        this.$.environmentSelect.value = environment;
+      }
+    },
+
+    _computeToggleIcon(opened) {
+      if (opened) {
+        return 'close';
+      }
+      return 'menu-down';
+    },
+
+    _computeUserEmail(email) {
+      if (email) {
+        return email.replace('@meteologica.com', '');
+      }
+    },
+
+    _computeEnvironmentClass(environment) {
+      return 'environment ' + (environment === '' ? 'current' : environment);
+    }
+
+  });
+
+}());
+</script>

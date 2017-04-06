@@ -107,12 +107,14 @@
 
           item: Object,
 
-          hostTarget: Object,
+          hostTarget: {
+            type: Object,
+            observer: '_hostTargetChanged'
+          },
 
           opened: {
             type: Boolean,
             value: false,
-            notify: true,
             observer: '_openedChanged'
           },
 
@@ -151,21 +153,29 @@
 
       _windowResized(event) {
         if (this.opened) {
-          this._updatePositions();
+          this._updatePosition();
         }
       }
 
       _windowScrolled() {
         if (this.opened) {
-          this.opened = false;
+          this.$.dialog.opened = false;
         }
       }
 
       _dialogOpened(event) {
+        if (this.hostTarget) {
+          this.hostTarget.classList.add('dialog__host-target--highlited');
+        }
+        // close dialog when user click on other screen section
+        this.$.dialog.noCancelOnOutsideClick = false;
         this.addEventListener('iron-resize', this._windowResized);
       }
 
       _dialogClosed(event) {
+        if (this.hostTarget) {
+          this.hostTarget.classList.remove('dialog__host-target--highlited');
+        }
         this.removeEventListener('iron-resize', this._windowResized);
       }
 
@@ -177,29 +187,43 @@
         this.opened = false;
       }
 
-      _openedChanged(opened) {
+      _openedChanged(opened, old) {
         if (opened) {
-          this._updatePositions();
+          // user wants to open dialog again, so it removes close dialog
+          // when click restriction for a moment.
+          this.$.dialog.noCancelOnOutsideClick = true; 
+          this._updatePosition();
         }
         this.$.dialog.opened = opened;
       }
 
-      _updatePositions() {
+      _hostTargetChanged(hostTarget, oldHostTarget) {
+        if (oldHostTarget) {
+          oldHostTarget.classList.remove('dialog__host-target--highlited');
+        }
+        if (hostTarget) {
+          hostTarget.classList.add('dialog__host-target--highlited');
+        }
+      }
+
+      _updatePosition() {
         const rect = this.hostTarget.getBoundingClientRect();
 
         const rightSpace = document.body.offsetWidth -  rect.left;
         const bottomSpace = document.body.offsetHeight -  rect.top;
 
-        this.$.dialog.horizontalAlign = rightSpace < 180 ? "right" : "left";
+        this.$.dialog.horizontalAlign = rightSpace < 150 ? "right" : "left";
         this.$.dialog.verticalAlign = bottomSpace < this.numberOptions * 50 ? "bottom" : "top";
         this.$.dialog.horizontalOffset = -12;
-        this.$.dialog.verticalOffset = -4;
+        this.$.dialog.verticalOffset = -4 + (bottomSpace < 30 ? 30 : 0);
       }
 
       _actionTapped(event) {
         this.$.dialog.opened = false;
         const nameAction = event.model.__data.action.name;
-        this.dispatchEvent(new CustomEvent('item-action-tapped', {'detail': {'action': nameAction}}));
+        this.dispatchEvent(new CustomEvent('item-action-tapped', {
+          detail: {action: nameAction, item: this.item}
+        }));
       }
 
       _computeActionHref(collection, itemId, actionHref) {

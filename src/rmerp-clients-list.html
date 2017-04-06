@@ -8,7 +8,7 @@
 <dom-module id="rmerp-clients-list">
   <template>
 
-    <style include="content-styles search-styles table-styles">
+    <style include="content-styles search-styles table-styles button-styles dialog-styles">
       :host {
         display: block;
       }
@@ -55,15 +55,15 @@
     <!-- Lazy Creations -->
     <template is="dom-if" if="[[loadComplete]]">
 
-      <!--<rmerp-menu-dropdown 
+      <rmerp-menu-dropdown 
         actions="[[itemActions]]"
-        collection="clients"></rmerp-menu-dropdown>-->
+        collection="clients"></rmerp-menu-dropdown>
       
-      <paper-dialog id="dialogDeleteItem" class="dialog">
-        Are you sure you want to delete this [[itemName]]?
-        <div class="buttons">
-          <paper-button class="dialog__button" dialog-dismiss>Cancel</paper-button>
-          <paper-button class="dialog__button" dialog-confirm autofocus>Accept</paper-button>
+      <paper-dialog id="dialogDeleteItem" class="dialog" modal>
+        Are you sure you want to delete [[itemName]]?
+        <div class="dialog__buttons">
+          <paper-button class="button--text" dialog-dismiss>Cancel</paper-button>
+          <paper-button class="button--text" dialog-confirm autofocus>Accept</paper-button>
         </div>
       </paper-dialog>
 
@@ -90,7 +90,7 @@
               return [
                 {name: 'overview', label: 'Vistazo', icon: 'visibility', href: 'overview'},
                 {name: 'settings', label: 'Preferencias', icon: 'settings', href: 'settings'},
-                {name: 'delete', label: 'Eliminar', icon: 'delete'},
+                {name: 'delete', label: 'Eliminar', icon: 'delete'}
               ]
             }
           },
@@ -122,6 +122,7 @@
 
       connectedCallback() {
         super.connectedCallback();
+        this._itemActionTapped = this._itemActionTapped.bind(this);
         //this._firstResize(this.$.ironList);
       }
 
@@ -164,6 +165,7 @@
         }
 
         const overlay = document.createElement('rmerp-clients-new-overlay');
+        overlay.smallScreen = this.smallScreen;
         overlay.open();
 
         this._overlay = overlay;
@@ -177,37 +179,37 @@
         event.preventDefault();
         event.stopPropagation();
 
+        const dialog = this.shadowRoot.querySelector('rmerp-menu-dropdown');
         const itemIndex = event.model.__data.index;
         const item = this._filteredData[itemIndex];
+        const menuIcon = event.currentTarget;
 
-        if (this._overlay) {
-          const overlayItem = this._overlay.item;
-          this._overlay.remove();
-          this._overlay = null;
-          if (overlayItem.id == item.id) {
-            return;
-          }
+        if (dialog.opened) {
+          dialog.close();
+          dialog.removeEventListener('item-action-tapped', this._itemActionTapped);
+          // it closes dialog and not opens again if user taps on the same menu icon of opened dialog.
+          if (dialog.item.id === item.id) { return; }
         }
 
-        var dialog = document.createElement('rmerp-menu-dropdown');
-        this.shadowRoot.appendChild(dialog);
+        dialog.addEventListener('item-action-tapped', this._itemActionTapped);
 
-        dialog.hostTarget = event.currentTarget;
-        dialog.collection = 'clients';
-        dialog.actions = this.itemActions;
         dialog.item = item;
+        dialog.hostTarget = menuIcon;
         dialog.open();
-
-        this._overlay = dialog;
-
-        dialog.addEventListener('item-action-tapped', event => {
-          const action = event.detail.action;
-          console.log(action);
-        });
       }
 
-      _editItemTapped(event) {
-        console.log(event.model.item);
+      _itemActionTapped(event) {
+        const action = event.detail.action;
+        const item = event.detail.item;
+        if (action == 'delete') {
+          this._openDeleteDialog(item);
+        }
+      }
+
+      _openDeleteDialog(item) {
+        const confirmationDialog = this.shadowRoot.querySelector('#dialogDeleteItem');
+        this.itemName = item.name || 'this client';
+        confirmationDialog.open();
       }
 
       _computedTotalResults(_filteredData) {
