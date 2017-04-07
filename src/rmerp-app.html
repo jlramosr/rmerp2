@@ -12,10 +12,16 @@
 
 <dom-module id="rmerp-app">
   <template>
-    <style include="drawer-menu-styles">
+    <style include="header-layout-styles drawer-menu-styles">
       :host {
         display: block;
+        height: 100vh;
       }
+
+      app-drawer[persistent] {
+        border-right: 1px solid var(--paper-grey-300);
+      }
+      
     </style>
 
     <app-route
@@ -25,11 +31,22 @@
 
     <app-drawer-layout id="drawerLayout" fullbleed>
     
-      <app-drawer id="drawer" swipe-open transition-duration="250">
+      <app-drawer id="drawer" swipe-open>
         hola {{user}}
       </app-drawer>
+
+      <div class="header-layout">
+        <div class="header-layout__header">
+          <div class="header-toolbar">
+            hola
+          </div>
+        </div>
+        <div class="header-layout__content">
+          content
+        </div>
+      </div>
   
-      <iron-pages selected="[[_page]]" attr-for-selected="name" fallback-selection="404">
+      <!--<iron-pages selected="[[_page]]" attr-for-selected="name" fallback-selection="404" role="main">
 
         <rmerp-dashboard
           name="dashboard"
@@ -57,7 +74,7 @@
 
         <rmerp-404-warning name="404"></rmerp-404-warning>
 
-      </iron-pages>
+      </iron-pages>-->
 
     </app-drawer-layout>
 
@@ -88,6 +105,33 @@
           loadComplete: Boolean
 
         };
+      }
+
+      constructor() {
+        super();
+        this._toggleDrawer = this._toggleDrawer.bind(this);
+      }
+
+      connectedCallback() {
+        super.connectedCallback();
+        this.$.drawer.toggle();
+        this._toggleListeners({enable: true});
+      }
+
+      disconnectedCallback() {
+        super.disconnectedCallback();
+        this._toggleListeners({enable: false});
+      }
+
+      _toggleListeners({enable}) {
+        const m = enable ? 'addEventListener' : 'removeEventListener';
+        document[m]('drawer-toggle', this._toggleDrawer);
+      }
+
+      _toggleDrawer() {
+        if (!this.$.drawer.persistent) {
+          this.$.drawer.toggle();
+        }
       }
 
       _routeChanged(route) {
