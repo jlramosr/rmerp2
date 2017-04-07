@@ -55,10 +55,10 @@
     <!-- Lazy Creations -->
     <template is="dom-if" if="[[loadComplete]]">
 
-      <rmerp-menu-dropdown 
+      <rmerp-menu-dropdown
         actions="[[itemActions]]"
         collection="clients"></rmerp-menu-dropdown>
-      
+
       <paper-dialog id="dialogDeleteItem" class="dialog" modal>
         Are you sure you want to delete [[itemName]]?
         <div class="dialog__buttons">
@@ -75,13 +75,13 @@
 
     class RMERPClientsList extends Polymer.Element {
 
-      static get is() { 
-        return 'rmerp-clients-list'; 
+      static get is() {
+        return 'rmerp-clients-list';
       }
 
       static get properties() {
         return {
-          
+
           data: Array,
 
           itemActions: {
@@ -97,7 +97,7 @@
 
           _filteredData: {
             type: Array,
-            computed: '_computeFilteredData(data, _searchValue)'
+            computed: '_computeFilteredData(data, _searchValue, loadComplete)'
           },
 
           _searchValue: {
@@ -105,7 +105,7 @@
             value: ''
           },
 
-          smallScreen: { 
+          smallScreen: {
             type: Boolean,
             observer: '_smallScreenChanged'
           },
@@ -137,7 +137,10 @@
         }, 1);
       }
 
-      _computeFilteredData(data, _searchValue) {
+      _computeFilteredData(data, _searchValue, loadComplete) {
+        if (!loadComplete) {
+          return;
+        }
         var _filteredData = [];
         if (_searchValue && _searchValue && this.loadComplete) {
           _filteredData = fuzzaldrin.filter(
@@ -177,7 +180,6 @@
 
       _menuItemTapped(event) {
         event.preventDefault();
-        event.stopPropagation();
 
         const dialog = this.shadowRoot.querySelector('rmerp-menu-dropdown');
         const itemIndex = event.model.__data.index;

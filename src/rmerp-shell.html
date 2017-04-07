@@ -2,8 +2,8 @@
 <link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
 <link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
-<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../bower_components/overlay-container/overlay-container.html">
 
 <link rel="import" href="rmerp-common.html">
 <link rel="import" href="rmerp-backend-connection.html">
@@ -27,6 +27,10 @@
       user-status-known="{{userStatusKnown}}"></rmerp-backend-connection>
 
     <paper-toast vertical-align="top" horizontal-align="right" raised duration="5000"></paper-toast>
+
+    <div id="content"></div>
+
+    <overlay-container></<overlay-container>
 
   </template>
 
@@ -103,18 +107,18 @@
         }
 
         this._currentElement = document.createElement('rmerp-' + page);
-        
+
         // common properties.
         this._currentElement.route = this.route;
         this._currentElement.user = this.user;
         this._currentElement.smallScreen = this.smallScreen;
         this._currentElement.mediumScreen = this.mediumScreen;
         this._currentElement.loadComplete = this.loadComplete;
-        
+
       }
 
       _appendElement(page) {
-        this.shadowRoot.appendChild(this._currentElement);
+        this.$.content.appendChild(this._currentElement);
         const href = this.resolveUrl('rmerp-' + page + '.html');
         Polymer.importHref(href, null, null, true);
       }
@@ -138,7 +142,7 @@
               RMERPCommon.showMessage(response.message, 'error');
             });
         });
-  
+
       }
 
       _appendGuestElement() {
@@ -159,7 +163,7 @@
               RMERPCommon.showMessage(response.message, 'error');
             });
         });
- 
+
       }
 
       _appendErrorElement() {
@@ -168,11 +172,11 @@
       }
 
       _userStatusKnownChanged(user, userStatusKnown) {
-        if (!userStatusKnown) { return; }  
+        if (!userStatusKnown) { return; }
 
         // app page load if there is user log in
         if (user) {
-          this._appendAppElement();          
+          this._appendAppElement();
           return;
         }
 
@@ -191,13 +195,13 @@
         }
 
         // redirect to login if there is no main page or there is long account route.
-        if ((restPath && possibleLogoutPaths.includes(mainPage)) || 
+        if ((restPath && possibleLogoutPaths.includes(mainPage)) ||
             (possibleLogoutPaths.includes(mainPage)) && mainPage != 'account') {
           RMERPCommon.updateWindowLocation('/account');
         }
 
         // guest page load.
-        this._appendGuestElement();  
+        this._appendGuestElement();
 
       }
 

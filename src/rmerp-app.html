@@ -7,7 +7,7 @@
 <link rel="import" href="rmerp-common.html">
 <link rel="import" href="rmerp-404-warning.html">
 
-<!-- dashboard is eagerly loaded --> 
+<!-- dashboard is eagerly loaded -->
 <link rel="import" href="rmerp-dashboard.html">
 
 <dom-module id="rmerp-app">
@@ -21,7 +21,7 @@
       app-drawer[persistent] {
         border-right: 1px solid var(--paper-grey-300);
       }
-      
+
     </style>
 
     <app-route
@@ -30,23 +30,12 @@
       tail="{{subroute}}"></app-route>
 
     <app-drawer-layout id="drawerLayout" fullbleed>
-    
-      <app-drawer id="drawer" swipe-open>
+
+      <app-drawer id="drawer" slot="drawer" swipe-open>
         hola {{user}}
       </app-drawer>
 
-      <div class="header-layout">
-        <div class="header-layout__header">
-          <div class="header-toolbar">
-            hola
-          </div>
-        </div>
-        <div class="header-layout__content">
-          content
-        </div>
-      </div>
-  
-      <!--<iron-pages selected="[[_page]]" attr-for-selected="name" fallback-selection="404" role="main">
+      <iron-pages selected="[[_page]]" attr-for-selected="name" fallback-selection="404" role="main">
 
         <rmerp-dashboard
           name="dashboard"
@@ -74,7 +63,7 @@
 
         <rmerp-404-warning name="404"></rmerp-404-warning>
 
-      </iron-pages>-->
+      </iron-pages>
 
     </app-drawer-layout>
 
