@@ -32,7 +32,7 @@
     <app-drawer-layout id="drawerLayout" fullbleed>
 
       <app-drawer id="drawer" slot="drawer" swipe-open>
-        hola {{user}}
+        hola {{user.email}} <img src="[[user.photoURL]]">
       </app-drawer>
 
       <iron-pages selected="[[_page]]" attr-for-selected="name" fallback-selection="404" role="main">

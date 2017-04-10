@@ -17,7 +17,7 @@
     <firebase-auth
       id="auth"
       app-name="rmerp"
-      user="{{user}}"
+      user="{{_user}}"
       provider="{{provider}}"
       on-error="_handleError"
       status-known="{{userStatusKnown}}"
@@ -34,9 +34,12 @@
       static get properties() {
         return {
 
+          _user: Object,
+          
           user: {
             type: Object,
-            notify: true
+            notify: true,
+            computed: '_computeUser(_user)'
           },
 
           userStatusKnown: {
@@ -65,6 +68,11 @@
 
       _handleError(event) {
         console.error(event.detail.message);
+      }
+
+      _computeUser(_user) {
+        if (!_user) { return null; }
+        return _user.providerData[0];
       }
 
     }
