@@ -240,28 +240,28 @@
 
       _loginPasswordTapped() {
         this._account.provider = 'password';
-        this.dispatchEvent(new CustomEvent('login-tapped', {'detail': {'account': this._account}}));
+        this.dispatchEvent(new CustomEvent('login-tapped', {detail: {account: this._account}}));
         this.shadowRoot.querySelector('.form__input').focus();
       }
 
       _loginGoogleTapped() {
         this._account.provider = 'google';
-        this.dispatchEvent(new CustomEvent('login-tapped', {'detail': {'account': this._account}}));
+        this.dispatchEvent(new CustomEvent('login-tapped', {detail: {account: this._account}}));
       }
 
       _loginFacebookTapped() {
         this._account.provider = 'facebook';
-        this.dispatchEvent(new CustomEvent('login-tapped', {'detail': {'account': this._account}}));
+        this.dispatchEvent(new CustomEvent('login-tapped', {detail: {account: this._account}}));
       }
 
       _loginTwitterTapped() {
         this._account.provider = 'twitter';
-        this.dispatchEvent(new CustomEvent('login-tapped', {'detail': {'account': this._account}}));
+        this.dispatchEvent(new CustomEvent('login-tapped', {detail: {account: this._account}}));
       }
 
       _loginGithubTapped() {
         this._account.provider = 'github';
-        this.dispatchEvent(new CustomEvent('login-tapped', {'detail': {'account': this._account}}));
+        this.dispatchEvent(new CustomEvent('login-tapped', {detail: {account: this._account}}));
       }
 
       _computeClassContainer(mediumScreen) {

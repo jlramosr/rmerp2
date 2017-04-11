@@ -15,11 +15,11 @@
       }
     </style>
 
-    <rmerp-tmpl-header-layout title="ERP">
+    <rmerp-tmpl-header-layout title="ERP" left-icon="menu">
 
       <div slot="content" class="content__list">
 
-        <iron-list id="ironList" items="[[_data]]" max-physical-count="30">
+        <iron-list id="ironList" items="[[categories]]" max-physical-count="30">
           <template id="template">
             <a class="table__item" href="/[[item.slug]]">
               <div class="table__item__detail">
@@ -49,22 +49,17 @@
 
           _loading: Boolean,
 
-          _data: {
+          categories: {
             type: Array,
-            value: [
-              {'name': 'Clients', 'slug': 'clients', 'description': 'Clients'},
-              {'name': 'Invoices', 'slug': 'invoices', 'description': 'Invoices'},
-            ],
-            observer: '_dataChanged',
-            readOnly: true
-          },
+            observer: '_categoriesChanged'
+          }
 
         }
       }
 
-      _dataChanged(data, oldData) {
+      _categoriesChanged(categories, oldCategories) {
         this._loading = true;
-        if (data.length) {
+        if (categories.length) {
          this._loading = false;
         }
       }

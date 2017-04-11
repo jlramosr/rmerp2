@@ -19,17 +19,17 @@
 
           <div class="header-toolbar__info">
 
-            <a href$="[[backPath]]" hidden$="[[!_computeShowBackHref(backIcon, backPath)]]">
+            <a href$="[[backPath]]" hidden$="[[!_computeShowBackHref(leftIcon, backPath)]]">
               <iron-icon
                 class="header-toolbar__icon--back"
-                icon$="rmerp-icons:[[backIcon]]"
-                on-click="_backTapped"></iron-icon>
+                icon$="rmerp-icons:[[leftIcon]]"
+                on-click="_leftIconTapped"></iron-icon>
             </a>
             <iron-icon
               class="header-toolbar__icon--back"
-              icon$="rmerp-icons:[[backIcon]]"
-              hidden$="[[!_computeShowOnlyBackIcon(backIcon, backPath)]]"
-              on-click="_backTapped"></iron-icon>
+              icon$="rmerp-icons:[[leftIcon]]"
+              hidden$="[[!_computeShowOnlyLeftIcon(leftIcon, backPath)]]"
+              on-click="_leftIconTapped"></iron-icon>
 
             <iron-icon class="header-toolbar__icon" icon$="rmerp-icons:[[icon]]" hidden$=[[!icon]]></iron-icon>
             <span class="header-toolbar__title">{{title}}</iron-icon>
@@ -67,7 +67,7 @@
             value: ''
           },
 
-          backIcon: {
+          leftIcon: {
             type: String,
             value: ''
           },
@@ -81,16 +81,16 @@
 
       }
 
-      _computeShowOnlyBackIcon(backIcon, backPath) {
-        return backIcon && !backPath;
+      _computeShowOnlyLeftIcon(leftIcon, backPath) {
+        return leftIcon && !backPath;
       }
 
-      _computeShowBackHref(backIcon, backPath) {
-        return backIcon && backPath;
+      _computeShowBackHref(leftIcon, backPath) {
+        return leftIcon && backPath;
       }
 
-      _backTapped() {
-        this.dispatchEvent(new CustomEvent('back-tapped', {detail: {}}));
+      _leftIconTapped() {
+        document.dispatchEvent(new CustomEvent(this.leftIcon + '-tapped', {detail: {}}));
       }
 
     }

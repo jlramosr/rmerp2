@@ -72,7 +72,13 @@
 
       _computeUser(_user) {
         if (!_user) { return null; }
-        return _user.providerData[0];
+        const userProviderData = _user.providerData[0];
+        return {
+          name: userProviderData.displayName,
+          email: userProviderData.email,
+          photo: userProviderData.photoURL,
+          uid: userProviderData.uid
+        };
       }
 
     }
