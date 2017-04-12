@@ -11,9 +11,24 @@
       items={{items}} 
       item={{item}}>
 
-      <rmerp-invoices-list name="list" data="{{items}}" load-complete="[[loadComplete]]"></rmerp-invoices-list>
-      <rmerp-invoices-overview name="overview" data="{{item}}"></rmerp-invoices-overview>
-      <rmerp-invoices-settings name="settings" data="{{item}}"></rmerp-invoices-settings>
+      <rmerp-invoices-list
+        name="list"
+        data="{{items}}"
+        load-complete="[[loadComplete]]"
+        small-screen="[[smallScreen]]"
+        medium-screen="[[mediumScreen]]"></rmerp-invoices-list>
+
+      <rmerp-invoices-overview
+        name="overview"
+        data="{{item}}"
+        small-screen="[[smallScreen]]"
+        medium-screen="[[mediumScreen]]"></rmerp-invoices-overview>
+
+      <rmerp-invoices-settings
+        name="settings"
+        data="{{item}}"
+        small-screen="[[smallScreen]]"
+        medium-screen="[[mediumScreen]]"></rmerp-invoices-settings>
 
     </rmerp-tmpl-category-route>
 
@@ -25,6 +40,27 @@
 
       static get is() { return 'rmerp-invoices'; }
 
+      static get properties() {
+        return {
+
+          route: Object,
+
+          collection: String,
+
+          items: Array,
+
+          item: Object,
+
+          itemId: String,
+
+          user: Object,
+
+          smallScreen: Boolean,
+
+          mediumScreen: Boolean
+
+        };
+      }
     }
 
     window.customElements.define(RMERPInvoices.is, RMERPInvoices);

@@ -15,9 +15,24 @@
       items={{items}} 
       item={{item}}>
 
-      <rmerp-clients-list name="list" data="{{items}}" load-complete="[[loadComplete]]"></rmerp-clients-list>
-      <rmerp-clients-overview name="overview" data="{{item}}"></rmerp-clients-overview>
-      <rmerp-clients-settings name="settings" data="{{item}}"></rmerp-clients-settings>
+      <rmerp-clients-list
+        name="list"
+        data="{{items}}"
+        load-complete="[[loadComplete]]"
+        small-screen="[[smallScreen]]"
+        medium-screen="[[mediumScreen]]"></rmerp-clients-list>
+
+      <rmerp-clients-overview
+        name="overview"
+        data="{{item}}"
+        small-screen="[[smallScreen]]"
+        medium-screen="[[mediumScreen]]"></rmerp-clients-overview>
+
+      <rmerp-clients-settings
+        name="settings"
+        data="{{item}}"
+        small-screen="[[smallScreen]]"
+        medium-screen="[[mediumScreen]]"></rmerp-clients-settings>
 
     </rmerp-tmpl-category-route>
 

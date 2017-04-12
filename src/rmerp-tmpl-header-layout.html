@@ -15,14 +15,10 @@
       }
     </style>
 
-    <iron-media-query query="max-width: 720px" query-matches="{{smallScreen}}"></iron-media-query>
-    <iron-media-query query="max-width: 1024px" query-matches="{{mediumScreen}}"></iron-media-query>
-
-
     <div class="header-layout">
       
       <div class="header-layout__header">
-        <div class="header-toolbar--secondary">
+        <div class="header-toolbar">
 
           <div class="header-toolbar__info">
 
@@ -31,13 +27,6 @@
               class="header-toolbar__icon--menu"
               hidden$="[[!close]]"
               on-click="_closeTapped"></iron-icon>
-
-            <iron-icon
-              icon="rmerp-icons:menu"
-              drawer-toggle
-              class="header-toolbar__icon--menu"
-              hidden$="[[!_showMenu]]"
-              on-click="_menuTapped"></iron-icon>
 
             <a href$="[[backPath]]" hidden$="[[!backPath]]">
               <iron-icon
@@ -83,13 +72,6 @@
             value: ''
           },
 
-          menu: {
-            type: Boolean,
-            value: false,
-          },
-
-          _showMenu: Boolean,
-
           close: {
             type: Boolean,
             value: false
@@ -100,52 +82,16 @@
             value: ''
           },
 
-          smallScreen: {
-            type: Boolean,
-            notify: true,
-          },
+          smallScreen: Boolean,
 
-          mediumScreen: {
-            type: Boolean,
-            notify: true
-          }
+          mediumScreen: Boolean
         
         }
 
       }
 
-      constructor() {
-        super();
-        this._drawerTransitioned = this._drawerTransitioned.bind(this);
-      }
-
-      connectedCallback() {
-        super.connectedCallback();
-        this._showMenu = this.menu && this.smallScreen;
-        this._toggleListeners({enable: true});
-      }
-
-      disconnectedCallback() {
-        super.disconnectedCallback();
-        this._toggleListeners({enable: false});
-      }
-
-      _toggleListeners({enable}) {
-        const m = enable ? 'addEventListener' : 'removeEventListener';
-        document[m]('app-drawer-transitioned', this._drawerTransitioned);
-      }
-
-      _drawerTransitioned(event) {
-        const drawer = event.path[0];
-        this._showMenu = this.menu && (this.smallScreen || !drawer.opened);
-      }
-
       _closeTapped() {
         document.dispatchEvent(new CustomEvent('close-tapped', {detail: {}}));
-      }
-
-      _menuTapped() {
-        document.dispatchEvent(new CustomEvent('menu-tapped', {detail: {}}));
       }
 
     }

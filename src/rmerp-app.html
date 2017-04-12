@@ -15,7 +15,7 @@
 
 <dom-module id="rmerp-app">
   <template>
-    <style include="header-layout-styles drawer-menu-styles">
+    <style include="drawer-layout-styles drawer-styles">
       :host {
         display: block;
         height: 100vh;
@@ -31,22 +31,19 @@
 
       <app-drawer id="drawer" class="drawer" slot="drawer">
         <div class="drawer__header">
+
           <paper-icon-button
             icon="rmerp-icons:menu"
             class="drawer__icon--menu"
             on-click="_menuTapped"
             tabindex="-1"></paper-icon-button>
-          <template is="dom-if" if="[[user.photo]]">
-            <img class="drawer__user--photo" src="[[user.photo]]" alt="photo"></img>
+
+          <template is="dom-if" if="[[smallScreen]]">
+            <div main-title>ERP</div>
           </template>
-          <template is="dom-if" if="[[!user.photo]]">
-            <iron-icon class="drawer__user--photo" icon="rmerp-icons:account-circle"></iron-icon>
-          </template>
-          <div class="drawer__user--info">
-            [[user.name]]
-            [[user.email]]
-          </div>
+
         </div>
+      
         <div class="drawer__list">
 
           <div class="drawer__list--up">
@@ -82,8 +79,36 @@
 
       <app-header-layout fullbleed>
         <app-header slot="header" fixed>
-          <app-toolbar class="header-toolbar--primary">
-            <div main-title>ERP</div>
+          <app-toolbar class="header-toolbar">
+
+            <iron-icon
+              icon="rmerp-icons:menu"
+              drawer-toggle
+              class="header-toolbar__icon--menu"
+              hidden="false"
+              on-click="_menuTapped"></iron-icon>
+            
+            <template is="dom-if" if="[[!smallScreen]]">
+              <div main-title>ERP</div>
+            </template>
+
+            <div class="header-toolbar">
+
+              <template is="dom-if" if="[[user.photo]]">
+                <img class="header-toolbar__user--photo" src="[[user.photo]]" alt="photo"></img>
+              </template>
+
+              <template is="dom-if" if="[[!user.photo]]">
+                <iron-icon class="header-toolbar__user--photo" icon="rmerp-icons:account-circle"></iron-icon>
+              </template>
+
+              <!--<div class="toolbar__user--info">
+                [[user.name]]
+                [[user.email]]
+              </div>-->
+
+            </div>
+
           </app-toolbar>
         </app-header>
 
@@ -97,6 +122,8 @@
               route="[[subroute]]"
               user="[[user]]"
               load-complete="[[loadComplete]]"
+              small-screen="[[smallScreen]]"
+              medium-screen="[[mediumScreen]]"
               offline="[[offline]]"></rmerp-dashboard>
 
             <rmerp-clients
@@ -104,6 +131,8 @@
               route="[[subroute]]"
               user="[[user]]"
               load-complete="[[loadComplete]]"
+              small-screen="[[smallScreen]]"
+              medium-screen="[[mediumScreen]]"
               offline="[[offline]]"></rmerp-clients>
 
             <rmerp-invoices
@@ -111,6 +140,8 @@
               route="[[subroute]]"
               user="[[user]]"
               load-complete="[[loadComplete]]"
+              small-screen="[[smallScreen]]"
+              medium-screen="[[mediumScreen]]"
               offline="[[offline]]"></rmerp-invoices>
 
             <rmerp-404-warning name="404"></rmerp-404-warning>
@@ -156,7 +187,11 @@
 
           user: Object,
 
-          loadComplete: Boolean
+          loadComplete: Boolean,
+
+          smallScreen: Boolean,
+
+          mediumScreen: Boolean
 
 
         };
@@ -164,7 +199,6 @@
 
       constructor() {
         super();
-        this._menuTapped = this._menuTapped.bind(this);
       }
 
       connectedCallback() {
@@ -179,7 +213,6 @@
 
       _toggleListeners({enable}) {
         const m = enable ? 'addEventListener' : 'removeEventListener';
-        document[m]('menu-tapped', this._menuTapped);
       }
 
       _menuTapped() {

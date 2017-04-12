@@ -1,6 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/overlay-container/overlay-container.html">
 
@@ -16,6 +17,9 @@
 
     <app-location route="{{route}}"></app-location>
     <app-route route="[[route]]"></app-route>
+
+    <iron-media-query query="max-width: 720px" query-matches="{{smallScreen}}"></iron-media-query>
+    <iron-media-query query="max-width: 1024px" query-matches="{{mediumScreen}}"></iron-media-query>
 
     <rmerp-backend-connection
       id="backendConnection"
@@ -50,6 +54,16 @@
           route: {
             type: Object,
             observer: '_routeChanged'
+          },
+
+          smallScreen: {
+            type: Boolean,
+            observer: '_smallScreenChanged'
+          },
+
+          mediumScreen: {
+            type: Boolean,
+            observer: '_mediumScreenChanged'
           },
 
           loadComplete: {
@@ -97,6 +111,8 @@
         // common properties.
         this._currentElement.route = this.route;
         this._currentElement.user = this.user;
+        this._currentElement.smallScreen = this.smallScreen;
+        this._currentElement.mediumScreen = this.mediumScreen;
         this._currentElement.loadComplete = this.loadComplete;
 
       }
@@ -200,6 +216,20 @@
         // databinding.
         if (this._currentElement) {
           this._currentElement.user = user;
+        }
+      }
+
+      _smallScreenChanged(smallScreen) {
+        // databinding.
+        if (this._currentElement) {
+          this._currentElement.smallScreen = smallScreen;
+        }
+      }
+
+      _mediumScreenChanged(mediumScreen) {
+        // databinding.
+        if (this._currentElement) {
+          this._currentElement.mediumScreen = mediumScreen;
         }
       }
 
