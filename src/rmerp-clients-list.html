@@ -14,7 +14,7 @@
       }
     </style>
 
-    <rmerp-tmpl-header-layout title="CLIENTES" icon="supervisor-account">
+    <rmerp-tmpl-header-layout menu title="CLIENTES" small-screen="{{smallScreen}}">
 
       <rmerp-button
         slot="action"
@@ -172,6 +172,10 @@
         overlay.open();
 
         this._overlay = overlay;
+
+        document.addEventListener('close-tapped', _ => {
+          overlay.opened = false;
+        });
 
         overlay.addEventListener('overlay-closed', _ => {
           this._overlay = null;

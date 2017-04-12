@@ -54,6 +54,8 @@
         margin-right: 6px;
         height: 18px;
         width: 18px;
+        min-height: 18px;
+        min-width: 18px;
         opacity: 0.7;
       }
     </style>
@@ -212,7 +214,7 @@
         const rightSpace = document.body.offsetWidth -  rect.left;
         const bottomSpace = document.body.offsetHeight -  rect.top;
 
-        this.$.dialog.horizontalAlign = rightSpace < 150 ? "right" : "left";
+        this.$.dialog.horizontalAlign = rightSpace < 180 ? "right" : "left";
         this.$.dialog.verticalAlign = bottomSpace < this.numberOptions * 50 ? "bottom" : "top";
         this.$.dialog.horizontalOffset = -12;
         this.$.dialog.verticalOffset = -4 + (bottomSpace < 30 ? 30 : 0);

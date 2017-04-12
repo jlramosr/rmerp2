@@ -14,7 +14,11 @@
       }
     </style>
 
-    <rmerp-tmpl-header-layout title="{{data.name}}" left-icon="arrow-back" back-path="/invoices" loading="[[loading]]">
+    <rmerp-tmpl-header-layout
+      title="{{data.name}}"
+      back-path="/invoices"
+      small-screen="{{smallScreen}}"
+      loading="[[loading]]">
 
       <rmerp-button
         slot="action"

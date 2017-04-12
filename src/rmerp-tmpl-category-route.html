@@ -80,9 +80,6 @@
         };
       }
 
-      static get observers() {
-      }
-
       _routeChanged(route) {
         if (route.path === null && route.prefix === null) { return; }
         const parentPage = route.prefix.split('/')[1];

@@ -18,9 +18,9 @@
 
     --rmerp-toolbar-height: 60px;
 
-    --rmerp-side-padding-small: 8px;
-    --rmerp-side-padding-medium: 32px;
-    --rmerp-side-padding-large: 82px;
+    --rmerp-side-padding-small: 16px;
+    --rmerp-side-padding-medium: 54px;
+    --rmerp-side-padding-large: 142px;
 
     /* override paper-elements theme */
     --primary-color: var(--rmerp-primary-color);
@@ -75,14 +75,19 @@
       }
 
       .header-toolbar__icon {
-        min-height: 40px;
-        min-width: 40px;
+        height: 48px;
+        width: 48px;
+        min-height: 48px;
+        min-width: 48px;
         color: #fff;
       }
 
-      .header-toolbar__icon--back {
+      .header-toolbar__icon--back,
+      .header-toolbar__icon--menu {
+        margin: 1px 2px 0 0;
         cursor: pointer;
-        padding: 1px 0 0;
+        height: 24px;
+        width: 24px;
         min-height: 24px;
         min-width: 24px;
         color: #fff;
@@ -250,7 +255,7 @@
         right: 0;
         bottom: 0;
         padding: 0 16px;
-        color: var(--rmerp-secondary-color);
+        color: var(--secondary-color);
         font-size: 14px;
         pointer-events: none;
       }
@@ -371,7 +376,7 @@
         height: 48px;
         width: 48px;
         opacity: 0.1;
-        color: var(--rmerp-secondary-color);
+        color: var(--secondary-color);
       }
 
       .form__input {
@@ -399,7 +404,7 @@
 
       .form__radio-button {
         margin-left: 12px;
-        --paper-radio-button-checked-color: var(--rmerp-secondary-color);
+        --paper-radio-button-checked-color: var(--secondary-color);
         --paper-radio-button-size: 24px;
         --paper-radio-button-label-spacing: 4px;
       }
@@ -530,7 +535,8 @@
     <style>
       .drawer {
         --app-drawer-content-container: {
-          background: #fff; 
+          background: #fff;
+          font-weight: 500;
         }
       }
 
@@ -541,13 +547,11 @@
         height: var(--rmerp-toolbar-height);
         background: var(--rmerp-primary-light-color);
         color: var(--rmerp-primary-color);
-        padding: 0 6px;
-        cursor: pointer;
-        font-size: 12px;
-        font-weight: 400;
+        padding: 0 12px;
+        font-size: 80%;
       }
 
-      .drawer__user--info{
+      .drawer__user--info {
         @apply --layout-vertical;
       }
 
@@ -561,7 +565,28 @@
       }
 
       .drawer__list {
-        padding: 8px 0;
+        @apply --layout-vertical;
+      }
+
+      .drawer__list--up {
+        margin: 8px 0;
+      }
+
+      .drawer__separator {
+        border: 0;
+        height: 1px;
+        background: var(--secondary-color);
+        background: -webkit-gradient(linear, left top, right top, color-stop(0%,hsla(0,0%,0%,0)), color-stop(50%,#888), color-stop(100%,hsla(0,0%,0%,0)));
+        background: -webkit-linear-gradient(left, hsla(0,0%,0%,0) 0%, #888 50%, hsla(0,0%,0%,0) 100%);
+        background: -moz-linear-gradient(left, hsla(0,0%,0%,0) 0%, #888 50%, hsla(0,0%,0%,0) 100%);
+        background: -ms-linear-gradient(left, hsla(0,0%,0%,0) 0%, #888 50%, hsla(0,0%,0%,0) 100%);
+        background: -o-linear-gradient(left, hsla(0,0%,0%,0) 0%, #888 50%, hsla(0,0%,0%,0) 100%);
+        background: linear-gradient(left, hsla(0,0%,0%,0) 0%, #888 50%, hsla(0,0%,0%,0) 100%);
+      }
+
+      .drawer__list--down {
+        margin: 8px 0;
+        opacity: 0.9;
       }
 
       .drawer__link {
@@ -571,28 +596,35 @@
         padding: 8px 20px;
         color: var(--primary-color);
         cursor: pointer;
-        font-size: 16px;
+        font-size: 12px;
         text-decoration: none;
         overflow-x: hidden;
         outline: none;
       }
 
+      .drawer__icon--menu {
+        color: var(--primary-color);
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+        min-height: 32px;
+      }
+
+      .drawer__icon--menu:hover {
+        color: var(--secondary-color);
+      }
+
       .drawer__icon {
-        margin-right: 16px;
-        width: 24px;
-        height: 24px;
-        min-width: 24px;
-        min-height: 24px;
-        margin-top: -4px;
+        margin-right: 24px;
+        width: 16px;
+        height: 16px;
+        min-width: 16px;
+        min-height: 16px;
       }
 
       .drawer__link:hover {
         background: var(--paper-grey-50);
-      }
-
-      .drawer__link.iron-selected {
-        font-weight: 500;
-        color: var(--rmerp-primary-color) !important;
+        color: var(--rmerp-secondary-color);
       }
 
     </style>

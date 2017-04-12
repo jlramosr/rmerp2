@@ -1,6 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
 <link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+
 <link rel="import" href="../bower_components/app-route/app-route.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 
@@ -24,10 +25,15 @@
       pattern="/:category"
       tail="{{subroute}}"></app-route>
 
-    <app-drawer-layout id="drawerLayout" fullbleed responsive-width="720px">
+    <app-drawer-layout id="drawerLayout" fullbleed responsive-width="719px">
 
       <app-drawer id="drawer" class="drawer" slot="drawer">
         <div class="drawer__header">
+          <paper-icon-button
+            icon="rmerp-icons:menu"
+            class="drawer__icon--menu"
+            on-click="_menuTapped"
+            tabindex="-1"></paper-icon-button>
           <template is="dom-if" if="[[user.photo]]">
             <img class="drawer__user--photo" src="[[user.photo]]" alt="photo"></img>
           </template>
@@ -38,54 +44,71 @@
             [[user.name]]
             [[user.email]]
           </div>
-          <iron-icon icon="rmerp-icons:power-settings-new" on-click="_logoutTapped"></iron-icon>
         </div>
         <div class="drawer__list">
-          <a class="drawer__link" href="/dashboard">
-            <iron-icon class="drawer__icon" icon="rmerp-icons:home"></iron-icon>
-            <span class="">Home</span>
-          </a>
-          <iron-list items="[[categories]]">
-            <template >
-              <a class="drawer__link" href="/[[item.slug]]">
-                <iron-icon class="drawer__icon" icon$="rmerp-icons:[[item.icon]]"></iron-icon>
-                <span class="">[[item.name]]</span>
-              </a>
-            </template>
-          </iron-list>
+
+          <div class="drawer__list--up">
+            <a class="drawer__link" href="/dashboard">
+              <iron-icon class="drawer__icon" icon="rmerp-icons:home"></iron-icon>
+              Home
+            </a>
+            <iron-list items="[[categories]]">
+              <template >
+                <a class="drawer__link" href="/[[item.slug]]">
+                  <iron-icon class="drawer__icon" icon$="rmerp-icons:[[item.icon]]"></iron-icon>
+                  [[item.name]]
+                </a>
+              </template>
+            </iron-list>
+          </div>
+
+          <div class="drawer__separator"></div>
+
+          <div class="drawer__list--down">
+            <a class="drawer__link" href="/dashboard">
+              <iron-icon class="drawer__icon" icon="rmerp-icons:settings"></iron-icon>
+              Preferences
+            </a>
+            <a class="drawer__link" href="/dashboard#" on-click="_logoutTapped">
+              <iron-icon class="drawer__icon" icon="rmerp-icons:power-settings-new"></iron-icon>
+              Logout
+            </a>
+          </div>
+
         </div>
       </app-drawer>
 
-      <iron-pages selected="[[_page]]" attr-for-selected="name" fallback-selection="404" role="main">
 
-        <rmerp-dashboard
-          name="dashboard"
-          categories="[[categories]]"
-          route="[[subroute]]"
-          user="[[user]]"
-          load-complete="[[loadComplete]]"
-          small-screen="[[smallScreen]]"
-          offline="[[offline]]"></rmerp-dashboard>
 
-        <rmerp-clients
-          name="clients"
-          route="[[subroute]]"
-          user="[[user]]"
-          load-complete="[[loadComplete]]"
-          small-screen="[[smallScreen]]"
-          offline="[[offline]]"></rmerp-clients>
+        <iron-pages selected="[[_page]]" attr-for-selected="name" fallback-selection="404" role="main">
 
-        <rmerp-invoices
-          name="invoices"
-          route="[[subroute]]"
-          user="[[user]]"
-          load-complete="[[loadComplete]]"
-          small-screen="[[smallScreen]]"
-          offline="[[offline]]"></rmerp-invoices>
+          <rmerp-dashboard
+            name="dashboard"
+            categories="[[categories]]"
+            route="[[subroute]]"
+            user="[[user]]"
+            load-complete="[[loadComplete]]"
+            offline="[[offline]]"></rmerp-dashboard>
 
-        <rmerp-404-warning name="404"></rmerp-404-warning>
+          <rmerp-clients
+            name="clients"
+            route="[[subroute]]"
+            user="[[user]]"
+            load-complete="[[loadComplete]]"
+            offline="[[offline]]"></rmerp-clients>
 
-      </iron-pages>
+          <rmerp-invoices
+            name="invoices"
+            route="[[subroute]]"
+            user="[[user]]"
+            load-complete="[[loadComplete]]"
+            offline="[[offline]]"></rmerp-invoices>
+
+          <rmerp-404-warning name="404"></rmerp-404-warning>
+
+        </iron-pages>
+
+
 
     </app-drawer-layout>
 
@@ -121,10 +144,6 @@
           },
 
           user: Object,
-
-          smallScreen: Boolean,
-
-          mediumScreen: Boolean,
 
           loadComplete: Boolean
 

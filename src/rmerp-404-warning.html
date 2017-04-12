@@ -1,8 +1,11 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 
+<link rel="import" href="rmerp-styles.html">
+<link rel="import" href="rmerp-tmpl-header-layout.html">
+
 <dom-module id="rmerp-404-warning">
   <template>
-    <style>
+    <style include="content-styles">
       :host {
         display: block;
         height: 100vh;
@@ -10,9 +13,7 @@
       }
 
       .container {
-        margin: 0 auto;
-        max-width: 460px;
-        padding: 80px 40px 40px;
+        padding: 40px 0;
       }
 
       .logo {
@@ -34,12 +35,18 @@
       }
     </style>
 
-    <div class="container">
-      <div class="logo">RMERP</div>
-      <h2><iron-icon icon="warning"></iron-icon>Page not found.</h2>
-      <p>The page you're looking for could have been deleted or never have existed.</p>
-      <p>Visit the <a class="" href="/">homepage</a></p>
-    </div>
+    <rmerp-tmpl-header-layout title="Page not found" icon="warning">
+
+      <div slot="content" class="content__form">
+
+        <div class="container">
+          <p>The page you're looking for could have been deleted or never have existed.</p>
+          <p>Visit the <a class="" href="/">homepage</a></p>
+        </div>
+        
+      </div>
+
+    <rmerp-tmpl-header-layout title="ERP" menu>
 
   </template>
 

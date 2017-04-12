@@ -1,4 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
 
 <link rel="import" href="rmerp-styles.html">
 
@@ -9,8 +10,10 @@
       :host {
         display: block;
       }
-
     </style>
+
+    <iron-media-query query="max-width: 720px" query-matches="{{smallScreen}}"></iron-media-query>
+    <iron-media-query query="max-width: 1024px" query-matches="{{mediumScreen}}"></iron-media-query>
 
     <div class="header-layout">
       <div class="header-layout__header">
@@ -19,19 +22,26 @@
 
           <div class="header-toolbar__info">
 
-            <a href$="[[backPath]]" hidden$="[[!_computeShowBackHref(leftIcon, backPath)]]">
+            <iron-icon
+              icon="rmerp-icons:close"
+              class="header-toolbar__icon--menu"
+              hidden$="[[!close]]"
+              on-click="_closeTapped"></iron-icon>
+
+            <iron-icon
+              icon="rmerp-icons:menu"
+              drawer-toggle
+              class="header-toolbar__icon--menu"
+              hidden$="[[!_showMenu]]"
+              on-click="_menuTapped"></iron-icon>
+
+            <a href$="[[backPath]]" hidden$="[[!backPath]]">
               <iron-icon
                 class="header-toolbar__icon--back"
-                icon$="rmerp-icons:[[leftIcon]]"
-                on-click="_leftIconTapped"></iron-icon>
+                icon="rmerp-icons:arrow-back"></iron-icon>
             </a>
-            <iron-icon
-              class="header-toolbar__icon--back"
-              icon$="rmerp-icons:[[leftIcon]]"
-              hidden$="[[!_computeShowOnlyLeftIcon(leftIcon, backPath)]]"
-              on-click="_leftIconTapped"></iron-icon>
 
-            <iron-icon class="header-toolbar__icon" icon$="rmerp-icons:[[icon]]" hidden$=[[!icon]]></iron-icon>
+            <iron-icon class="header-toolbar__icon" icon$="rmerp-icons:[[icon]]" hidden$="[[!icon]]"></iron-icon>
             <span class="header-toolbar__title">{{title}}</iron-icon>
 
           </div>
@@ -67,30 +77,69 @@
             value: ''
           },
 
-          leftIcon: {
-            type: String,
-            value: ''
+          menu: {
+            type: Boolean,
+            value: false,
+          },
+
+          _showMenu: Boolean,
+
+          close: {
+            type: Boolean,
+            value: false
           },
 
           backPath: {
             type: String,
             value: ''
+          },
+
+          smallScreen: {
+            type: Boolean,
+            notify: true,
+          },
+
+          mediumScreen: {
+            type: Boolean,
+            notify: true
           }
         
         }
 
       }
 
-      _computeShowOnlyLeftIcon(leftIcon, backPath) {
-        return leftIcon && !backPath;
+      constructor() {
+        super();
+        this._drawerTransitioned = this._drawerTransitioned.bind(this);
       }
 
-      _computeShowBackHref(leftIcon, backPath) {
-        return leftIcon && backPath;
+      connectedCallback() {
+        super.connectedCallback();
+        this._showMenu = this.menu && this.smallScreen;
+        this._toggleListeners({enable: true});
       }
 
-      _leftIconTapped() {
-        document.dispatchEvent(new CustomEvent(this.leftIcon + '-tapped', {detail: {}}));
+      disconnectedCallback() {
+        super.disconnectedCallback();
+        this._toggleListeners({enable: false});
+      }
+
+      _toggleListeners({enable}) {
+        const m = enable ? 'addEventListener' : 'removeEventListener';
+        document[m]('app-drawer-transitioned', this._drawerTransitioned);
+      }
+
+      _drawerTransitioned(event) {
+        const drawer = event.path[0];
+        this._showMenu = this.menu && (this.smallScreen || !drawer.opened);
+      }
+
+      _closeTapped() {
+        document.dispatchEvent(new CustomEvent('close-tapped', {detail: {}}));
+      }
+
+      _menuTapped() {
+        document.dispatchEvent(new CustomEvent('menu-tapped', {detail: {}}));
       }
 
     }
