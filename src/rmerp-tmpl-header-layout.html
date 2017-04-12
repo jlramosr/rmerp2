@@ -1,5 +1,8 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
+<link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
 
 <link rel="import" href="rmerp-styles.html">
 
@@ -15,10 +18,11 @@
     <iron-media-query query="max-width: 720px" query-matches="{{smallScreen}}"></iron-media-query>
     <iron-media-query query="max-width: 1024px" query-matches="{{mediumScreen}}"></iron-media-query>
 
+
     <div class="header-layout">
-      <div class="header-layout__header">
       
-        <div class="header-toolbar">
+      <div class="header-layout__header">
+        <div class="header-toolbar--secondary">
 
           <div class="header-toolbar__info">
 
@@ -56,8 +60,10 @@
       <div class="header-layout__content">
         <slot name="content"></slot>
       </div>
+      
 
     </div>
+      
 
   </template>
 

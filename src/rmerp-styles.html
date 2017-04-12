@@ -16,7 +16,8 @@
     --rmerp-responsive-small: 720px;
     --rmerp-responsive-medium: 1024px;
 
-    --rmerp-toolbar-height: 60px;
+    --rmerp-primary-toolbar-height: 60px;
+    --rmerp-secondary-toolbar-height: 40px;
 
     --rmerp-side-padding-small: 16px;
     --rmerp-side-padding-medium: 54px;
@@ -44,27 +45,32 @@
   <template>
     <style>
 
-      /* make the header-layout fit the size of its container */
-      .header-layout {
-        @apply --layout-vertical;
-        @apply --layout-fit;
-      }
-
-      .header-layout__header {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
+      .header-toolbar--primary {
+        @apply --layout-horizontal;
+        @apply --layout-center-center;
+        height: var(--rmerp-primary-toolbar-height);
+        padding: 0 var(--rmerp-side-padding-small);
         background-color: var(--background-toolbar, var(--rmerp-primary-color));
         color: var(--color-toolbar, #fff);
       }
 
-      .header-toolbar {
+      .header-layout {
+        @apply --layout-vertical;
+        @apply --layout-flex;
+      }
+
+      .header-layout__header {
+        @apply --layout-fit;
+        top: var(--rmerp-primary-toolbar-height);
+      }
+
+      .header-toolbar--secondary {
         @apply --layout-horizontal;
         @apply --layout-center-center;
-        box-sizing: border-box;
-        height: var(--rmerp-toolbar-height);
+        height: var(--rmerp-secondary-toolbar-height);
         padding: 0 var(--rmerp-side-padding-small);
+        background-color: var(--background-toolbar, var(--rmerp-primary-soft-color));
+        color: var(--color-toolbar, var(--primary-color));
       }
 
       .header-toolbar__info {
@@ -107,17 +113,8 @@
       }
 
       .header-layout__content {
-        @apply --layout-vertical;
-        @apply --layout-flex;
         @apply --layout-fit;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        position: relative;
-        /* create a stacking context so all children are below the header */
-        z-index: 0;
-        margin-top: 60px;
-        /*padding: 20px;*/
-        box-sizing: border-box;
+        top: 120px;
       }
 
       @media (min-width: 720px) { 
@@ -129,6 +126,107 @@
         .header-toolbar {
           padding: 0 var(--rmerp-side-padding-large);
         }
+      }
+
+    </style>
+  </template>
+</dom-module>
+
+<dom-module id="drawer-menu-styles">
+  <template>
+    <style>
+      .drawer {
+        --app-drawer-content-container: {
+          background: #fff;
+          font-weight: 500;
+        }
+      }
+
+      .drawer__header {
+        @apply --layout-horizontal;
+        @apply --layout-center;
+        max-width: 100%;
+        height: var(--rmerp-toolbar-height);
+        background: var(--rmerp-primary-color);
+        color: #fff;
+        padding: 0 12px;
+        font-size: 80%;
+      }
+
+      .drawer__user--info {
+        @apply --layout-vertical;
+      }
+
+      .drawer__user--photo {
+        width: 42px;
+        height: 42px;
+        min-width: 42px;
+        min-height: 42px;
+        margin: 8px;
+        border-radius: 50%;
+      }
+
+      .drawer__list {
+        @apply --layout-vertical;
+      }
+
+      .drawer__list--up {
+        margin: 8px 0;
+      }
+
+      .drawer__separator {
+        border: 0;
+        height: 1px;
+        background: var(--secondary-color);
+        background: -webkit-gradient(linear, left top, right top, color-stop(0%,hsla(0,0%,0%,0)), color-stop(50%,#888), color-stop(100%,hsla(0,0%,0%,0)));
+        background: -webkit-linear-gradient(left, hsla(0,0%,0%,0) 0%, #888 50%, hsla(0,0%,0%,0) 100%);
+        background: -moz-linear-gradient(left, hsla(0,0%,0%,0) 0%, #888 50%, hsla(0,0%,0%,0) 100%);
+        background: -ms-linear-gradient(left, hsla(0,0%,0%,0) 0%, #888 50%, hsla(0,0%,0%,0) 100%);
+        background: -o-linear-gradient(left, hsla(0,0%,0%,0) 0%, #888 50%, hsla(0,0%,0%,0) 100%);
+        background: linear-gradient(left, hsla(0,0%,0%,0) 0%, #888 50%, hsla(0,0%,0%,0) 100%);
+      }
+
+      .drawer__list--down {
+        margin: 8px 0;
+        opacity: 0.9;
+      }
+
+      .drawer__link {
+        @apply --layout-horizontal;
+        @apply --layout-center;
+        @apply --layout-flex;
+        padding: 8px 20px;
+        color: var(--primary-color);
+        cursor: pointer;
+        font-size: 12px;
+        text-decoration: none;
+        overflow-x: hidden;
+        outline: none;
+      }
+
+      .drawer__icon--menu {
+        color: #fff;
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+        min-height: 32px;
+      }
+
+      .drawer__icon--menu:hover {
+        color: var(--secondary-color);
+      }
+
+      .drawer__icon {
+        margin-right: 24px;
+        width: 16px;
+        height: 16px;
+        min-width: 16px;
+        min-height: 16px;
+      }
+
+      .drawer__link:hover {
+        background: var(--paper-grey-50);
+        color: var(--rmerp-secondary-color);
       }
 
     </style>
@@ -526,107 +624,6 @@
       .toast--error {
         background-color: #a22;
       }
-    </style>
-  </template>
-</dom-module>
-
-<dom-module id="drawer-menu-styles">
-  <template>
-    <style>
-      .drawer {
-        --app-drawer-content-container: {
-          background: #fff;
-          font-weight: 500;
-        }
-      }
-
-      .drawer__header {
-        @apply --layout-horizontal;
-        @apply --layout-center;
-        max-width: 100%;
-        height: var(--rmerp-toolbar-height);
-        background: var(--rmerp-primary-light-color);
-        color: var(--rmerp-primary-color);
-        padding: 0 12px;
-        font-size: 80%;
-      }
-
-      .drawer__user--info {
-        @apply --layout-vertical;
-      }
-
-      .drawer__user--photo {
-        width: 42px;
-        height: 42px;
-        min-width: 42px;
-        min-height: 42px;
-        margin: 8px;
-        border-radius: 50%;
-      }
-
-      .drawer__list {
-        @apply --layout-vertical;
-      }
-
-      .drawer__list--up {
-        margin: 8px 0;
-      }
-
-      .drawer__separator {
-        border: 0;
-        height: 1px;
-        background: var(--secondary-color);
-        background: -webkit-gradient(linear, left top, right top, color-stop(0%,hsla(0,0%,0%,0)), color-stop(50%,#888), color-stop(100%,hsla(0,0%,0%,0)));
-        background: -webkit-linear-gradient(left, hsla(0,0%,0%,0) 0%, #888 50%, hsla(0,0%,0%,0) 100%);
-        background: -moz-linear-gradient(left, hsla(0,0%,0%,0) 0%, #888 50%, hsla(0,0%,0%,0) 100%);
-        background: -ms-linear-gradient(left, hsla(0,0%,0%,0) 0%, #888 50%, hsla(0,0%,0%,0) 100%);
-        background: -o-linear-gradient(left, hsla(0,0%,0%,0) 0%, #888 50%, hsla(0,0%,0%,0) 100%);
-        background: linear-gradient(left, hsla(0,0%,0%,0) 0%, #888 50%, hsla(0,0%,0%,0) 100%);
-      }
-
-      .drawer__list--down {
-        margin: 8px 0;
-        opacity: 0.9;
-      }
-
-      .drawer__link {
-        @apply --layout-horizontal;
-        @apply --layout-center;
-        @apply --layout-flex;
-        padding: 8px 20px;
-        color: var(--primary-color);
-        cursor: pointer;
-        font-size: 12px;
-        text-decoration: none;
-        overflow-x: hidden;
-        outline: none;
-      }
-
-      .drawer__icon--menu {
-        color: var(--primary-color);
-        width: 32px;
-        height: 32px;
-        min-width: 32px;
-        min-height: 32px;
-      }
-
-      .drawer__icon--menu:hover {
-        color: var(--secondary-color);
-      }
-
-      .drawer__icon {
-        margin-right: 24px;
-        width: 16px;
-        height: 16px;
-        min-width: 16px;
-        min-height: 16px;
-      }
-
-      .drawer__link:hover {
-        background: var(--paper-grey-50);
-        color: var(--rmerp-secondary-color);
-      }
-
     </style>
   </template>
 </dom-module>
