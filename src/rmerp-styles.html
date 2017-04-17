@@ -5,7 +5,8 @@
 <style is="custom-style">
   :root {
     /* colors */
-    --rmerp-primary-color: var(--paper-blue-grey-800);
+    --rmerp-primary-dark-color: var(--paper-blue-grey-800);
+    --rmerp-primary-color: var(--paper-blue-grey-600);
     --rmerp-primary-soft-color: var(--paper-blue-grey-500);
     --rmerp-primary-light-color: var(--paper-blue-grey-200);
     --rmerp-secondary-color: #DD6F00;
@@ -16,8 +17,9 @@
     --rmerp-responsive-small: 720px;
     --rmerp-responsive-medium: 1024px;
 
-    --rmerp-primary-toolbar-height: 60px;
-    --rmerp-secondary-toolbar-height: 36px;
+    --rmerp-drawer-toolbar-height: 100px;
+    --rmerp-primary-toolbar-height: 45px;
+    --rmerp-secondary-toolbar-height: 55px;
 
     --rmerp-side-padding-small: 16px;
     --rmerp-side-padding-medium: 54px;
@@ -44,79 +46,43 @@
 <dom-module id="drawer-layout-styles">
   <template>
     <style>
-      .header-toolbar {
+      .layout__drawer {
+        --app-drawer-content-container: {
+          height: 100%;
+          border-right: 1px solid #888;
+          overflow: auto;
+          background: #fff;
+          font-weight: 500;
+        }
+      }
+
+      .drawer__toolbar {
         @apply --layout-horizontal;
-        @apply --layout-center-center;
-        height: var(--rmerp-primary-toolbar-height);
-        padding: 0 var(--rmerp-side-padding-small);
-        background-color: var(--background-toolbar, var(--rmerp-primary-color));
-        color: var(--color-toolbar, #fff);
+        @apply --layout-center;
+        max-width: 100%;
+        height: var(--rmerp-drawer-toolbar-height);
+        color: var(--rmerp-primary-color);
+        background: #fff;
+        padding: 0 12px;
+        font-size: 80%;
       }
 
-      .header-toolbar__icon {
-        height: 48px;
-        width: 48px;
-        min-height: 48px;
-        min-width: 48px;
-        color: #fff;
+      .drawer__user {
+        @apply --layout-horizontal;
+        @apply --layout-center;
       }
 
-      .header-toolbar__icon--menu {
-        margin: 1px 2px 0 0;
-        cursor: pointer;
-        height: 24px;
-        width: 24px;
-        min-height: 24px;
-        min-width: 24px;
-        color: #fff;
-      }
-
-      .header-toolbar__user--info {
+      .user__info {
         @apply --layout-vertical;
       }
 
-      .header-toolbar__user--photo {
+      .user__photo {
         width: 42px;
         height: 42px;
         min-width: 42px;
         min-height: 42px;
         margin: 8px;
         border-radius: 50%;
-      }
-
-      @media (min-width: 720px) { 
-        .header-toolbar {
-          padding: 0 var(--rmerp-side-padding-medium);
-        }
-      }
-      @media (min-width: 1024px) { 
-        .header-toolbar {
-          padding: 0 var(--rmerp-side-padding-large);
-        }
-      }
-    </style>
-  </template>
-</dom-module>
-
-<dom-module id="drawer-styles">
-  <template>
-    <style>
-      .drawer {
-        --app-drawer-content-container: {
-          background: #fff;
-          font-weight: 500;
-        }
-      }
-
-      .drawer__header {
-        @apply --layout-horizontal;
-        @apply --layout-center;
-        max-width: 100%;
-        height: var(--rmerp-primary-toolbar-height);
-        background: var(--rmerp-primary-color);
-        color: #fff;
-        padding: 0 12px;
-        font-size: 80%;
       }
 
       .drawer__list {
@@ -157,8 +123,20 @@
         outline: none;
       }
 
+      .drawer__link:hover {
+        background: var(--paper-grey-50);
+        color: var(--rmerp-secondary-color);
+      }
+
+      .drawer__icon--list {
+        margin-right: 24px;
+        width: 16px;
+        height: 16px;
+        min-width: 16px;
+        min-height: 16px;
+      }
+
       .drawer__icon--menu {
-        color: #fff;
         width: 32px;
         height: 32px;
         min-width: 32px;
@@ -169,63 +147,40 @@
         color: var(--secondary-color);
       }
 
-      .drawer__icon {
-        margin-right: 24px;
-        width: 16px;
-        height: 16px;
-        min-width: 16px;
-        min-height: 16px;
+      .layout__header {
+        height: var(--rmerp-primary-toolbar-height);
+        padding: 0;
+        background: var(--background-toolbar, var(--rmerp-primary-color));
+        color: var(--color-toolbar, #fff);
+        --app-header-shadow: {
+          box-shadow: inset 0px 0px 0px 0px var(--primary-color);
+        };
+        --app-header-background-rear-layer: {
+          /* The header is blue when condensed */
+          background-color: blue;
+        };
       }
 
-      .drawer__link:hover {
-        background: var(--paper-grey-50);
-        color: var(--rmerp-secondary-color);
-      }
-
-    </style>
-  </template>
-</dom-module>
-
-<dom-module id="header-layout-styles">
-  <template>
-    <style>
-      .header-layout {
-        @apply --layout-vertical;
-        @apply --layout-flex;
-      }
-
-      .header-layout__header {
-        @apply --layout-fit;
-        top: var(--rmerp-primary-toolbar-height);
-      }
-
-      .header-toolbar {
+      .header__toolbar {
         @apply --layout-horizontal;
         @apply --layout-center-center;
-        height: var(--rmerp-secondary-toolbar-height);
-        padding: 0 var(--rmerp-side-padding-small);
-        background-color: var(--background-toolbar, var(--rmerp-primary-soft-color));
-        color: var(--color-toolbar, #fff);
+        height: var(--rmerp-primary-toolbar-height);
       }
 
-      .header-toolbar__info {
+      .toolbar__info {
         @apply --layout-horizontal;
-        @apply --layout-center;
         @apply --layout-flex;
-        overflow: hidden;
       }
 
-      .header-toolbar__icon {
-        height: 48px;
-        width: 48px;
-        min-height: 48px;
-        min-width: 48px;
-        color: #fff;
+      .toolbar__info--center {
+        @apply --layout-center-center;
       }
 
-      .header-toolbar__icon--back {
-        margin: 1px 2px 0 0;
-        cursor: pointer;
+      .toolbar__info--left {
+        @apply --layout-center;
+      }
+
+      .toolbar__icon {
         height: 24px;
         width: 24px;
         min-height: 24px;
@@ -233,31 +188,120 @@
         color: #fff;
       }
 
-      .header-toolbar__title {
+      .toolbar__icon--menu {
+        margin: 3px 0 0 0;
+        cursor: pointer;
+      }
+
+      .toolbar__icon--logo {
+        margin-right: 4px;
+      }
+
+      .toolbar__icon--search {
+        margin: 3px 0 0 0;
+        cursor: pointer;
+      }
+
+      @media (min-width: 720px) { 
+        .layout__header {
+          --app-header-background-rear-layer: {
+            background-color: var(--background-toolbar, var(--rmerp-primary-color));
+          };
+        }
+        .header__toolbar {
+          padding: 0 var(--rmerp-side-padding-medium);
+        }
+      }
+      @media (min-width: 1024px) { 
+        .header__toolbar {
+          padding: 0 var(--rmerp-side-padding-large);
+        }
+      }
+    </style>
+  </template>
+</dom-module>
+
+<dom-module id="template-layout-styles">
+  <template>
+    <style>
+      .template__header {
+        @apply --layout-horizontal;
+        @apply --layout-center-center;
+        height: var(--rmerp-secondary-toolbar-height);
+        padding: 0;
+        background: var(--background-toolbar, var(--rmerp-primary-soft-color));
+        color: var(--color-toolbar, #fff);
+        --app-header-shadow: {
+          box-shadow: inset 0px 0px 0px 0px var(--primary-color);
+        };
+      }
+
+      .header__toolbar {
+        height: var(--rmerp-secondary-toolbar-height);
+      }
+
+      .toolbar__info {
+        @apply --layout-horizontal;
+        @apply --layout-center;
+        @apply --layout-flex;
+        overflow: hidden;
+      }
+
+      .toolbar__icon {
+        margin: 0 0px 2px 0;
+        height: 28px;
+        width: 28px;
+        min-height: 28px;
+        min-width: 28px;
+        cursor: pointer;
+        color: #fff;
+      }
+
+      .toolbar__icon--info {
+        margin: 0 0px 2px 0;
+        height: 48px;
+        width: 48px;
+        min-height: 48px;
+        min-width: 48px;
+      }
+
+      .toolbar__icon--close {
+        margin: 0 4px 2px 0;
+      }
+
+      .toolbar__icon--back {
+        margin: 0 4px 2px 0;
+      }
+
+      .toolbar__title {
         font-size: 22px;
         font-weight: 400;
-        margin-left: 6px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }
 
-      .header-toolbar__actions {
+      .toolbar__actions[paper-iron-icon] {
         @apply --layout-horizontal;
+        @apply --layout-center-center;
+        margin-right: 8px;
       }
 
-      .header-layout__content {
+      .template__content {
+        @apply --layout-vertical;
+        @apply --layout-flex;
         @apply --layout-fit;
-        top: 120px;
+        top: var(--rmerp-primary-toolbar-height);
+        margin-top: var(--rmerp-secondary-toolbar-height);
       }
 
       @media (min-width: 720px) { 
-        .header-toolbar {
+        .header__toolbar {
           padding: 0 var(--rmerp-side-padding-medium);
         }
       }
       @media (min-width: 1024px) { 
-        .header-toolbar {
+        .header__toolbar {
           padding: 0 var(--rmerp-side-padding-large);
         }
       }
@@ -322,7 +366,7 @@
         vertical-align: middle;
         box-sizing: border-box;
         color: var(--color-button, #fff);
-        background: var(--background-button, var(--rmerp-primary-soft-color));
+        background: var(--background-button, var(--rmerp-primary-dark-color));
         font-family: 'Roboto', sans-serif;
         font-size: 13px;
         font-weight: 400;
@@ -332,17 +376,18 @@
       }
 
       .button--text:hover {
-        background: var(--background-button-hover, var(--rmerp-primary-light-color));
+        background: var(--background-button-hover, var(--rmerp-primary-dark-color));
       }
 
       .button--text:focus {
-        background: var(--background-button-focus, var(--rmerp-primary-light-color));
+        background: var(--background-button-focus, var(--rmerp-primary-dark-color));
       }
 
       .button--icon {
-        height: 40px;
-        width: 40px;
-        min-width: 40px;
+        height: 24px;
+        width: 24px;
+        min-width: 24px;
+        cursor: pointer;
         color: var(--color-icon, #fff);
       }
     </style>

@@ -4,6 +4,7 @@
 <link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 
@@ -15,7 +16,7 @@
 
 <dom-module id="rmerp-app">
   <template>
-    <style include="drawer-layout-styles drawer-styles">
+    <style include="drawer-layout-styles show-styles">
       :host {
         display: block;
         height: 100vh;
@@ -29,18 +30,27 @@
 
     <app-drawer-layout id="drawerLayout" fullbleed responsive-width="719px">
 
-      <app-drawer id="drawer" class="drawer" slot="drawer">
-        <div class="drawer__header">
+      <app-drawer id="drawer" class="layout__drawer" slot="drawer" opened="{{drawerOpened}}">
+        <div class="drawer__toolbar">
 
           <paper-icon-button
-            icon="rmerp-icons:menu"
+            icon="rmerp-icons:close"
             class="drawer__icon--menu"
             on-click="_menuTapped"
+            hidden$="[[smallScreen]]"
             tabindex="-1"></paper-icon-button>
 
-          <template is="dom-if" if="[[smallScreen]]">
-            <div main-title>ERP</div>
-          </template>
+          <div class="drawer__user">
+
+            <img class="user__photo" hidden$="[[!user.photo]]" src="[[user.photo]]" alt="photo"></img>
+            <iron-icon class="user__photo" hidden$="[[user.photo]]" icon="rmerp-icons:account-circle"></iron-icon>
+
+            <div class="user__info">
+              [[user.name]]
+              [[user.email]]
+            </div>
+
+          </div>
 
         </div>
       
@@ -48,13 +58,13 @@
 
           <div class="drawer__list--up">
             <a class="drawer__link" href="/dashboard">
-              <iron-icon class="drawer__icon" icon="rmerp-icons:home"></iron-icon>
+              <iron-icon class="drawer__icon--list" icon="rmerp-icons:home"></iron-icon>
               Home
             </a>
             <iron-list items="[[categories]]">
               <template >
                 <a class="drawer__link" href="/[[item.slug]]">
-                  <iron-icon class="drawer__icon" icon$="rmerp-icons:[[item.icon]]"></iron-icon>
+                  <iron-icon class="drawer__icon--list" icon$="rmerp-icons:[[item.icon]]"></iron-icon>
                   [[item.name]]
                 </a>
               </template>
@@ -65,11 +75,11 @@
 
           <div class="drawer__list--down">
             <a class="drawer__link" href="/dashboard">
-              <iron-icon class="drawer__icon" icon="rmerp-icons:settings"></iron-icon>
+              <iron-icon class="drawer__icon--list" icon="rmerp-icons:settings"></iron-icon>
               Preferences
             </a>
             <a class="drawer__link" href="/dashboard#" on-click="_logoutTapped">
-              <iron-icon class="drawer__icon" icon="rmerp-icons:power-settings-new"></iron-icon>
+              <iron-icon class="drawer__icon--list" icon="rmerp-icons:power-settings-new"></iron-icon>
               Logout
             </a>
           </div>
@@ -78,37 +88,26 @@
       </app-drawer>
 
       <app-header-layout fullbleed>
-        <app-header slot="header" fixed>
-          <app-toolbar class="header-toolbar">
+        <app-header slot="header" class="layout__header" fixed$="[[!smallScreen]]" condenses$="[[smallScreen]]" reveals$="[[smallScreen]]" effects="fade-background">
+          <app-toolbar class="header__toolbar" bottom-item="headerContent">
 
             <iron-icon
               icon="rmerp-icons:menu"
-              drawer-toggle
-              class="header-toolbar__icon--menu"
-              hidden="false"
-              on-click="_menuTapped"></iron-icon>
+              class="toolbar__icon toolbar__icon--menu"
+              on-click="_menuTapped"
+              hidden$="[[drawerOpened]]"></iron-icon>
             
-            <template is="dom-if" if="[[!smallScreen]]">
-              <div main-title>ERP</div>
-            </template>
-
-            <div class="header-toolbar">
-
-              <template is="dom-if" if="[[user.photo]]">
-                <img class="header-toolbar__user--photo" src="[[user.photo]]" alt="photo"></img>
-              </template>
-
-              <template is="dom-if" if="[[!user.photo]]">
-                <iron-icon class="header-toolbar__user--photo" icon="rmerp-icons:account-circle"></iron-icon>
-              </template>
-
-              <!--<div class="toolbar__user--info">
-                [[user.name]]
-                [[user.email]]
-              </div>-->
-
+            <div class$="toolbar__info toolbar__info--[[_computeLogoPosition(drawerOpened)]]">
+              <iron-icon
+                src="../images/manifest/icon-48x48.png"
+                class="toolbar__icon toolbar__icon--logo"></iron-icon>
+              <h4 main-title>[[appName]]</h4>
             </div>
 
+            <iron-icon
+              icon="rmerp-icons:search"
+              class="toolbar__icon toolbar__icon--search"></iron-icon>
+            
           </app-toolbar>
         </app-header>
 
@@ -185,7 +184,11 @@
             observer: '_routeChanged'
           },
 
+          appName: String,
+
           user: Object,
+
+          drawerOpened: Boolean,
 
           loadComplete: Boolean,
 
@@ -203,6 +206,7 @@
 
       connectedCallback() {
         super.connectedCallback();
+        this._drawerOpened = !this.smallScreen;
         this._toggleListeners({enable: true});
       }
 
@@ -219,13 +223,15 @@
         const drawerLayout = this.$.drawerLayout;
         const drawer = this.$.drawer;
 
-        if (drawer.opened) {
-          drawerLayout.forceNarrow = true;
-        } else {
-          drawerLayout.forceNarrow = false;
-        }
-
         drawer.toggle();
+
+        if (drawer.opened) {
+          // remove mobile mode.
+          drawerLayout.forceNarrow = false;
+        } else {
+          // mobile mode.
+          drawerLayout.forceNarrow = true;
+        }
       }
 
       _routeChanged(route) {
@@ -272,6 +278,10 @@
 
       _logoutTapped() {
         this.dispatchEvent(new CustomEvent('logout-tapped', {detail: {}}));
+      }
+
+      _computeLogoPosition(drawerOpened) {
+        return drawerOpened ? 'left' : 'center';
       }
 
     }

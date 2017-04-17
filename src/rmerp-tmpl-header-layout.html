@@ -9,50 +9,47 @@
 <dom-module id="rmerp-tmpl-header-layout">
   <template>
 
-    <style include="header-layout-styles show-styles">
+    <style include="template-layout-styles show-styles">
       :host {
         display: block;
       }
+
     </style>
 
-    <div class="header-layout">
-      
-      <div class="header-layout__header">
-        <div class="header-toolbar">
+    <app-header class="template__header">
+      <app-toolbar class="header__toolbar">
 
-          <div class="header-toolbar__info">
+        <div class="toolbar__info">
 
+          <iron-icon
+            icon="rmerp-icons:close"
+            class="toolbar__icon toolbar__icon--close"
+            hidden$="[[!close]]"
+            on-click="_closeTapped"></iron-icon>
+
+          <a href$="[[backPath]]" hidden$="[[!backPath]]">
             <iron-icon
-              icon="rmerp-icons:close"
-              class="header-toolbar__icon--menu"
-              hidden$="[[!close]]"
-              on-click="_closeTapped"></iron-icon>
+              class="toolbar__icon toolbar__icon--back"
+              icon="rmerp-icons:arrow-back"></iron-icon>
+          </a>
 
-            <a href$="[[backPath]]" hidden$="[[!backPath]]">
-              <iron-icon
-                class="header-toolbar__icon--back"
-                icon="rmerp-icons:arrow-back"></iron-icon>
-            </a>
-
-            <iron-icon class="header-toolbar__icon" icon$="rmerp-icons:[[icon]]" hidden$="[[!icon]]"></iron-icon>
-            <span class="header-toolbar__title">{{title}}</iron-icon>
-
-          </div>
-
-          <div class="header-toolbar__actions">
-            <slot name="action"></slot>
-          </div>
+          <iron-icon class="toolbar__icon toolbar__icon--info" icon$="rmerp-icons:[[icon]]" hidden$="[[!icon]]"></iron-icon>
+          <span class="toolbar__title">{{title}}</iron-icon>
 
         </div>
-      </div>
 
-      <div class="header-layout__content">
-        <slot name="content"></slot>
-      </div>
-      
+        <div class="toolbar__actions">
+          <slot name="action"></slot>
+        </div>
 
+      </app-toolbar>
+    </app-header>
+
+    <div class="template__content">
+      <slot name="content"></slot>
     </div>
-      
+    
+    
 
   </template>
 
