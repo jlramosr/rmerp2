@@ -108,23 +108,6 @@
         this._page = action || 'list';
       }
 
-      /*_pageChanged(_page) {
-        if (_page !== 'list') {
-          const href = this.resolveUrl('rmerp-' + this.collection + '-' + _page + '.html');
-          Polymer.importHref(href, this._ensureLazyLoaded(), null, false);
-        }
-      }
-
-      _ensureLazyLoaded() {
-        // load lazy resources after render and set `loadComplete` when done.
-        Polymer.RenderStatus.afterNextRender(this, _ => {
-          console.log("HOLA category");
-          Polymer.importHref(this.resolveUrl('lazy-resources.html'), _ => {
-            console.log("SASA");
-          });
-        });
-      }*/
-
     }
 
     window.customElements.define(RMERPTmplCategoryRoute.is, RMERPTmplCategoryRoute);

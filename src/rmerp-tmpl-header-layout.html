@@ -1,5 +1,4 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../bower_components/iron-media-query/iron-media-query.html">
 <link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
 <link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
@@ -13,44 +12,51 @@
       :host {
         display: block;
       }
-
     </style>
 
-    <app-header class="template__header">
-      <app-toolbar class="header__toolbar">
+    <app-header-layout>
+      <app-header
+        slot="header"
+        class="template__header"
+        fixed$="[[!smallScreen]]"
+        condenses$="[[smallScreen]]"
+        reveals$="[[smallScreen]]"
+        effects="fade-background">
 
-        <div class="toolbar__info">
+        <app-toolbar class="header__toolbar">
 
-          <iron-icon
-            icon="rmerp-icons:close"
-            class="toolbar__icon toolbar__icon--close"
-            hidden$="[[!close]]"
-            on-click="_closeTapped"></iron-icon>
+          <div class="toolbar__info">
 
-          <a href$="[[backPath]]" hidden$="[[!backPath]]">
-            <iron-icon
-              class="toolbar__icon toolbar__icon--back"
-              icon="rmerp-icons:arrow-back"></iron-icon>
-          </a>
+            <paper-icon-button
+              icon="rmerp-icons:close"
+              class="toolbar__icon toolbar__icon--close"
+              hidden$="[[!close]]"
+              on-click="_closeTapped"></paper-icon-button>
 
-          <iron-icon class="toolbar__icon toolbar__icon--info" icon$="rmerp-icons:[[icon]]" hidden$="[[!icon]]"></iron-icon>
-          <span class="toolbar__title">{{title}}</iron-icon>
+            <a href$="[[backPath]]" hidden$="[[!backPath]]">
+              <paper-icon-button
+                class="toolbar__icon toolbar__icon--back"
+                icon="rmerp-icons:arrow-back"></paper-icon-button>
+            </a>
 
-        </div>
+            <iron-icon class="toolbar__info__img" icon$="rmerp-icons:[[icon]]" hidden$="[[!icon]]"></iron-icon>
+            <span class="toolbar__title">{{title}}</iron-icon>
 
-        <div class="toolbar__actions">
-          <slot name="action"></slot>
-        </div>
+          </div>
 
-      </app-toolbar>
-    </app-header>
+          <div class="toolbar__actions">
+            <slot name="action"></slot>
+          </div>
 
-    <div class="template__content">
-      <slot name="content"></slot>
-    </div>
+        </app-toolbar>
+      </app-header>
+
+      <div class="template__content">
+        <slot name="content"></slot>
+      </div>
+
+    </app-header-layout>
     
-    
-
   </template>
 
   <script>
@@ -81,7 +87,7 @@
 
           smallScreen: Boolean,
 
-          mediumScreen: Boolean
+          mediumScreen: Boolean,
         
         }
 

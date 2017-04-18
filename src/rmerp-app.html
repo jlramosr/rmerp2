@@ -88,32 +88,40 @@
       </app-drawer>
 
       <app-header-layout fullbleed>
-        <app-header slot="header" class="layout__header" fixed$="[[!smallScreen]]" condenses$="[[smallScreen]]" reveals$="[[smallScreen]]" effects="fade-background">
+        <app-header
+          slot="header"
+          class="layout__header"
+          fixed$="[[!smallScreen]]"
+          condenses$="[[smallScreen]]"
+          reveals$="[[smallScreen]]"
+          effects="fade-background">
+
           <app-toolbar class="header__toolbar" bottom-item="headerContent">
 
-            <iron-icon
+            <paper-icon-button
               icon="rmerp-icons:menu"
               class="toolbar__icon toolbar__icon--menu"
               on-click="_menuTapped"
-              hidden$="[[drawerOpened]]"></iron-icon>
+              hidden$="[[drawerOpened]]"></paper-icon-button>
             
             <div class$="toolbar__info toolbar__info--[[_computeLogoPosition(drawerOpened)]]">
               <iron-icon
-                src="../images/manifest/icon-48x48.png"
-                class="toolbar__icon toolbar__icon--logo"></iron-icon>
+                src="/images/manifest/icon-48x48.png"
+                class="toolbar__info__logo"></iron-icon>
               <h4 main-title>[[appName]]</h4>
             </div>
 
-            <iron-icon
+            <paper-icon-button
               icon="rmerp-icons:search"
-              class="toolbar__icon toolbar__icon--search"></iron-icon>
+              class="toolbar__icon toolbar__icon--search"></paper-icon-button>
             
           </app-toolbar>
+        
         </app-header>
 
-        <div>
+        <div class="layout__template">
 
-          <iron-pages selected="[[_page]]" attr-for-selected="name" fallback-selection="404" role="main">
+          <iron-pages id="hola" selected="[[_page]]" attr-for-selected="name" fallback-selection="404">
 
             <rmerp-dashboard
               name="dashboard"
@@ -165,11 +173,13 @@
 
           defaultCategory: String,
 
+          appName: String,
+
           categories: {
             type: Array,
             value: [
               {name: 'Clients', slug: 'clients', description: 'Clients', icon: 'supervisor-account'},
-              {name: 'Invoices', slug: 'invoices', description: 'Invoices', icon: 'euro-symbol'},
+              {name: 'Invoices', slug: 'invoices', description: 'Invoices', icon: 'euro-symbol'}
             ],
             readOnly: true
           },
@@ -184,8 +194,6 @@
             observer: '_routeChanged'
           },
 
-          appName: String,
-
           user: Object,
 
           drawerOpened: Boolean,
@@ -196,12 +204,7 @@
 
           mediumScreen: Boolean
 
-
         };
-      }
-
-      constructor() {
-        super();
       }
 
       connectedCallback() {
@@ -222,7 +225,6 @@
       _menuTapped() {
         const drawerLayout = this.$.drawerLayout;
         const drawer = this.$.drawer;
-
         drawer.toggle();
 
         if (drawer.opened) {
@@ -248,25 +250,36 @@
 
         // update page.
         this._page = category || '';
+
+        if (this.loadComplete) {
+          // Resize layout.
+          window.setTimeout(_ => {
+            this.$.drawerLayout.notifyResize();  
+            this.$.hola.notifyResize();
+          }); 
+        }
       }
 
       _pageChanged(_page) {
         if (_page == this.defaultCategory) {
-          this._ensureLazyLoaded();
-        }
-        else {
+          this._pageLoaded();
+        } else {
           const href = this.resolveUrl('rmerp-' + _page + '.html');
-          Polymer.importHref(href, this._ensureLazyLoaded(), null, true);
+          Polymer.importHref(href, this._pageLoaded(), null, true);
         }
       }
 
-      _ensureLazyLoaded() {
+      _pageLoaded() {
         // load lazy resources after render and set `loadComplete` when done.
         if (!this.loadComplete) {
           Polymer.RenderStatus.afterNextRender(this, _ => {
             Polymer.importHref(this.resolveUrl('lazy-resources.html'), _ => {
               this.loadComplete = true;
-              // Load pre-caching Service Worker
+              // Resize layout.
+              window.setTimeout(_ => {
+                this.$.drawerLayout.notifyResize();
+              });
+              // Load pre-caching Service Worker.
               if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('/service-worker.js');
               }

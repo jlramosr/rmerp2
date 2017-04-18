@@ -6,12 +6,6 @@
 <dom-module id="rmerp-404-warning">
   <template>
     <style include="content-styles">
-      :host {
-        display: block;
-        height: 100vh;
-        background: #fff;
-      }
-
       .container {
         padding: 40px 0;
       }
@@ -35,7 +29,10 @@
       }
     </style>
 
-    <rmerp-tmpl-header-layout title="Page not found" icon="warning">
+    <rmerp-tmpl-header-layout
+      title="Page not found"
+      icon="warning"
+      small-screen="[[smallScreen]]">
 
       <div slot="content" class="content__form">
 

@@ -64,12 +64,7 @@
           mediumScreen: {
             type: Boolean,
             observer: '_mediumScreenChanged'
-          },
-
-          loadComplete: {
-            type: Boolean,
-            observer: '_loadCompleteChanged'
-          },
+          }
 
         };
       }
@@ -113,8 +108,6 @@
         this._currentElement.user = this.user;
         this._currentElement.smallScreen = this.smallScreen;
         this._currentElement.mediumScreen = this.mediumScreen;
-        this._currentElement.loadComplete = this.loadComplete;
-
       }
 
       _appendElement(page) {
@@ -231,13 +224,6 @@
         // databinding.
         if (this._currentElement) {
           this._currentElement.mediumScreen = mediumScreen;
-        }
-      }
-
-      _loadCompleteChanged(loadComplete) {
-        // databinding.
-        if (this._currentElement) {
-          this._currentElement.loadComplete = loadComplete;
         }
       }
 

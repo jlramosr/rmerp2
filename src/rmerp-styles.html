@@ -18,8 +18,8 @@
     --rmerp-responsive-medium: 1024px;
 
     --rmerp-drawer-toolbar-height: 100px;
-    --rmerp-primary-toolbar-height: 45px;
-    --rmerp-secondary-toolbar-height: 55px;
+    --rmerp-primary-toolbar-height: 50px;
+    --rmerp-secondary-toolbar-height: 50px;
 
     --rmerp-side-padding-small: 16px;
     --rmerp-side-padding-medium: 54px;
@@ -97,12 +97,12 @@
         border: 0;
         height: 1px;
         background: var(--secondary-color);
-        background: -webkit-gradient(linear, left top, right top, color-stop(0%,hsla(0,0%,0%,0)), color-stop(50%,#888), color-stop(100%,hsla(0,0%,0%,0)));
-        background: -webkit-linear-gradient(left, hsla(0,0%,0%,0) 0%, #888 50%, hsla(0,0%,0%,0) 100%);
-        background: -moz-linear-gradient(left, hsla(0,0%,0%,0) 0%, #888 50%, hsla(0,0%,0%,0) 100%);
-        background: -ms-linear-gradient(left, hsla(0,0%,0%,0) 0%, #888 50%, hsla(0,0%,0%,0) 100%);
-        background: -o-linear-gradient(left, hsla(0,0%,0%,0) 0%, #888 50%, hsla(0,0%,0%,0) 100%);
-        background: linear-gradient(left, hsla(0,0%,0%,0) 0%, #888 50%, hsla(0,0%,0%,0) 100%);
+        background: -webkit-gradient(linear, left top, right top, color-stop(0%,#fff), color-stop(50%,#888), color-stop(100%,#fff));
+        background: -webkit-linear-gradient(left, #fff 0%, #888 50%, #fff 100%);
+        background: -moz-linear-gradient(left, #fff 0%, #888 50%, #fff 100%);
+        background: -ms-linear-gradient(left, #fff 0%, #888 50%, #fff 100%);
+        background: -o-linear-gradient(left, #fff 0%, #888 50%, #fff 100%);
+        background: linear-gradient(left, #fff 0%, #888 50%, #fff 100%);
       }
 
       .drawer__list--down {
@@ -156,8 +156,8 @@
           box-shadow: inset 0px 0px 0px 0px var(--primary-color);
         };
         --app-header-background-rear-layer: {
-          /* The header is blue when condensed */
-          background-color: blue;
+          /* The header when condensed */
+          background-color: var(--rmerp-primary-color);
         };
       }
 
@@ -180,26 +180,35 @@
         @apply --layout-center;
       }
 
-      .toolbar__icon {
+      .toolbar__info__logo {
+        margin-right: 4px;
         height: 24px;
         width: 24px;
         min-height: 24px;
         min-width: 24px;
+      }
+
+      .toolbar__icon {
+        height: 40px;
+        width: 40px;
+        min-height: 40px;
+        min-width: 40px;
+        margin: 3px 0 0 0;
+        cursor: pointer;
         color: #fff;
       }
 
       .toolbar__icon--menu {
-        margin: 3px 0 0 0;
-        cursor: pointer;
-      }
-
-      .toolbar__icon--logo {
-        margin-right: 4px;
+        margin-left: -8px;
       }
 
       .toolbar__icon--search {
-        margin: 3px 0 0 0;
-        cursor: pointer;
+        margin-right: 0px;
+      }
+
+      .layout__template {
+        @apply --layout-fit;
+        top: var(--rmerp-primary-toolbar-height);
       }
 
       @media (min-width: 720px) { 
@@ -227,13 +236,11 @@
       .template__header {
         @apply --layout-horizontal;
         @apply --layout-center-center;
+        top: var(--rmerp-primary-toolbar-height);
         height: var(--rmerp-secondary-toolbar-height);
         padding: 0;
         background: var(--background-toolbar, var(--rmerp-primary-soft-color));
         color: var(--color-toolbar, #fff);
-        --app-header-shadow: {
-          box-shadow: inset 0px 0px 0px 0px var(--primary-color);
-        };
       }
 
       .header__toolbar {
@@ -247,30 +254,28 @@
         overflow: hidden;
       }
 
-      .toolbar__icon {
-        margin: 0 0px 2px 0;
-        height: 28px;
-        width: 28px;
-        min-height: 28px;
-        min-width: 28px;
-        cursor: pointer;
+      .toolbar__info__img {
+        margin: 0 10px 0 0;
+        height: 40px;
+        width: 40px;
+        min-height: 40px;
+        min-width: 40px;
         color: #fff;
       }
 
-      .toolbar__icon--info {
-        margin: 0 0px 2px 0;
-        height: 48px;
-        width: 48px;
-        min-height: 48px;
-        min-width: 48px;
+      .toolbar__icon {
+        margin: 0 4px 0 -8px;
+        height: 40px;
+        width: 40px;
+        min-height: 40px;
+        min-width: 40px;
+        color: #fff;
       }
 
       .toolbar__icon--close {
-        margin: 0 4px 2px 0;
       }
 
       .toolbar__icon--back {
-        margin: 0 4px 2px 0;
       }
 
       .toolbar__title {
@@ -281,18 +286,17 @@
         text-overflow: ellipsis;
       }
 
-      .toolbar__actions[paper-iron-icon] {
+      .toolbar__actions {
         @apply --layout-horizontal;
         @apply --layout-center-center;
-        margin-right: 8px;
+        margin-right: 0px;
       }
 
       .template__content {
         @apply --layout-vertical;
         @apply --layout-flex;
         @apply --layout-fit;
-        top: var(--rmerp-primary-toolbar-height);
-        margin-top: var(--rmerp-secondary-toolbar-height);
+        top: 40px;
       }
 
       @media (min-width: 720px) { 
@@ -329,10 +333,7 @@
       }
 
       .content__list {
-        @apply --layout-vertical;
-        @apply --layout-fit;
-        overflow-x: hidden;
-        overflow-y: auto;
+        padding: 0px;
       }
 
       @media (min-width: 720px) { 
@@ -384,10 +385,9 @@
       }
 
       .button--icon {
-        height: 24px;
-        width: 24px;
-        min-width: 24px;
-        cursor: pointer;
+        height: 40px;
+        width: 40px;
+        min-width: 40px;
         color: var(--color-icon, #fff);
       }
     </style>
@@ -510,9 +510,11 @@
 
       .table__item--menu-icon {
         --paper-icon-button: {
-          color: var(--primary-color);
+          height: 40px;
+          width: 40px;
           min-height: 40px;
           min-width: 40px;
+          color: var(--primary-color);
           opacity: 0.8;
         }
       }

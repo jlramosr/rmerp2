@@ -8,13 +8,12 @@
 <dom-module id="rmerp-clients-list">
   <template>
 
-    <style include="content-styles search-styles table-styles button-styles dialog-styles">
-      :host {
-        display: block;
-      }
-    </style>
+    <style include="content-styles search-styles table-styles button-styles dialog-styles"></style>
 
-    <rmerp-tmpl-header-layout title="CLIENTES" back-path="/dashboard">
+    <rmerp-tmpl-header-layout
+      title="CLIENTES"
+      back-path="/dashboard"
+      small-screen="{{smallScreen}}">
 
       <rmerp-button
         slot="action"
@@ -123,18 +122,6 @@
       connectedCallback() {
         super.connectedCallback();
         this._itemActionTapped = this._itemActionTapped.bind(this);
-        //this._firstResize(this.$.ironList);
-      }
-
-      _firstResize(ironList) {
-        var times = 0;
-        var resizeIntervalId = setInterval(_ => {
-          times += 1;
-          if (times > 100) {
-            clearInterval(resizeIntervalId);
-          }
-          ironList.notifyResize();
-        }, 1);
       }
 
       _computeFilteredData(data, _searchValue, loadComplete) {
@@ -224,9 +211,15 @@
       }
 
       _computeItemClass(index, itemsLength) {
+
         if (index == itemsLength - 1) {
           return 'table__item--last-child';
         }
+
+        window.setTimeout(_ => {
+          this.$.ironList.notifyResize();
+        });
+
       }
     }
 

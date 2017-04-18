@@ -8,17 +8,12 @@
 <dom-module id="rmerp-clients-settings">
   <template>
 
-    <style include="content-styles">
-      :host {
-        display: block;
-      }
-    </style>
+    <style include="content-styles"></style>
 
     <rmerp-tmpl-header-layout
       title="{{data.name}}"
       back-path="/clients"
-      small-screen="{{smallScreen}}"
-      loading="[[loading]]">
+      small-screen="{{smallScreen}}">
 
       <rmerp-button
         slot="action"
