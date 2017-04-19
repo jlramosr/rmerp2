@@ -15,9 +15,9 @@
 
       <div id="content" slot="content" class="content__list">
         
-        <iron-list id="ironList" scroll-target="content" items="[[categories]]">
+        <iron-list id="ironList" items="[[categories]]">
           <template>
-            <a class$="table__item [[_computeItemClass()]]" href="/[[item.slug]]">
+            <a class$="table__item [[_computeItemClass(index, categories.length)]]" href="/[[item.slug]]">
               <div class="table__item__detail">
                 <span class="table__item--primary-text">[[item.name]]</span>
                 <span class="table__item--secondary-text">[[item.description]]</span>

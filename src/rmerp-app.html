@@ -88,15 +88,19 @@
       </app-drawer>
 
       <app-header-layout fullbleed>
-        <app-header
+
+        <!--<app-header
           slot="header"
           class="layout__header"
           fixed$="[[!smallScreen]]"
           condenses$="[[smallScreen]]"
           reveals$="[[smallScreen]]"
-          effects="fade-background">
+          effects="fade-background"
+          transition-duration="0">-->
 
-          <app-toolbar class="header__toolbar" bottom-item="headerContent">
+        <app-header slot="header" class="layout__header" fixed>
+
+          <app-toolbar class="header__toolbar">
 
             <paper-icon-button
               icon="rmerp-icons:menu"
@@ -116,12 +120,12 @@
               class="toolbar__icon toolbar__icon--search"></paper-icon-button>
             
           </app-toolbar>
-        
+
         </app-header>
 
-        <div class="layout__template">
+        <div class="layout__content">
 
-          <iron-pages id="hola" selected="[[_page]]" attr-for-selected="name" fallback-selection="404">
+          <iron-pages selected="[[_page]]" attr-for-selected="name" fallback-selection="404">
 
             <rmerp-dashboard
               name="dashboard"
@@ -154,11 +158,11 @@
             <rmerp-404-warning name="404"></rmerp-404-warning>
 
           </iron-pages>
-        
-        </div>
+
+        </div> 
 
       </app-header-layout>
-      
+
     </app-drawer-layout>
 
   </template>
@@ -254,9 +258,8 @@
         if (this.loadComplete) {
           // Resize layout.
           window.setTimeout(_ => {
-            this.$.drawerLayout.notifyResize();  
-            this.$.hola.notifyResize();
-          }); 
+            this.$.drawerLayout.notifyResize();
+          });
         }
       }
 

@@ -1,7 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
-<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
-<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../bower_components/iron-scroll-target-behavior/iron-scroll-target-behavior.html">
 
 <link rel="import" href="rmerp-styles.html">
 
@@ -12,21 +10,17 @@
       :host {
         display: block;
       }
+
+      :host([small-screen]) .template__header {
+        position: fixed;
+      }
     </style>
 
-    <app-header-layout>
-      <app-header
-        slot="header"
-        class="template__header"
-        fixed$="[[!smallScreen]]"
-        condenses$="[[smallScreen]]"
-        reveals$="[[smallScreen]]"
-        effects="fade-background">
-
-        <app-toolbar class="header__toolbar">
+    <div class="template">
+      <div class="template__header" id="templateHeader" hidden$="[[!title]]">
+        <div class="header__toolbar">
 
           <div class="toolbar__info">
-
             <paper-icon-button
               icon="rmerp-icons:close"
               class="toolbar__icon toolbar__icon--close"
@@ -41,34 +35,57 @@
 
             <iron-icon class="toolbar__info__img" icon$="rmerp-icons:[[icon]]" hidden$="[[!icon]]"></iron-icon>
             <span class="toolbar__title">{{title}}</iron-icon>
-
           </div>
 
           <div class="toolbar__actions">
             <slot name="action"></slot>
           </div>
 
-        </app-toolbar>
-      </app-header>
+        </div>
+      </div>
 
       <div class="template__content">
         <slot name="content"></slot>
       </div>
+    </div>
 
-    </app-header-layout>
+    <!--<app-header-layout id="headerLayout">
+      <app-header
+        slot="header"
+        class="template__header--y"
+        fixed$="[[!smallScreen]]"
+        condenses$="[[smallScreen]]"
+        reveals$="[[smallScreen]]"
+        effects="fade-background">
+
+        <app-toolbar class="header__toolbar--y">
+
+          
+
+        </app-toolbar>
+      </app-header>
+
+      <div class="template__content">
+        
+      </div>
+
+    </app-header-layout>-->
     
   </template>
 
   <script>
 
-    class RMERPTmplHeaderLayout extends Polymer.Element {
+    class RMERPTmplHeaderLayout extends Polymer.mixinBehaviors([Polymer.IronScrollTargetBehavior], Polymer.Element) {
 
       static get is() { return 'rmerp-tmpl-header-layout'; }
 
       static get properties() {
         return {
 
-          title: String,
+          title: {
+            type: String,
+            value: ''
+          },
 
           icon: {
             type: String,
@@ -85,13 +102,46 @@
             value: ''
           },
 
-          smallScreen: Boolean,
+          smallScreen: { 
+            type: Boolean,
+            reflectToAttribute: true
+          },
 
           mediumScreen: Boolean,
+
+          _scrollTop: {
+            type: Number,
+            value: 0
+          }
         
         }
 
       }
+
+      /*_scrollHandler(event) {
+
+        //this.scroll(1410,1101);
+
+        const scrollTop = this._scrollTop;
+
+        const lastScrollTop = this._lastScrollTop;
+        const dScrollTop = scrollTop - this._lastScrollTop;
+        const absDScrollTop = Math.abs(dScrollTop);
+
+        
+        const isScrollingDown = this._scrollTop > this._lastScrollTop;
+        if (this.smallScreen) {
+          if (isScrollingDown) {
+            this.$.templateHeader.style.top = Math.max(50 - this._scrollTop, 0) + 'px';
+          }
+          else {
+            if ((scrollTop >= 50) && (Math.abs(this._initScrollTop - scrollTop) > 30 || absDScrollTop > 5)) {
+              this.$.templateHeader.style.top = Math.max(50 - this._scrollTop, 50) + 'px';
+            }
+          }
+        }
+        this._lastScrollTop = this._scrollTop;  
+      }*/
 
       _closeTapped() {
         document.dispatchEvent(new CustomEvent('close-tapped', {detail: {}}));

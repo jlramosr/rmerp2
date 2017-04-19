@@ -117,7 +117,7 @@
         padding: 8px 20px;
         color: var(--primary-color);
         cursor: pointer;
-        font-size: 12px;
+        font-size: 11px;
         text-decoration: none;
         overflow-x: hidden;
         outline: none;
@@ -206,7 +206,9 @@
         margin-right: 0px;
       }
 
-      .layout__template {
+      /* make the content fit the size of its container */
+      .layout__content {
+        @apply --layout-vertical;
         @apply --layout-fit;
         top: var(--rmerp-primary-toolbar-height);
       }
@@ -233,18 +235,40 @@
 <dom-module id="template-layout-styles">
   <template>
     <style>
+      .template {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+
       .template__header {
-        @apply --layout-horizontal;
-        @apply --layout-center-center;
-        top: var(--rmerp-primary-toolbar-height);
-        height: var(--rmerp-secondary-toolbar-height);
-        padding: 0;
+        /*position: fixed;*/
+        width: 100%;
+        z-index: 1;
         background: var(--background-toolbar, var(--rmerp-primary-soft-color));
         color: var(--color-toolbar, #fff);
       }
 
       .header__toolbar {
+        @apply --layout-horizontal;
+        @apply --layout-center-center;
+        box-sizing: border-box;
         height: var(--rmerp-secondary-toolbar-height);
+        padding: 0 var(--rmerp-side-padding-small);
+      }
+
+      .template__content {
+        @apply --layout-vertical;
+        @apply --layout-flex;
+        @apply --layout-fit;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        position: relative;
+        top: var(--rmerp-secondary-toolbar-height);
+        /* create a stacking context so all children are below the header */
+        z-index: 0;
+        box-sizing: border-box;
       }
 
       .toolbar__info {
@@ -258,7 +282,6 @@
         margin: 0 10px 0 0;
         height: 40px;
         width: 40px;
-        min-height: 40px;
         min-width: 40px;
         color: #fff;
       }
@@ -267,7 +290,6 @@
         margin: 0 4px 0 -8px;
         height: 40px;
         width: 40px;
-        min-height: 40px;
         min-width: 40px;
         color: #fff;
       }
@@ -279,7 +301,7 @@
       }
 
       .toolbar__title {
-        font-size: 22px;
+        font-size: 18px;
         font-weight: 400;
         white-space: nowrap;
         overflow: hidden;
@@ -290,13 +312,6 @@
         @apply --layout-horizontal;
         @apply --layout-center-center;
         margin-right: 0px;
-      }
-
-      .template__content {
-        @apply --layout-vertical;
-        @apply --layout-flex;
-        @apply --layout-fit;
-        top: 40px;
       }
 
       @media (min-width: 720px) { 
@@ -369,7 +384,7 @@
         color: var(--color-button, #fff);
         background: var(--background-button, var(--rmerp-primary-dark-color));
         font-family: 'Roboto', sans-serif;
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 400;
         text-align: center;
         text-decoration: none;
@@ -431,7 +446,7 @@
         bottom: 0;
         padding: 0 16px;
         color: var(--secondary-color);
-        font-size: 14px;
+        font-size: 12px;
         pointer-events: none;
       }
 
@@ -559,7 +574,7 @@
       .form__input {
         --paper-input-container-label: {
           color: var(--paper-grey-700);
-          font-size: 16px;
+          font-size: 14px;
         }
         --paper-input-container-disabled: {
           opacity: 0.8;
@@ -569,14 +584,14 @@
         }
         --paper-input-container-label-floating: {
           color: var(--rmerp-primary-color);
-          font-size: 20px;
+          font-size: 18px;
         }
       }
 
       .form__radio-group {
         --paper-radio-group-item-padding: 0px;
         margin: 8px 12px;
-        font-size: 14px;
+        font-size: 12px;
       }
 
       .form__radio-button {
@@ -594,7 +609,7 @@
         background: transparent;
         box-sizing: border-box;
         font-family: 'Lato', sans-serif;
-        font-size: 16px;
+        font-size: 14px;
         outline: 0;
         min-width: 50%;
       }
@@ -685,7 +700,7 @@
   <template>
     <style>
       paper-toast {
-        font-size: 14px;
+        font-size: 12px;
       }
 
       .toast--info {
