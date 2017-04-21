@@ -8,7 +8,7 @@
 <dom-module id="rmerp-clients-list">
   <template>
 
-    <style include="content-styles search-styles table-styles button-styles dialog-styles"></style>
+    <style include="content-styles search-styles table-styles button-styles"></style>
 
     <rmerp-tmpl-header-layout
       title="CLIENTES"
@@ -22,14 +22,14 @@
         on-click="_newItemTapped"
         small="[[smallScreen]]"></rmerp-button>
 
-      <div id="content" slot="content" class="content__list">
+      <div slot="content" class="content__list">
 
         <div class="search">
           <input id="searchInput" class="search__input" on-keyup="_searchInputKeyup" value="{{searchValue}}" placeholder="Buscar">
           <div class="search__results">[[_computedTotalResults(_filteredData)]]</div>
         </div>
 
-        <iron-list id="ironList" scroll-target="content" items="[[_filteredData]]" max-physical-count="5">
+        <iron-list id="ironList" items="[[_filteredData]]" max-physical-count="5">
           <template>
             <a class$="table__item [[_computeItemClass(index, _filteredData.length)]]" href="/clients/[[item.id]]">
               <div class="table__item__detail">
@@ -57,14 +57,6 @@
       <rmerp-menu-dropdown
         actions="[[itemActions]]"
         collection="clients"></rmerp-menu-dropdown>
-
-      <paper-dialog id="dialogDeleteItem" class="dialog" modal>
-        Are you sure you want to delete [[itemName]]?
-        <div class="dialog__buttons">
-          <paper-button class="button--text" dialog-dismiss>Cancel</paper-button>
-          <paper-button class="button--text" dialog-confirm autofocus>Accept</paper-button>
-        </div>
-      </paper-dialog>
 
     </template>
 
@@ -148,25 +140,32 @@
         }
       }
 
-      _newItemTapped() {
+      _openOverlay(element, properties) {
         if (this._overlay) {
           this._overlay.remove();
           this._overlay = null;
         }
 
-        const overlay = document.createElement('rmerp-clients-new-overlay');
+        const overlay = document.createElement(element);
+        //common properties
         overlay.smallScreen = this.smallScreen;
-        overlay.open();
+        //single properties
+        for (var p in properties) {
+          overlay[p] = properties[p];
+        }
 
-        this._overlay = overlay;
-
-        document.addEventListener('close-tapped', _ => {
-          overlay.opened = false;
-        });
+        overlay.addEventListener('overlay-accept-tapped', this._dialogConfirmationAccepted);
 
         overlay.addEventListener('overlay-closed', _ => {
           this._overlay = null;
         });
+
+        overlay.open();
+        this._overlay = overlay;
+      }
+
+      _newItemTapped() {
+        this._openOverlay('rmerp-clients-new-overlay');
       }
 
       _menuItemTapped(event) {
@@ -192,17 +191,32 @@
       }
 
       _itemActionTapped(event) {
+
         const action = event.detail.action;
         const item = event.detail.item;
+
         if (action == 'delete') {
-          this._openDeleteDialog(item);
+          const overlay = this._openOverlay('rmerp-dialog-overlay', {
+            text: 'Are you sure you want to delete ' + item.name + '?',
+            cancelOnOutsideClick: true,
+            danger: true,
+            action: action,
+            item: item,
+            positionTarget: document.body
+          });
         }
+
       }
 
-      _openDeleteDialog(item) {
-        const confirmationDialog = this.shadowRoot.querySelector('#dialogDeleteItem');
-        this.itemName = item.name || 'this client';
-        confirmationDialog.open();
+      _dialogConfirmationAccepted(event) {
+        
+        const action = event.detail.action;
+        const item = event.detail.item;
+
+        if (action == 'delete') {
+          console.log(action, " item ", item.name, item.id)
+        }
+
       }
 
       _computedTotalResults(_filteredData) {

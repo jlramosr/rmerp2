@@ -144,7 +144,7 @@
       }*/
 
       _closeTapped() {
-        document.dispatchEvent(new CustomEvent('close-tapped', {detail: {}}));
+        this.dispatchEvent(new CustomEvent('template-close-tapped', {detail: {}}));
       }
 
     }

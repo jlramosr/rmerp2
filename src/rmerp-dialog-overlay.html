@@ -1,0 +1,146 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/overlay-container/animated-overlay-mixin.html">
+
+<link rel="import" href="rmerp-styles.html">
+<link rel="import" href="rmerp-tmpl-header-layout.html">
+<link rel="import" href="rmerp-button.html">
+
+<dom-module id="rmerp-dialog-overlay">
+  <template>
+
+    <style include="button-styles show-styles">
+      :host {
+        @apply --layout-horizontal;
+        @apply --layout-center;
+        background: var(--rmerp-dialog-background-color, #fff);
+        color: var(--rmerp-dialog-color, var(--primary-color));
+        position: absolute;
+        padding: 24px;
+        top: 50%;
+        height: 120px;
+        margin-top: -84px; /* height/2 + padding */
+        left: 50%;
+        width: 200px;
+        margin-left: -124px; /* width/2 + padding */
+        box-shadow: 0 8px 10px 1px rgba(0, 0, 0, 0.14),
+                    0 3px 14px 2px rgba(0, 0, 0, 0.12),
+                    0 5px 5px -3px rgba(0, 0, 0, 0.4);
+      }
+
+      :host(:not([small-screen])) {
+        height: 150px;
+        margin-top: -99px; /* height/2 + padding */
+        width: 320px;
+        margin-left: -184px; /* width/2 + padding */
+      }
+
+      .dialog__content {
+        @apply --layout-vertical;
+        width: 100%;
+      }
+
+      .dialog__text {
+        @apply --layout-horizontal;
+        @apply --layout-center-justified;
+        text-align: center;
+      }
+
+      .dialog__buttons {
+        @apply --layout-horizontal;
+        @apply --layout-center-justified;
+        margin-top: 24px;
+      }
+
+      .dialog__icon--close {
+        position: absolute;
+        color: var(--rmerp-dialog-color, var(--primary-color));
+        left: 5px;
+        top: 5px;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+      }
+    </style>
+
+    <div class="dialog__content">
+
+      <div class="dialog__text">
+        [[text]]
+      </div>
+
+      <div class="dialog__buttons">
+        <paper-button class="button--text" on-click="_cancelTapped">
+          Cancel
+        </paper-button>
+        <paper-button class$="button--text [[_computeDangerButton(danger)]]" on-click="_acceptTapped">
+          <span hidden$="[[!danger]]">Yes, [[action]]</span>
+          <span hidden$="[[danger]]">Accept</span>
+        </paper-button>
+      </div>
+
+      <iron-icon
+        hidden$="[[!iconClose]]"
+        class="dialog__icon--close"
+        icon="rmerp-icons:close"
+        on-click="_cancelTapped"></iron-icon>
+
+    </div>
+
+  </template>
+
+  <script>
+    class RMERPDialogOverlay extends AnimatedOverlayMixin(Polymer.Element) {
+
+      static get is() { return 'rmerp-dialog-overlay'; }
+
+      static get properties() {
+        return {
+
+          text: String,
+
+          item: Object,
+
+          action: String,
+
+          danger: {
+            type: Boolean,
+            value: false
+          },
+
+          iconClose: {
+            type: Boolean,
+            value: false
+          },
+
+          smallScreen: {
+            type: Boolean,
+            reflectToAttribute: true
+          }
+
+        };
+      }
+
+      _acceptTapped(event) {
+        this.dispatchEvent(new CustomEvent('overlay-accept-tapped', {
+          detail: {item: this.item, action: this.action}
+        }));
+        this.opened = false;
+      }
+
+      _cancelTapped(event) {
+        this.dispatchEvent(new CustomEvent('overlay-close-tapped', {
+          detail: {item: this.item, action: this.action}
+        }));
+        this.opened = false;
+      }
+
+      _computeDangerButton(danger) {
+        return danger ? 'button--danger' : '';
+      }
+
+    }
+
+    window.customElements.define(RMERPDialogOverlay.is, RMERPDialogOverlay);
+
+  </script>
+</dom-module>

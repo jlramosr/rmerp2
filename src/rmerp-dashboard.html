@@ -17,9 +17,9 @@
         
         <iron-list id="ironList" items="[[categories]]">
           <template>
-            <a class$="table__item [[_computeItemClass(index, categories.length)]]" href="/[[item.slug]]">
+            <a class$="table__item [[_computeItemClass(index, categories.length)]]" href="/[[item.name]]">
               <div class="table__item__detail">
-                <span class="table__item--primary-text">[[item.name]]</span>
+                <span class="table__item--primary-text">[[item.label]]</span>
                 <span class="table__item--secondary-text">[[item.description]]</span>
               </div>
             </a>

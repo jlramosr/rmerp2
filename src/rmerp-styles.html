@@ -6,7 +6,7 @@
   :root {
     /* colors */
     --rmerp-primary-dark-color: var(--paper-blue-grey-800);
-    --rmerp-primary-color: var(--paper-blue-grey-600);
+    --rmerp-primary-color: var(--paper-blue-grey-700);
     --rmerp-primary-soft-color: var(--paper-blue-grey-500);
     --rmerp-primary-light-color: var(--paper-blue-grey-200);
     --rmerp-secondary-color: #DD6F00;
@@ -20,6 +20,9 @@
     --rmerp-drawer-toolbar-height: 100px;
     --rmerp-primary-toolbar-height: 50px;
     --rmerp-secondary-toolbar-height: 50px;
+
+    --rmerp-dialog-color: var(--rmerp-primary-color);
+    --rmerp-dialog-background-color: #fff;
 
     --rmerp-side-padding-small: 16px;
     --rmerp-side-padding-medium: 54px;
@@ -236,9 +239,7 @@
   <template>
     <style>
       .template {
-        position: absolute;
-        left: 0;
-        top: 0;
+        @apply --layout-fit;
         width: 100%;
       }
 
@@ -374,7 +375,7 @@
         position: relative;    
         display: inline-block;
         cursor: pointer;
-        margin-left: 10px;
+        margin: 0 2px;
         border: 0;
         border-radius: 3px;
         padding: 8px 10px;
@@ -392,11 +393,29 @@
       }
 
       .button--text:hover {
-        background: var(--background-button-hover, var(--rmerp-primary-dark-color));
+        background: var(--background-button-hover, var(--rmerp-primary-color));
       }
 
       .button--text:focus {
-        background: var(--background-button-focus, var(--rmerp-primary-dark-color));
+        background: var(--background-button-focus, var(--rmerp-primary-color));
+      }
+
+      .button--danger {
+        background: #a22;
+      }
+
+      .button--danger:hover,
+      .button--danger:focus {
+        background: #b11;
+      }
+
+      .button--ok {
+        background: #252;
+      }
+
+      .button--ok:hover,
+      .button--ok:focus {
+        background: #363;
       }
 
       .button--icon {
@@ -669,28 +688,6 @@
         width: 100px;
         height: 100px;
         opacity: 0.7;
-      }
-    </style>
-  </template>
-</dom-module>
-
-<dom-module id="dialog-styles">
-  <template>
-    <style>
-      .dialog {
-        padding: 16px;
-      }
-
-      .dialog__buttons {
-        @apply --layout-horizontal;
-        @apply --layout-end-justified;
-        margin: 16px auto 0 auto;
-        padding: 0;
-      }
-
-      .dialog__host-target--highlited {
-        background: #eee;
-        border-radius: 50%;
       }
     </style>
   </template>

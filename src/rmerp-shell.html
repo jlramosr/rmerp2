@@ -44,6 +44,8 @@
 
           _currentElement: Object,
 
+          appName: String,
+
           user: {
             type: Object,
             observer: '_userChanged'
@@ -64,7 +66,7 @@
           mediumScreen: {
             type: Boolean,
             observer: '_mediumScreenChanged'
-          }
+          }  
 
         };
       }
@@ -104,6 +106,7 @@
         this._currentElement = document.createElement('rmerp-' + page);
 
         // common properties.
+        this._currentElement.appName = this.appName;
         this._currentElement.route = this.route;
         this._currentElement.user = this.user;
         this._currentElement.smallScreen = this.smallScreen;
@@ -121,7 +124,6 @@
 
         // local properties.
         this._currentElement.defaultCategory = 'dashboard';
-        this._currentElement.appName = 'ERP';
 
         this._appendElement('app');
 

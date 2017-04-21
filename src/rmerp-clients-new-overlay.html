@@ -218,7 +218,7 @@
 
       constructor() {
         super();
-        this._backTapped = this._backTapped.bind(this);
+        this._closeTapped = this._closeTapped.bind(this);
       }
 
       connectedCallback() {
@@ -233,10 +233,10 @@
 
       _toggleListeners({enable}) {
         const m = enable ? 'addEventListener' : 'removeEventListener';
-        this.$.layout[m]('back-tapped', this._backTapped);
+        this.$.layout[m]('template-close-tapped', this._closeTapped);
       }
 
-      _backTapped() {
+      _closeTapped() {
         this.opened = false;
       }
 

@@ -63,9 +63,9 @@
             </a>
             <iron-list items="[[categories]]">
               <template >
-                <a class="drawer__link" href="/[[item.slug]]">
+                <a class="drawer__link" href="/[[item.name]]">
                   <iron-icon class="drawer__icon--list" icon$="rmerp-icons:[[item.icon]]"></iron-icon>
-                  [[item.name]]
+                  [[item.label]]
                 </a>
               </template>
             </iron-list>
@@ -182,8 +182,8 @@
           categories: {
             type: Array,
             value: [
-              {name: 'Clients', slug: 'clients', description: 'Clients', icon: 'supervisor-account'},
-              {name: 'Invoices', slug: 'invoices', description: 'Invoices', icon: 'euro-symbol'}
+              {name: 'clients', label: 'Clients', description: 'Clients', icon: 'supervisor-account'},
+              {name: 'invoices', label: 'Invoices', description: 'Invoices', icon: 'euro-symbol'}
             ],
             readOnly: true
           },
