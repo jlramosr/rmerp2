@@ -1,0 +1,205 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/overlay-container/animated-overlay-mixin.html">
+
+<link rel="import" href="rmerp-styles.html">
+
+<dom-module id="rmerp-dropdown-overlay">
+  <template>
+    <style>
+      :host {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: var(--menu-dropdown-width, 120px);
+        padding: 0;
+        background: var(--rmerp-dropdown-background-color, #fdfdfd);
+        color: var(--rmerp-dropdown-color, --rmerp-primary-soft-color);
+        overflow: hidden;
+        box-shadow: 0 8px 10px 1px rgba(0, 0, 0, 0.14),
+            0 3px 14px 2px rgba(0, 0, 0, 0.12),
+            0 5px 5px -3px rgba(0, 0, 0, 0.4);
+      }
+
+      a, a:visited, a:hover, a:visited, a:active {
+        text-decoration: none;
+        color: var(--rmerp-dropdown-color, --rmerp-primary-soft-color);
+      }
+
+      .dialog__actions {
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      .dialog__row {
+        @apply --layout-horizontal;
+        @apply --layout-left;
+        @apply --layout-center;
+        padding: 8px;
+        border-top: 1px solid var(--rmerp-primary-light-color);
+        font-size: 12px;
+        font-weight: 200;
+        cursor: pointer;
+      }
+
+      .dialog__row:hover {
+        background: var(--rmerp-primary-light-color);
+        color: var(--rmerp-primary-color);
+        font-weight: 400;
+      }
+
+      .dialog__row:first-child {
+        border-top: 0;
+      }
+
+      .dialog__icon {
+        margin-right: 6px;
+        height: 18px;
+        width: 18px;
+        min-height: 18px;
+        min-width: 18px;
+        opacity: 0.7;
+      }
+    </style>
+
+    <div id="content">
+      <div class="dialog__actions">
+        <template is="dom-repeat" items="[[actions]]" as="action">
+
+          <template is="dom-if" if="[[action.href]]">
+
+            <a class="dialog__row"
+              style$="height:[[actionLenght]]px;"
+              href="/[[collection]]/[[item.id]]/[[action.href]]"
+              on-click="_actionTapped">
+
+              <iron-icon class="dialog__icon" icon$="rmerp-icons:[[action.icon]]"></iron-icon>
+              {{action.label}}
+
+            </a>
+
+          </template>
+
+          <template is="dom-if" if="[[!action.href]]">
+
+            <div class="dialog__row" style$="height: [[actionLenght]]px;" on-click="_actionTapped">
+              <iron-icon class="dialog__icon" icon$="rmerp-icons:[[action.icon]]"></iron-icon>
+              {{action.label}}
+            </div>
+            
+          </template>
+
+        </template>
+
+      </div>
+    </div>
+
+  </template>
+  <script>
+
+    class RMERPDropdownOverlay extends AnimatedOverlayMixin(Polymer.Element) {
+
+      static get is() { return 'rmerp-dropdown-overlay'; }
+
+      static get properties() {
+        return {
+
+          actions: Array,
+
+          collection: String,
+
+          item: Object,
+          
+          /**
+          * Heigth of a dropdown action in pixels
+          * @type {!Number}
+          */
+          actionLenght: {
+            type: Number,
+            value: 20
+          },
+
+          /**
+          * The element that should be used to position the element. If not set, it will
+          * be centered on the screen.
+          * @type {!Element}
+          */
+          positionTarget: Object
+
+        };
+      }
+      
+      constructor() {
+        super();
+        this._windowScrolled = this._windowScrolled.bind(this);
+        this._windowResized = this._windowResized.bind(this);
+      }
+
+      connectedCallback() {
+        super.connectedCallback();
+        this._toggleListeners({enable: true});
+      }
+
+      disconnectedCallback() {
+        super.disconnectedCallback();
+        this._toggleListeners({enable: false});
+      }
+
+      _toggleListeners({enable}) {
+        const m = enable ? 'addEventListener' : 'removeEventListener';
+        window[m]('scroll', this._windowScrolled);
+        window[m]('resize', this._windowResized);
+      }
+
+      _windowScrolled() {
+        this.opened = false;
+      }
+
+      _windowResized() {
+        this.opened = false;
+      }
+
+      __openedChanged(opened, old) {
+        super.__openedChanged(opened, old);
+        if (opened && !old) {
+          this._positionize();
+        }
+      }
+
+      _positionize() {
+        const dropdownWidth = this.getBoundingClientRect().width;
+        const dropdownHeight = this.actions.length * this.actionLenght + this.actions.length;
+        const targetRect = this.positionTarget.getBoundingClientRect();
+
+        const offsetWidth = document.body.offsetWidth;
+        const offsetHeight = document.body.offsetHeight
+
+        const rightSpace =  offsetWidth - targetRect.left;
+        const bottomSpace = offsetHeight -  targetRect.top;
+
+        this.style.left = (rightSpace < dropdownWidth + 60 ?
+          //there is no right space.
+          offsetWidth - dropdownWidth - rightSpace:
+          //there is right space.
+          targetRect.left) + 12 + 'px';
+
+        this.style.top = (bottomSpace < dropdownHeight + 60 ?
+          //there is no down space.
+          offsetHeight - dropdownHeight - bottomSpace - 24:
+          //there is down space.
+          targetRect.top + 18) + 'px';
+      }
+
+      _actionTapped(event) {
+        this.opened = false;
+        const nameAction = event.model.__data.action.name;
+        this.dispatchEvent(new CustomEvent('item-action-tapped', {
+          detail: {action: nameAction, item: this.item}
+        }));
+      }
+
+    }
+
+    window.customElements.define(RMERPDropdownOverlay.is, RMERPDropdownOverlay);
+
+  </script>
+</dom-module>

@@ -11,12 +11,13 @@
 
     <rmerp-tmpl-category-route
       route="[[route]]"
-      collection="clients" 
+      collection="[[collection]]" 
       items={{items}} 
       item={{item}}>
 
       <rmerp-clients-list
         name="list"
+        collection="[[collection]]"
         data="{{items}}"
         load-complete="[[loadComplete]]"
         small-screen="[[smallScreen]]"

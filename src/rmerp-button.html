@@ -20,9 +20,9 @@
 
     <template is="dom-if" if="[[!small]]">
       <a href$="[[href]]" hidden$="[[!href]]">
-        <button class="button--text">[[title]]</button>
+        <button class="button--text">[[label]]</button>
       </a>
-      <button class="button--text" hidden$="[[href]]">[[title]]</button>
+      <button class="button--text" hidden$="[[href]]">[[label]]</button>
     </template>
 
   </template>
@@ -36,7 +36,7 @@
       static get properties() {
         return {
 
-          title: String,
+          label: String,
 
           icon: String,
 

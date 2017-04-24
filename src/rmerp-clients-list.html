@@ -8,7 +8,7 @@
 <dom-module id="rmerp-clients-list">
   <template>
 
-    <style include="content-styles search-styles table-styles button-styles"></style>
+    <style include="content-styles search-styles list-styles button-styles"></style>
 
     <rmerp-tmpl-header-layout
       title="CLIENTES"
@@ -17,7 +17,7 @@
 
       <rmerp-button
         slot="action"
-        title="NUEVO CLIENTE"
+        label="NUEVO CLIENTE"
         icon="add"
         on-click="_newItemTapped"
         small="[[smallScreen]]"></rmerp-button>
@@ -29,36 +29,36 @@
           <div class="search__results">[[_computedTotalResults(_filteredData)]]</div>
         </div>
 
-        <iron-list id="ironList" items="[[_filteredData]]" max-physical-count="5">
+        <iron-list grid="[[grid]]" id="ironList" items="[[_filteredData]]" class="list">
           <template>
-            <a class$="table__item [[_computeItemClass(index, _filteredData.length)]]" href="/clients/[[item.id]]">
-              <div class="table__item__detail">
-                <span class="table__item--primary-text">[[item.name]]</span>
-                <span class="table__item--secondary-text">[[item.address]]</span>
-              </div>
-              <paper-icon-button
-                id$="menuIcon-[[index]]"
-                class="table__item--menu-icon"
-                noink
-                tabindex="-1"
-                icon="rmerp-icons:more"
-                on-click="_menuItemTapped"></paper-icon-button>
-            </a>
+            <div class$="[[_computeItemContainerClass(grid)]]">
+              <a class$="[[_computeItemClass(index, _filteredData.length, grid)]]"
+                href="/[[collection]]/[[item.id]]">
+
+                <div class$="[[_computeItemDetailClass(grid)]]">
+                  <span class$="[[_computeItemPrimaryTextClass(grid)]]">
+                    [[item.name]]
+                  </span>
+                  <span class$="[[_computeItemSecondaryTextClass(grid)]]">
+                    [[item.address]]
+                  </span>
+                </div>
+
+                <paper-icon-button
+                  id$="menuIcon-[[index]]"
+                  class$="[[_computeItemIconClass(grid)]]"
+                  noink
+                  tabindex="-1"
+                  icon="rmerp-icons:more"
+                  on-click="_menuItemTapped"></paper-icon-button>
+              </a>
+            <div>
           </template>
         </iron-list>
 
       </div>
 
     </rmerp-tmpl-header-layout>
-
-    <!-- Lazy Creations -->
-    <template is="dom-if" if="[[loadComplete]]">
-
-      <rmerp-menu-dropdown
-        actions="[[itemActions]]"
-        collection="clients"></rmerp-menu-dropdown>
-
-    </template>
 
   </template>
 
@@ -72,6 +72,8 @@
 
       static get properties() {
         return {
+
+          collection: String,
 
           data: Array,
 
@@ -106,6 +108,11 @@
             value: null
           },
 
+          grid: {
+            type: Boolean,
+            value: false
+          },
+
           loadComplete: Boolean
 
         }
@@ -121,7 +128,7 @@
           return;
         }
         var _filteredData = [];
-        if (_searchValue && _searchValue && this.loadComplete) {
+        if (_searchValue.length && _searchValue && loadComplete) {
           _filteredData = fuzzaldrin.filter(
             data, _searchValue, {key: 'name'});
         } else {
@@ -162,6 +169,8 @@
 
         overlay.open();
         this._overlay = overlay;
+
+        return overlay;
       }
 
       _newItemTapped() {
@@ -171,27 +180,20 @@
       _menuItemTapped(event) {
         event.preventDefault();
 
-        const dialog = this.shadowRoot.querySelector('rmerp-menu-dropdown');
         const itemIndex = event.model.__data.index;
         const item = this._filteredData[itemIndex];
         const menuIcon = event.currentTarget;
 
-        if (dialog.opened) {
-          dialog.close();
-          dialog.removeEventListener('item-action-tapped', this._itemActionTapped);
-          // it closes dialog and not opens again if user taps on the same menu icon of opened dialog.
-          if (dialog.item.id === item.id) { return; }
-        }
-
-        dialog.addEventListener('item-action-tapped', this._itemActionTapped);
-
-        dialog.item = item;
-        dialog.hostTarget = menuIcon;
-        dialog.open();
+        this._openOverlay('rmerp-dropdown-overlay', {
+          cancelOnOutsideClick: true,
+          item: item,
+          collection: this.collection,
+          actions: this.itemActions,
+          positionTarget: menuIcon
+        }).addEventListener('item-action-tapped', this._itemActionTapped);
       }
 
       _itemActionTapped(event) {
-
         const action = event.detail.action;
         const item = event.detail.item;
 
@@ -201,8 +203,7 @@
             cancelOnOutsideClick: true,
             danger: true,
             action: action,
-            item: item,
-            positionTarget: document.body
+            item: item
           });
         }
 
@@ -221,19 +222,42 @@
 
       _computedTotalResults(_filteredData) {
         const length = _filteredData.length || '0';
-        return length + ' resultados';
+        return length + ' results';
       }
 
-      _computeItemClass(index, itemsLength) {
+      _computeItemClass(index, itemsLength, grid) {
+        let _class = (grid ? 'grid' : 'table') + '__item ';
 
         if (index == itemsLength - 1) {
-          return 'table__item--last-child';
+          _class += (grid ? 'grid' : 'table') + '__item--last-child';
         }
 
         window.setTimeout(_ => {
           this.$.ironList.notifyResize();
         });
 
+        return _class;
+
+      }
+
+      _computeItemContainerClass(grid) {
+        return (grid ? 'grid' : 'table') + '__item-container';
+      }
+
+      _computeItemDetailClass(grid) {
+        return (grid ? 'grid' : 'table') + '__item__detail';
+      }
+
+      _computeItemPrimaryTextClass(grid) {
+        return (grid ? 'grid' : 'table') + '__item--primary-text';
+      }
+
+      _computeItemSecondaryTextClass(grid) {
+        return (grid ? 'grid' : 'table') + '__item--secondary-text';
+      }
+
+      _computeItemIconClass(grid) {
+        return (grid ? 'grid' : 'table') + '__item--menu-icon';
       }
     }
 

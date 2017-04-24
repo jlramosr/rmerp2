@@ -8,7 +8,7 @@
 <dom-module id="rmerp-invoices-list">
   <template>
 
-    <style include="content-styles search-styles table-styles"></style>
+    <style include="content-styles search-styles list-styles"></style>
 
     <rmerp-tmpl-header-layout
       title="FACTURAS"
@@ -17,7 +17,7 @@
 
       <rmerp-button
         slot="action"
-        title="NUEVA FACTURA"
+        label="NUEVA FACTURA"
         icon="add"
         on-click="_newItemTapped"
         small="[[smallScreen]]"></rmerp-button>
@@ -29,12 +29,14 @@
           <div class="search__results">[[_computedTotalResults(_filteredData)]]</div>
         </div>
         
-        <iron-list id="ironList" items="[[_filteredData]]" max-physical-count="30">
+        <iron-list id="ironList" items="[[_filteredData]]" class="list">
           <template id="template">
-            <a class$="table__item [[_computeItemClass(index, _filteredData.length)]]" href="/clients/[[item.id]]">
-              <span class="table__item--primary-text">[[item.name]]</span>
-              <span class="table__item--secondary-text">[[item.address]]</span>
-            </a>
+            <div class="table__item-container">
+              <a class$="table__item [[_computeItemClass(index, _filteredData.length)]]" href="/clients/[[item.id]]">
+                <span class="table__item--primary-text">[[item.name]]</span>
+                <span class="table__item--secondary-text">[[item.address]]</span>
+              </a>
+            </div>
           </template>
         </iron-list>
 

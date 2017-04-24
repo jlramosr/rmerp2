@@ -8,21 +8,23 @@
 <dom-module id="rmerp-dashboard">
   <template>
 
-    <style include="content-styles table-styles spinner-styles"></style>
+    <style include="content-styles list-styles spinner-styles"></style>
 
     <rmerp-tmpl-header-layout
       small-screen="{{smallScreen}}">
 
       <div id="content" slot="content" class="content__list">
         
-        <iron-list id="ironList" items="[[categories]]">
+        <iron-list id="ironList" items="[[categories]]" class="list">
           <template>
-            <a class$="table__item [[_computeItemClass(index, categories.length)]]" href="/[[item.name]]">
-              <div class="table__item__detail">
-                <span class="table__item--primary-text">[[item.label]]</span>
-                <span class="table__item--secondary-text">[[item.description]]</span>
-              </div>
-            </a>
+            <div class="table__item-container">
+              <a class$="table__item [[_computeItemClass(index, categories.length)]]" href="/[[item.name]]">
+                <div class="table__item__detail">
+                  <span class="table__item--primary-text">[[item.label]]</span>
+                  <span class="table__item--secondary-text">[[item.description]]</span>
+                </div>
+              </a>
+            </div>
           </template>
         </iron-list>
 
