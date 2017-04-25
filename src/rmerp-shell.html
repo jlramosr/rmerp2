@@ -9,8 +9,6 @@
 <link rel="import" href="rmerp-backend-connection.html">
 <link rel="import" href="rmerp-styles.html">
 
-<link rel="import" href="rmerp-app.html">
-
 <dom-module id="rmerp-shell">
   <template>
     <style include="toast-styles"></style>
@@ -26,7 +24,7 @@
       user="{{user}}"
       user-status-known="{{userStatusKnown}}"></rmerp-backend-connection>
 
-    <paper-toast vertical-align="top" horizontal-align="right" raised duration="5000"></paper-toast>
+    <paper-toast vertical-align="bottom" horizontal-align="right" raised duration="5000"></paper-toast>
 
     <div id="content"></div>
 

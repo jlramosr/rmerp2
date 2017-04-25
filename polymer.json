@@ -2,13 +2,10 @@
   "entrypoint": "index.html",
   "shell": "src/rmerp-shell.html",
   "fragments": [
-    "src/rmerp-clients.html",
-    "src/rmerp-clients-list",
-    "src/rmerp-clients-new-overlay.html",
-    "src/rmerp-clients-overview.html",
-    "src/rmerp-clients-settings",
-
-    "src/rmerp-invoices.html"
+    "src/rmerp-account.html",
+    "src/rmerp-app.html",
+    "src/rmerp-404-warning.html",
+    "src/lazy-resources.html"
   ],
   "sources": [
     "src/**/*",

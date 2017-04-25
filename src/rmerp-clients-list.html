@@ -33,7 +33,7 @@
           <template>
             <div class$="[[_computeItemContainerClass(grid)]]">
               <a class$="[[_computeItemClass(index, _filteredData.length, grid)]]"
-                href="/[[collection]]/[[item.id]]">
+                href="/[[category]]/[[item.id]]">
 
                 <div class$="[[_computeItemDetailClass(grid)]]">
                   <span class$="[[_computeItemPrimaryTextClass(grid)]]">
@@ -73,7 +73,7 @@
       static get properties() {
         return {
 
-          collection: String,
+          category: String,
 
           data: Array,
 
@@ -121,6 +121,7 @@
       connectedCallback() {
         super.connectedCallback();
         this._itemActionTapped = this._itemActionTapped.bind(this);
+        this._dialogConfirmationAccepted = this._dialogConfirmationAccepted.bind(this);
       }
 
       _computeFilteredData(data, _searchValue, loadComplete) {
@@ -174,7 +175,9 @@
       }
 
       _newItemTapped() {
-        this._openOverlay('rmerp-clients-new-overlay');
+        this._openOverlay('rmerp-clients-new-overlay', {
+          category: this.category
+        });
       }
 
       _menuItemTapped(event) {
@@ -187,7 +190,7 @@
         this._openOverlay('rmerp-dropdown-overlay', {
           cancelOnOutsideClick: true,
           item: item,
-          collection: this.collection,
+          category: this.category,
           actions: this.itemActions,
           positionTarget: menuIcon
         }).addEventListener('item-action-tapped', this._itemActionTapped);
@@ -210,12 +213,14 @@
       }
 
       _dialogConfirmationAccepted(event) {
-        
         const action = event.detail.action;
         const item = event.detail.item;
 
         if (action == 'delete') {
-          console.log(action, " item ", item.name, item.id)
+          document.dispatchEvent(new CustomEvent('delete-item', {detail: {
+            itemId: item.id,
+            category: this.category
+          }}));
         }
 
       }

@@ -61,6 +61,18 @@
         }
       }
 
+      create(item) {
+        console.log("CREATE ITEM BACKEND", item);
+      }
+
+      update(id) {
+        console.log("UPDATE ITEM BACKEND", id);
+      }
+
+      delete(id) {
+        console.log("DELETE ITEM BACKEND", id);
+      }
+
       _computeItems(itemsDataObject) {
         return Object.keys(itemsDataObject).map(function(key) {
           var object = itemsDataObject[key];

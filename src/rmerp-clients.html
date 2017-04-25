@@ -11,13 +11,13 @@
 
     <rmerp-tmpl-category-route
       route="[[route]]"
-      collection="[[collection]]" 
+      category="[[category]]" 
       items={{items}} 
       item={{item}}>
 
       <rmerp-clients-list
         name="list"
-        collection="[[collection]]"
+        category="[[category]]"
         data="{{items}}"
         load-complete="[[loadComplete]]"
         small-screen="[[smallScreen]]"
@@ -52,7 +52,7 @@
 
           route: Object,
 
-          collection: String,
+          category: String,
 
           items: Array,
 

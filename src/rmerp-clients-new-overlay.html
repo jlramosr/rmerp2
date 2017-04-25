@@ -40,13 +40,13 @@
         <paper-radio-group selected="individual" class="client-type form__radio-group">
           <paper-radio-button
             name="individual"
-            checked="{{client.individual}}"
+            checked="{{item.individual}}"
             disabled="[[readOnly]]"
             noink
             class="form__radio-button">Particular</paper-radio-button>
           <paper-radio-button
             name="corporate"
-            checked="{{client.corporate}}"
+            checked="{{item.corporate}}"
             disabled="[[readOnly]]"
             noink
             class="form__radio-button">Empresa</paper-radio-button>
@@ -57,32 +57,32 @@
           <div class="form__item">
             <iron-icon
               class="form__icon"
-              hidden$="[[!_computeShowNamePersonIcon(client.individual,smallScreen)]]"  
+              hidden$="[[!_computeShowNamePersonIcon(item.individual,smallScreen)]]"  
               disabled$="[[readOnly]]"
               icon="person"></iron-icon>
             <iron-icon
               class="form__icon"
-              hidden$="[[!client.corporate]]" 
+              hidden$="[[!item.corporate]]" 
               disabled$="[[readOnly]]"
               icon="domain"></iron-icon>
             <paper-input always-float-label
               class="form__input"
               disabled="[[readOnly]]"
               label="Nombre" 
-              value="{{client.name}}"></paper-input>
+              value="{{item.name}}"></paper-input>
           </div>
 
-          <div class="form__item form__line--last-child" hidden$="[[!client.individual]]">
+          <div class="form__item form__line--last-child" hidden$="[[!item.individual]]">
             <iron-icon
               class="form__icon"
-              hidden$="[[!_computeShowLastNamePersonIcon(client.individual,smallScreen)]]" 
+              hidden$="[[!_computeShowLastNamePersonIcon(item.individual,smallScreen)]]" 
               disabled$="[[readOnly]]"
               icon="person"></iron-icon>
             <paper-input always-float-label
               class="form__input" 
               disabled="[[readOnly]]"
               label="Apellidos" 
-              value="{{client.lastName}}"></paper-input>
+              value="{{item.lastName}}"></paper-input>
           </div>
 
         </div>
@@ -99,7 +99,7 @@
               class="form__input"
               disabled="[[readOnly]]"
               label="Teléfono" 
-              value="{{client.phone}}"></paper-input>
+              value="{{item.phone}}"></paper-input>
           </div>  
           
           <div class="form__item form__line--last-child">
@@ -112,7 +112,7 @@
               class="form__input"
               disabled="[[readOnly]]"
               label="Teléfono alternativo"
-              value="{{client.secondaryPhone}}"></paper-input>
+              value="{{item.secondaryPhone}}"></paper-input>
           </div>
 
         </div>
@@ -128,7 +128,7 @@
               class="form__input"
               disabled="[[readOnly]]"
               label="Email" 
-              value="{{client.email}}"></paper-input>
+              value="{{item.email}}"></paper-input>
           </div>
 
         </div> 
@@ -144,7 +144,7 @@
               class="form__input"
               disabled="[[readOnly]]"
               label="Dirección" 
-              value="{{client.address}}"></paper-input>
+              value="{{item.address}}"></paper-input>
           </div>
 
         </div>
@@ -156,7 +156,7 @@
               class="form__input"
               disabled="[[readOnly]]"
               label="Código Postal" 
-              value="{{client.postalcode}}"></paper-input>
+              value="{{item.postalcode}}"></paper-input>
           </div>
 
           <div class="form__item">
@@ -164,7 +164,7 @@
               class="form__input"
               disabled="[[readOnly]]"
               label="Población" 
-              value="{{client.town}}"></paper-input>
+              value="{{item.town}}"></paper-input>
           </div>
 
           <div class="form__item form__line--last-child">
@@ -172,7 +172,7 @@
               class="form__input"
               disabled="[[readOnly]]"
               label="Provincia" 
-              value="{{client.city}}"></paper-input>
+              value="{{item.city}}"></paper-input>
           </div>
 
         </div> 
@@ -188,7 +188,7 @@
               class="form__input"
               disabled="[[readOnly]]"
               label="Notas" 
-              value="{{client.notes}}"></paper-textarea>
+              value="{{item.notes}}"></paper-textarea>
           </div>
 
         </div>
@@ -208,10 +208,14 @@
       static get properties() {
         return {
 
-          positionTarget: {
+          item: {
             type: Object,
-            value: window
-          }
+            value: _ => {
+              return {};
+            }
+          },
+
+          category: String
 
         };
       }
@@ -253,8 +257,11 @@
       }
 
       _submitTapped() {
-        console.log("HECHO");
         RMERPCommon.showMessage('Cliente creado satisfactoriamente', 'success');
+        document.dispatchEvent(new CustomEvent('create-item', {detail: {
+          item: this.item,
+          category: this.category
+        }}));
         /*if (!this._validate()) {
           return;
         }

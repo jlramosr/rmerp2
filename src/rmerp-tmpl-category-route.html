@@ -13,7 +13,8 @@
     <style include="spinner-styles"></style>
 
     <rmerp-backend-data
-      collection="[[collection]]"
+      id="backend"
+      collection="[[category]]"
       item-id="[[itemId]]"
       items="{{items}}"
       item="{{item}}"
@@ -56,7 +57,7 @@
             value: 'overview'
           },
 
-          collection: String,
+          category: String,
 
           items: {
             type: Array,
@@ -81,10 +82,44 @@
         };
       }
 
+      connectedCallback() {
+        super.connectedCallback();
+        this._createItem = this._createItem.bind(this);
+        this._deleteItem = this._deleteItem.bind(this);
+        this._toggleListeners({enable: true});
+      }
+
+      disconnectedCallback() {
+        super.disconnectedCallback();
+        this._toggleListeners({enable: false});
+      }
+
+      _toggleListeners({enable}) {
+        const m = enable ? 'addEventListener' : 'removeEventListener';
+        document[m]('create-item', this._createItem);
+        document[m]('delete-item', this._deleteItem);
+      }
+
+      _createItem(event) {
+        const itemCategory = event.detail.category;
+        if (itemCategory == this.category) {
+          const item = event.detail.item;
+          this.$.backend.create(item);
+        }  
+      }
+
+      _deleteItem(event) {
+        const itemCategory = event.detail.category;
+        if (itemCategory == this.category) {
+          const itemId = event.detail.itemId;
+          this.$.backend.delete(itemId);
+        }  
+      }
+
       _routeChanged(route) {
         if (route.path === null && route.prefix === null) { return; }
         const parentPage = route.prefix.split('/')[1];
-        if (parentPage !== this.collection) {
+        if (parentPage !== this.category) {
           this.itemId = null;
           return;
         }
@@ -96,7 +131,7 @@
 
         // redirect if there is no action.
         if (id && id !== '' && !action) {
-          RMERPCommon.updateWindowLocation('/' + this.collection +
+          RMERPCommon.updateWindowLocation('/' + this.category +
                                            '/' + id +
                                            '/' + this.defaultItemAction);
           return;
