@@ -8,13 +8,13 @@
     <firebase-document
       id="query"
       app-name="rmerp"
-      path="/[[collection]]"
+      path="/[[userId]]/[[collection]]"
       data="{{itemsDataObject}}"></firebase-document>
 
     <firebase-document
       id="document"
       app-name="rmerp"
-      path="/[[collection]]/[[itemId]]"
+      path="/[[userId]]/[[collection]]/[[itemId]]"
       data="{{itemDataObject}}"></firebase-document>
 
     <!--<firebase-auth id="auth" user="{{user}}" provider="google" on-error="handleError"></firebase-auth>-->
@@ -29,6 +29,8 @@
 
       static get properties() {
         return {
+
+          userId: String,
 
           collection: String,
 
@@ -48,7 +50,7 @@
           item: {
             type: Object,
             notify: true,
-            computed: '_computeItem(itemDataObject)',
+            computed: '_computeItem(itemDataObject, itemId)',
             observer: '_itemChanged',
           },
 
@@ -62,18 +64,63 @@
       }
 
       create(item) {
-        console.log("CREATE ITEM BACKEND", item);
+        let _document = this.$.document;
+        this.itemDataObject = item;
+        return new Promise((resolve, reject) => {
+          console.log(_document.path);
+          _document.save(this.userId + '/' + this.collection) //second parameter null generates random id.
+            .then(_ => { 
+              // Success Save (add automatically /itemId to path element).
+              let itemId = _document.path.split('/')[3];
+              resolve(itemId);
+            })
+            .catch(error => {
+              // Failure Save.
+              console.error(error, item);
+              reject(error);
+            });
+        });
       }
 
-      update(id) {
-        console.log("UPDATE ITEM BACKEND", id);
+      update(item) {
+        let _document = this.$.document;
+        this.itemDataObject = item;
+        return new Promise((resolve, reject) => {
+          _document.save(this.userId + '/' + this.collection, item.id)
+            .then(_ => { 
+              // Success Save.
+              resolve(item.id);      
+            })
+            .catch(error => { 
+              // Failure Save.
+              console.error(error, item);
+              reject(item.id, error);
+            });
+        });
       }
 
-      delete(id) {
-        console.log("DELETE ITEM BACKEND", id);
+      delete(itemId) {
+        let _document = this.$.document;
+        this.itemDataObject = null;
+        return new Promise((resolve, reject) => {
+          _document.save(this.userId + '/' + this.collection, itemId)
+            .then(_ => { 
+              // Success Delete.
+              resolve();
+              // Important step (with / at the end) to update path and delete itemId at the end.
+              // this.itemId doesn't change because route doesn't change either and it continues being null.
+              _document.path = this.userId + '/' + this.collection + '/';
+            })
+            .catch(error => { 
+              // Failure Delete.
+              console.error(error, item);
+              reject(error);
+            });
+        });
       }
 
       _computeItems(itemsDataObject) {
+        this.loading = true;
         return Object.keys(itemsDataObject).map(function(key) {
           var object = itemsDataObject[key];
           object.id = key;
@@ -81,21 +128,21 @@
         });
       }
 
-      _computeItem(itemDataObject) {
-        itemDataObject.id = this.itemId;
-        return itemDataObject;
-      }
-
       _itemsChanged(items, oldItems) {
-        this.loading = true;
         if (oldItems) {
           this.loading = false;
         }
       }
 
-      _itemChanged(item, oldItem) {
+      _computeItem(itemDataObject, itemId) {
+        if (!itemDataObject || Object.keys(itemDataObject).length === 0 || !itemId) return null;
         this.loading = true;
-        if (this.itemId && oldItem) {
+        itemDataObject.id = itemId;
+        return itemDataObject;
+      }
+
+      _itemChanged(item, oldItem) {
+        if (oldItem !== undefined) {
           this.loading = false;
         }
       }

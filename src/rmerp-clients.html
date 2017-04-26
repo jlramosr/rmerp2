@@ -11,7 +11,9 @@
 
     <rmerp-tmpl-category-route
       route="[[route]]"
-      category="[[category]]" 
+      category="[[category]]"
+      label="[[label]]"
+      user-id="[[userId]]"
       items={{items}} 
       item={{item}}>
 
@@ -54,13 +56,15 @@
 
           category: String,
 
+          label: String,
+
           items: Array,
 
           item: Object,
 
           itemId: String,
 
-          user: Object,
+          userId: String,
 
           smallScreen: Boolean,
 

@@ -14,6 +14,7 @@
 
     <rmerp-backend-data
       id="backend"
+      user-id="[[userId]]"
       collection="[[category]]"
       item-id="[[itemId]]"
       items="{{items}}"
@@ -57,7 +58,11 @@
             value: 'overview'
           },
 
+          userId: String,
+
           category: String,
+
+          label: String,
 
           items: {
             type: Array,
@@ -85,6 +90,7 @@
       connectedCallback() {
         super.connectedCallback();
         this._createItem = this._createItem.bind(this);
+        this._updateItem = this._updateItem.bind(this);
         this._deleteItem = this._deleteItem.bind(this);
         this._toggleListeners({enable: true});
       }
@@ -97,6 +103,7 @@
       _toggleListeners({enable}) {
         const m = enable ? 'addEventListener' : 'removeEventListener';
         document[m]('create-item', this._createItem);
+        document[m]('update-item', this._updateItem);
         document[m]('delete-item', this._deleteItem);
       }
 
@@ -104,16 +111,60 @@
         const itemCategory = event.detail.category;
         if (itemCategory == this.category) {
           const item = event.detail.item;
-          this.$.backend.create(item);
+          this.$.backend.create(item)
+            .then(itemId => { this._itemCreatedSuccess(itemId) })
+            .catch(message => { this._itemCreatedError(message) });
         }  
+      }
+
+      _itemCreatedSuccess(itemId) {
+        RMERPCommon.showMessage(RMERPCommon.capitalize(this.label) + ' has been created succesfully', 'success');
+        RMERPCommon.updateWindowLocation('/' + this.category + '/' + itemId);
+      }
+
+      _itemCreatedError(message) {
+        RMERPCommon.showMessage('There has been an error creating the ' + this.label + ':' + message, 'error');
+        RMERPCommon.updateWindowLocation('/' + this.category);
+      }
+
+      _updateItem(event) {
+        const itemCategory = event.detail.category;
+        if (itemCategory == this.category) {
+          const item = event.detail.item;
+          this.$.backend.update(item)
+            .then(itemId => { this._itemUpdatedSuccess(itemId) })
+            .catch((itemId, message) => { this._itemUpdatedError(itemId, message) });
+        }  
+      }
+
+      _itemUpdatedSuccess(itemId) {
+        RMERPCommon.showMessage(RMERPCommon.capitalize(this.label) + ' has been updated succesfully', 'success');
+        RMERPCommon.updateWindowLocation('/' + this.category + '/' + itemId);
+      }
+
+      _itemUpdatedError(message) {
+        RMERPCommon.showMessage('There has been an error updating the ' + this.label + ':' + message, 'error');
+        RMERPCommon.updateWindowLocation('/' + this.category + '/' + itemId);
       }
 
       _deleteItem(event) {
         const itemCategory = event.detail.category;
         if (itemCategory == this.category) {
           const itemId = event.detail.itemId;
-          this.$.backend.delete(itemId);
+          this.$.backend.delete(itemId)
+            .then(_ => { this._itemDeletedSuccess() })
+            .catch(message => { this._itemDeletedError(message) });
         }  
+      }
+
+      _itemDeletedSuccess() {
+        RMERPCommon.showMessage(RMERPCommon.capitalize(this.label) + ' has been removed succesfully', 'success');
+        RMERPCommon.updateWindowLocation('/' + this.category);
+      }
+
+      _itemDeletedError(message) {
+        RMERPCommon.showMessage('There has been an error removing the ' + this.label + ':' + message, 'error');
+        RMERPCommon.updateWindowLocation('/' + this.category);
       }
 
       _routeChanged(route) {

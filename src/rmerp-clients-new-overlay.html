@@ -32,7 +32,7 @@
         slot="action"
         label="CREAR"
         icon="send"
-        on-tap="_submitTapped"
+        on-click="_submitTapped"
         small="[[smallScreen]]"></rmerp-button>
 
       <div slot="content" class="content__form">
@@ -245,6 +245,7 @@
       }
 
       _validate() {
+        return true;
         const inputs = [this.$.clientSelect, this.$.delayPredictions, this.$.delayPublications];
         let isValid = true;
 
@@ -257,15 +258,13 @@
       }
 
       _submitTapped() {
-        RMERPCommon.showMessage('Cliente creado satisfactoriamente', 'success');
-        document.dispatchEvent(new CustomEvent('create-item', {detail: {
-          item: this.item,
-          category: this.category
-        }}));
-        /*if (!this._validate()) {
-          return;
+        if (this._validate()) {
+          document.dispatchEvent(new CustomEvent('create-item', {detail: {
+            item: this.item,
+            category: this.category
+          }}));
+          this.opened = false;
         }
-        this.loading = true;*/
       }
 
       _getParsedFormValues() {

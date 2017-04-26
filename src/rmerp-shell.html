@@ -24,7 +24,9 @@
       user="{{user}}"
       user-status-known="{{userStatusKnown}}"></rmerp-backend-connection>
 
-    <paper-toast vertical-align="bottom" horizontal-align="right" raised duration="5000"></paper-toast>
+    <paper-toast id="toast" vertical-align="bottom" horizontal-align="right" raised duration="5000">
+      <paper-icon-button icon="rmerp-icons:close" class="toast__icon" on-click="_closeToast"></paper-icon-button>
+    </paper-toast>
 
     <div id="content"></div>
 
@@ -240,6 +242,10 @@
           toast.text = message;
           toast.open();
         }
+      }
+
+      _closeToast() {
+        this.$.toast.close();
       }
 
     }

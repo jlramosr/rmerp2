@@ -783,7 +783,9 @@
   <template>
     <style>
       paper-toast {
-        font-size: 12px;
+        display: block;
+        position: relative;
+        padding: 40px;
       }
 
       .toast--info {
@@ -800,6 +802,16 @@
 
       .toast--error {
         background-color: #a22;
+      }
+
+      .toast__icon {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        top: 0;
+        color: #fff;
+        width: 32px;
+        height: 32px;
       }
     </style>
   </template>
