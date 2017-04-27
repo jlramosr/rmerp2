@@ -332,17 +332,17 @@
 <dom-module id="content-styles">
   <template>
     <style>
-      .content__form {
+      .content__page {
         padding: 16px;
       }
       @media (min-width: 720px) { 
-        .content__form {
+        .content__page {
           padding: var(--rmerp-side-padding-small) 
                    var(--rmerp-side-padding-medium);
         }
       }
       @media (min-width: 1024px) { 
-        .content__form {
+        .content__page {
           padding: var(--rmerp-side-padding-small)
                    var(--rmerp-side-padding-large);
         }
@@ -647,7 +647,7 @@
   <template>
     <style>
       .form {
-        padding: 8px 16px;
+        display: grid;
       }
 
       .form__line {

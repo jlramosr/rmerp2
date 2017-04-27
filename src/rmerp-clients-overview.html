@@ -2,6 +2,7 @@
 
 <link rel="import" href="rmerp-styles.html">
 <link rel="import" href="rmerp-tmpl-header-layout.html">
+<link rel="import" href="rmerp-tmpl-form.html">
 <link rel="import" href="rmerp-button.html">
 
 <dom-module id="rmerp-clients-overview">
@@ -25,12 +26,13 @@
         icon="settings"
         small="[[smallScreen]]"></rmerp-button>
 
-      <div slot="content" class="content__form">
+      <div slot="content" class="content__page">
 
-        OVERVIEW {{data.id}} sadsdsad sda afasdf  OVERVIEW {{data.id}} sadsdsad sdaae afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf
-        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-        OVERVIEW {{data.id}} sadsdsad sda afasdf  OVERVIEW {{data.id}} sadsdsad sdaae afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf OVERVIEW {{data.id}} sadsdsad sda afasdf
-        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+        <rmerp-tmpl-form
+          data="[[data]]"
+          small-screen="[[smallScreen]]"
+          medium-screen="[[mediumScreen]]"></rmerp-tmpl-form>
+
       </div>
 
     </rmerp-tmpl-header-layout>
@@ -46,7 +48,11 @@
       static get properties() {
         return {
 
-          data: Object
+          data: Object,
+
+          smallScreen: Object,
+
+          mediumScreen: Object
 
         }
       }

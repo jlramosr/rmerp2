@@ -67,7 +67,6 @@
         let _document = this.$.document;
         this.itemDataObject = item;
         return new Promise((resolve, reject) => {
-          console.log(_document.path);
           _document.save(this.userId + '/' + this.collection) //second parameter null generates random id.
             .then(_ => { 
               // Success Save (add automatically /itemId to path element).
@@ -115,6 +114,7 @@
               // Failure Delete.
               console.error(error, item);
               reject(error);
+              _document.path = this.userId + '/' + this.collection + '/';
             });
         });
       }
