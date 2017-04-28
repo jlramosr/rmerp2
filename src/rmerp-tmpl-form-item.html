@@ -1,0 +1,96 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="rmerp-styles.html">
+
+<dom-module id="rmerp-tmpl-form-item">
+  <template>
+
+    <style include="template-layout-styles show-styles">
+      :host {
+        background: red;
+        height: 50px;
+        grid-column: span var(--cols, 1);
+      }
+
+      :host([col-start]:not([col-end])) {
+        grid-column: var(--col-start) / span var(--cols, 1);
+      }
+
+      :host(:not([col-start])[col-end]) {
+        grid-column: span var(--cols, 1) / var(--col-end);
+      }
+
+      :host([col-start][col-end]) {
+        grid-column: var(--col-start) / var(--col-end);
+      }
+
+    </style>
+
+  </template>
+
+  <script>
+
+    class RMERPTmplFormItem extends Polymer.Element {
+
+      static get is() { return 'rmerp-tmpl-form-item'; }
+
+      static get properties() {
+        return {
+
+          cols: {
+            type: Number,
+            reflectToAttribute: true
+          },
+
+          colStart: {
+            type: Number,
+            reflectToAttribute: true
+          },
+
+          colEnd: {
+            type: Number,
+            reflectToAttribute: true
+          }
+        
+        }
+
+      }
+
+      connectedCallback() {
+        super.connectedCallback();
+
+        if (this.cols < 1 || this.cols > 10) {
+          this.cols = undefined;
+        }
+        this.updateStyles({'--cols': this.cols});
+
+        if (this.colStart < 1 || this.colStart > 10) {
+          this.colStart = undefined;
+        }
+        this.updateStyles({'--col-start': this.colStart});
+
+        if (this.colEnd < 1 || this.colEnd > 10) {
+          this.colEnd = undefined;
+        }
+        //grid-column: 4 / 5 only fills square number 4
+        //grid-column: 4 / 5+1 fills number 4 and 5
+        this.updateStyles({'--col-end': this.colEnd + 1});
+
+        this._toggleListeners({enable: true});
+      }
+
+      disconnectedCallback() {
+        super.disconnectedCallback();
+        this._toggleListeners({enable: false});
+      }
+
+      _toggleListeners({enable}) {
+        const m = enable ? 'addEventListener' : 'removeEventListener';
+      }
+
+    }
+
+    window.customElements.define(RMERPTmplFormItem.is, RMERPTmplFormItem);
+
+  </script>
+</dom-module>
