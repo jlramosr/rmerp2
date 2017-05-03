@@ -1,4 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
 
 <link rel="import" href="rmerp-styles.html">
 <link rel="import" href="rmerp-tmpl-form-item.html">
@@ -6,27 +8,48 @@
 <dom-module id="rmerp-tmpl-form">
   <template>
 
-    <style include="template-layout-styles show-styles">
+    <style include="show-styles">
       :host {
+        padding: 0;
         display: grid;
         grid-auto-flow: row;
-        grid-template-columns: repeat(10, auto);
+        grid-template-columns: repeat(var(--columns), auto);
         grid-template-rows: auto;
         grid-gap: 10px 0px;
         justify-items: stretch;
         align-items: stretch;
       }
-
     </style>
 
+    <template is="dom-repeat" items="{{fields}}" as="field">
 
-    <rmerp-tmpl-form-item></rmerp-tmpl-form-item>
-    <rmerp-tmpl-form-item col-start="5"></rmerp-tmpl-form-item>
-    <rmerp-tmpl-form-item col-start="7"></rmerp-tmpl-form-item>
-    <rmerp-tmpl-form-item col-start="9"></rmerp-tmpl-form-item>
-    <rmerp-tmpl-form-item col-start="5"></rmerp-tmpl-form-item>
-    <rmerp-tmpl-form-item col-start="7"></rmerp-tmpl-form-item>
-    <rmerp-tmpl-form-item col-start="9" cols="2"></rmerp-tmpl-form-item>
+      <rmerp-tmpl-form-item
+        cols="[[field.formView.cols]]"
+        col-start="[[field.formView.colStart]]"
+        col-end="[[field.formView.colEnd]]"
+        small-cols="[[field.formView.smallCols]]"
+        small-col-start="[[field.formView.smallColStart]]"
+        small-col-end="[[field.formView.smallColEnd]]"
+        small-screen="[[smallScreen]]"
+        form-cols="[[columns]]"
+        hidden$="[[!field.formView]]">
+        
+        <paper-input always-float-label
+          disabled="[[field.readOnly]]"
+          label="[[field.label]]"
+          value="{{_getValue(data, field.name)}}"></paper-input>
+
+      </rmerp-tmpl-form-item>
+
+    </template>
+
+    <!--<rmerp-tmpl-form-item small-screen="[[smallScreen]]" form-cols="[[columns]]"></rmerp-tmpl-form-item>
+    <rmerp-tmpl-form-item col-start="5" small-cols="6" small-screen="[[smallScreen]]" form-cols="[[columns]]"></rmerp-tmpl-form-item>
+    <rmerp-tmpl-form-item col-start="7" small-cols="6" small-screen="[[smallScreen]]" form-cols="[[columns]]"></rmerp-tmpl-form-item>
+    <rmerp-tmpl-form-item col-end="12"  cols="34" small-screen="[[smallScreen]]" form-cols="[[columns]]"></rmerp-tmpl-form-item>
+    <rmerp-tmpl-form-item col-start="5" small-screen="[[smallScreen]]" form-cols="[[columns]]"></rmerp-tmpl-form-item>
+    <rmerp-tmpl-form-item col-start="6" small-screen="[[smallScreen]]" form-cols="[[columns]]"></rmerp-tmpl-form-item>
+    <rmerp-tmpl-form-item col-start="9" cols="4" small-screen="[[smallScreen]]" form-cols="[[columns]]"></rmerp-tmpl-form-item>-->
 
   </template>
 
@@ -39,14 +62,43 @@
       static get properties() {
         return {
 
+          data: Object,
+
+          fields: Array,
+
           smallScreen: Boolean,
 
           mediumScreen: Boolean,
+
+          columns: Number,
+
+          maxColumns: {
+            type: Number,
+            value: 1000,
+            readOnly: true
+          }
         
         }
 
       }
 
+      connectedCallback() {
+        super.connectedCallback();
+
+        if (!this.columns || this.columns < 1 || this.columns > this.maxColumns) {
+          this.columns = 10;
+        }
+
+        this.updateStyles({
+          '--columns': this.columns
+        });
+
+      }
+
+      _getValue(data, field){
+        if (!data) return '';
+        return data[field];
+      }
     }
 
     window.customElements.define(RMERPTmplForm.is, RMERPTmplForm);

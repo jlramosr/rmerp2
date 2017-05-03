@@ -6,25 +6,54 @@
   <template>
 
     <style include="template-layout-styles show-styles">
+      /*
+        https://css-tricks.com/snippets/css/complete-guide-grid/
+        grid-column: span 3         fills next 3 free squares.
+        grid-column: 1 / 3          fills from square number 1 to square number 3.
+        grid-column: span 1 / 3     fills 1 square from square number 3 from right to left.
+        grid-column: 1 / span 3     fills 3 squares from square number 1 from left to right.
+      */
+
       :host {
-        background: red;
-        height: 50px;
-        grid-column: span var(--cols, 1);
+        background: transparent;
+        padding: 0 5px;
+        grid-column: span var(--cols);
       }
 
       :host([col-start]:not([col-end])) {
-        grid-column: var(--col-start) / span var(--cols, 1);
+        grid-column: var(--col-start) / span var(--cols);
       }
 
       :host(:not([col-start])[col-end]) {
-        grid-column: span var(--cols, 1) / var(--col-end);
+        grid-column: span var(--cols) / var(--col-end);
       }
 
       :host([col-start][col-end]) {
         grid-column: var(--col-start) / var(--col-end);
       }
 
+      @media (max-width: 720px) { 
+        :host(:not([small-col-start]):not([small-col-end])) {
+          grid-column: span var(--small-cols);
+        }
+
+        :host([small-col-start]:not([small-col-end])) {
+          grid-column: var(--small-col-start) / span var(--small-cols);
+        }
+
+        :host(:not([small-col-start])[small-col-end]) {
+          grid-column: span var(--small-cols) / var(--small-col-end);
+        }
+
+        :host([small-col-start][small-col-end]) {
+          grid-column: var(--small-col-start) / var(--small-col-end);
+        }
+
+      }
+
     </style>
+
+    <slot></slot>
 
   </template>
 
@@ -50,6 +79,28 @@
           colEnd: {
             type: Number,
             reflectToAttribute: true
+          },
+
+          smallCols: {
+            type: Number,
+            reflectToAttribute: true
+          },
+
+          smallColStart: {
+            type: Number,
+            reflectToAttribute: true
+          },
+
+          smallColEnd: {
+            type: Number,
+            reflectToAttribute: true
+          },
+
+          formCols: Number,
+
+          smallScreen: {
+            type: Boolean,
+            reflectToAttribute: true
           }
         
         }
@@ -59,33 +110,33 @@
       connectedCallback() {
         super.connectedCallback();
 
-        if (this.cols < 1 || this.cols > 10) {
-          this.cols = undefined;
+        if (!this.smallCols || this.smallCols < 1 || this.smallCols > this.formCols) {
+          this.smallCols = this.formCols; //default smallCols value
         }
-        this.updateStyles({'--cols': this.cols});
 
-        if (this.colStart < 1 || this.colStart > 10) {
+        if (!this.cols || this.cols < 1 || this.cols > this.formCols) {
+          this.cols = this.formCols / 2; //default cols value
+        }
+
+        if (this.colStart < 1 || this.colStart > this.formCols) {
           this.colStart = undefined;
         }
-        this.updateStyles({'--col-start': this.colStart});
 
-        if (this.colEnd < 1 || this.colEnd > 10) {
+        if (this.colEnd < 1 || this.colEnd > this.formCols) {
           this.colEnd = undefined;
         }
-        //grid-column: 4 / 5 only fills square number 4
-        //grid-column: 4 / 5+1 fills number 4 and 5
-        this.updateStyles({'--col-end': this.colEnd + 1});
 
-        this._toggleListeners({enable: true});
-      }
-
-      disconnectedCallback() {
-        super.disconnectedCallback();
-        this._toggleListeners({enable: false});
-      }
-
-      _toggleListeners({enable}) {
-        const m = enable ? 'addEventListener' : 'removeEventListener';
+        this.updateStyles({
+          '--cols': this.cols,
+          '--col-start': this.colStart,
+          //grid-column: 4 / 5 only fills square number 4
+          //grid-column: 4 / 5+1 fills number 4 and 5
+          '--col-end': this.colEnd + 1,
+          '--small-cols': this.smallCols,
+          '--small-col-start': this.smallColStart,
+          '--small-col-end': this.smallColEnd + 1,
+          '--form-cols': this.formCols
+        });
       }
 
     }

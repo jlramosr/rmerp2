@@ -30,8 +30,12 @@
 
         <rmerp-tmpl-form
           data="[[data]]"
+          columns="12"
+          fields="[[fields]]"
           small-screen="[[smallScreen]]"
-          medium-screen="[[mediumScreen]]"></rmerp-tmpl-form>
+          medium-screen="[[mediumScreen]]">
+        
+        </rmerp-tmpl-form>
 
       </div>
 
@@ -47,6 +51,17 @@
 
       static get properties() {
         return {
+
+          fields: {
+            type: Array,
+            value: _ => [
+              {name: 'name', label: "Nombre", readOnly: true, formView: { cols: 5, colStart: 2 } },
+              {name: 'address', label: "Direccion", formView: { cols: 1, colEnd: 12 } },
+              {name: 'phone', label: "Telefono", formView: { colStart: 1, colEnd: 7, smallCols: 6 } },
+              {name: 'email', label: 'Email', formView: { smallCols: 6 } },
+              {name: 'nomostrar', label: 'NoMostrar', formView: false }
+            ]
+          },
 
           data: Object,
 
