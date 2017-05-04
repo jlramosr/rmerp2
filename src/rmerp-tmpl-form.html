@@ -1,8 +1,12 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/iron-list/iron-list.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tab.html">
 
 <link rel="import" href="rmerp-styles.html">
+<link rel="import" href="rmerp-common.html">
 <link rel="import" href="rmerp-tmpl-form-item.html">
 
 <dom-module id="rmerp-tmpl-form">
@@ -10,20 +14,98 @@
 
     <style include="show-styles">
       :host {
+        height: 100vh;
         padding: 0;
         display: grid;
         grid-auto-flow: row;
         grid-template-columns: repeat(var(--columns), auto);
-        grid-template-rows: auto;
-        grid-gap: 10px 0px;
+        grid-template-rows: repeat(auto-fill, 60px);
+        grid-gap: 0px 0px;
         justify-items: stretch;
         align-items: stretch;
       }
+
+      .form-item {
+        outline: none;
+        --paper-input-container-color: #111;
+        --paper-input-container-input-color: var(--rmerp-primary-color);
+        --paper-input-container-focus-color: var(--rmerp-secondary-color);
+        --paper-input-container-input: {
+          font-size: 14px;
+          padding-left: 16px;
+        }
+        --paper-input-container-label: {
+          font-size: 16px;
+        }
+        --paper-input-container-disabled: {
+          opacity: 0.66;
+          color: var(--rmerp-primary-soft-color);
+        }
+        --paper-input-container-underline-disabled: {
+          background: var(--rmerp-primary-soft-color);
+          border: 1px solid var(--rmerp-primary-soft-color);
+        } 
+      }
+
+      .form-item__input-container {
+        position: relative
+      }
+
+      .form-item__input-icon {
+        position: absolute;
+        top: 28px; 
+        left: 0;
+        color: var(--rmerp-primary-color);
+        opacity: 0.6;
+      }
+
+      .form-item__input {
+      }
+
+      .form-item__textarea-container {
+        position: relative;
+      }
+
+      .form-item__textarea {
+        @apply --layout-fit;
+      }
+
+      .form-item__tabs {
+        @apply --layout-vertical;
+        height: 100%;
+        box-shadow: 0 4px 6px 1px rgba(0, 0, 0, 0.14),
+                    0 2px 4px 1px rgba(0, 0, 0, 0.12),
+                    0 3px 2px -1px rgba(0, 0, 0, 0.1);
+      }
+
+      .tabs__tabs {
+        --paper-tabs-selection-bar-color: var(--rmerp-secondary-color);
+        --paper-tabs-content: {
+          background: var(--rmerp-primary-light-color);
+        }
+      }
+
+      .tabs__pages {
+        @apply --layout-flex;
+        overflow: auto;
+      }
+
+      .tabs__tab {
+        
+      }
+
+      .pages__form {
+        padding: 0 8px;
+        height: 100%;
+      }
     </style>
 
-    <template is="dom-repeat" items="{{fields}}" as="field">
+    <template is="dom-repeat" items="{{_fields}}" as="field">
 
       <rmerp-tmpl-form-item
+        rows="[[field.formView.rows]]"
+        row-start="[[field.formView.rowStart]]"
+        row-end="[[field.formView.rowEnd]]"
         cols="[[field.formView.cols]]"
         col-start="[[field.formView.colStart]]"
         col-end="[[field.formView.colEnd]]"
@@ -33,23 +115,70 @@
         small-screen="[[smallScreen]]"
         form-cols="[[columns]]"
         hidden$="[[!field.formView]]">
-        
-        <paper-input always-float-label
-          disabled="[[field.readOnly]]"
-          label="[[field.label]]"
-          value="{{_getValue(data, field.name)}}"></paper-input>
+
+        <template is="dom-if" if="[[_isInput(field.type)]]">
+          <div class="form-item__input-container">
+            <iron-icon icon$="rmerp-icons:[[field.icon]]" class="form-item__input-icon"></iron-icon>
+            <paper-input
+              always-float-label
+              class="form-item form-item__input"
+              required="[[field.required]]"
+              disabled="[[field.readOnly]]"
+              label="[[field.label]]"
+              value="{{_getValue(data, field.name)}}">
+            </paper-input>
+          </div>
+        </template>
+
+        <template is="dom-if" if="[[_isSelect(field.type)]]">
+          <paper-input always-float-label
+            class="form-item form-item__input"
+            required="[[field.required]]"
+            disabled="[[field.readOnly]]"
+            label="[[field.label]]"
+            value="{{_getValue(data, field.name)}}"></paper-input>
+        </template>
+
+        <template is="dom-if" if="[[_isText(field.type)]]">
+          <div class="form-item__textarea-container">
+            <paper-textarea always-float-label
+              class="form-item form-item__textarea"
+              rows="[[field.formView.rows]]"
+              max-rows="[[field.formView.rows]]"
+              required="[[field.required]]"
+              disabled="[[field.readOnly]]"
+              label="[[field.label]]"
+              value="{{_getValue(data, field.name)}}"></paper-textarea>
+          </div>
+        </template>
+
+        <template is="dom-if" if="[[_isTab(field.type)]]">
+          <div class="form-item form-item__tabs">
+            <paper-tabs selected="{{tabSelected}}" id="paperTabs" class="tabs__tabs">
+              <template is="dom-repeat" items="{{field.tabs}}" as="tab">
+                <paper-tab class="tabs__tab">[[tab.label]]</paper-tab>
+              </template>
+            </paper-tabs>
+
+            <iron-pages selected="{{tabSelected}}" class="tabs__pages">
+              <template is="dom-repeat" items="{{field.tabs}}" as="tab">
+
+                <rmerp-tmpl-form
+                  class="pages__form"
+                  data="[[data]]"
+                  model="[[tab.items]]"
+                  columns="[[columns]]"
+                  small-screen="[[smallScreen]]"
+                  medium-screen="[[mediumScreen]]"></rmerp-tmpl-form>
+
+              </template>
+            </iron-pages>
+          </div>
+        </template>
 
       </rmerp-tmpl-form-item>
 
     </template>
-
-    <!--<rmerp-tmpl-form-item small-screen="[[smallScreen]]" form-cols="[[columns]]"></rmerp-tmpl-form-item>
-    <rmerp-tmpl-form-item col-start="5" small-cols="6" small-screen="[[smallScreen]]" form-cols="[[columns]]"></rmerp-tmpl-form-item>
-    <rmerp-tmpl-form-item col-start="7" small-cols="6" small-screen="[[smallScreen]]" form-cols="[[columns]]"></rmerp-tmpl-form-item>
-    <rmerp-tmpl-form-item col-end="12"  cols="34" small-screen="[[smallScreen]]" form-cols="[[columns]]"></rmerp-tmpl-form-item>
-    <rmerp-tmpl-form-item col-start="5" small-screen="[[smallScreen]]" form-cols="[[columns]]"></rmerp-tmpl-form-item>
-    <rmerp-tmpl-form-item col-start="6" small-screen="[[smallScreen]]" form-cols="[[columns]]"></rmerp-tmpl-form-item>
-    <rmerp-tmpl-form-item col-start="9" cols="4" small-screen="[[smallScreen]]" form-cols="[[columns]]"></rmerp-tmpl-form-item>-->
 
   </template>
 
@@ -64,7 +193,17 @@
 
           data: Object,
 
-          fields: Array,
+          model: Array,
+
+          _fields: {
+            type: Array,
+            computed: '_computeFields(model)'
+          },
+
+          tabSelected: {
+            type: Number,
+            value: 0
+          },
 
           smallScreen: Boolean,
 
@@ -95,10 +234,49 @@
 
       }
 
+      _computeFields(model) {
+        let _fields = RMERPCommon.cloneObject(model);
+        //https://gist.github.com/chad3814/2924672.
+        for (let itemIndex = _fields.length - 1; itemIndex >= 0; itemIndex -= 1) {
+          let itemModel = _fields[itemIndex];
+          const itemTabName = itemModel.formView.tab;
+          if (itemTabName) { 
+
+            //item goes within a tab.
+            _fields.forEach(itemModelSearch => {
+
+              if (itemModelSearch.type == 'tab') {
+                //one tab container founded.
+                const tabContainer = itemModelSearch;
+                tabContainer.tabs.forEach(tab => {
+
+                  if (tab.name == itemTabName) {
+                    //the tab container founded corresponds with the item tab.
+                    if (!tab.items) {
+                      tab.items = [];
+                    }
+                    tab.items.push(itemModel);
+                    _fields.splice(itemIndex, 1);
+                  }
+
+                });
+              } 
+            }); 
+          }
+        }
+        return _fields;
+      }
+
       _getValue(data, field){
         if (!data) return '';
         return data[field];
       }
+
+      _isInput(type) { return type === 'string' || type === 'number'; }
+      _isText(type) { return type === 'text'; }
+      _isSelect(type) { return type === 'select'; }
+      _isTab(type) { return type === 'tab'; }
+
     }
 
     window.customElements.define(RMERPTmplForm.is, RMERPTmplForm);

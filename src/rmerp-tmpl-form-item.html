@@ -16,8 +16,9 @@
 
       :host {
         background: transparent;
-        padding: 0 5px;
+        padding: 6px;
         grid-column: span var(--cols);
+        grid-row: span var(--rows);
       }
 
       :host([col-start]:not([col-end])) {
@@ -30,6 +31,18 @@
 
       :host([col-start][col-end]) {
         grid-column: var(--col-start) / var(--col-end);
+      }
+
+      :host([row-start]:not([row-end])) {
+        grid-row: var(--row-start) / span var(--rows);
+      }
+
+      :host(:not([row-start])[row-end]) {
+        grid-row: span var(--rows) / var(--row-end);
+      }
+
+      :host([row-start][row-end]) {
+        grid-row: var(--row-start) / var(--row-end);
       }
 
       @media (max-width: 720px) { 
@@ -65,6 +78,21 @@
 
       static get properties() {
         return {
+
+          rows: {
+            type: Number,
+            reflectToAttribute: true
+          },
+
+          rowStart: {
+            type: Number,
+            reflectToAttribute: true
+          },
+
+          rowEnd: {
+            type: Number,
+            reflectToAttribute: true
+          },
 
           cols: {
             type: Number,
@@ -110,23 +138,22 @@
       connectedCallback() {
         super.connectedCallback();
 
-        if (!this.smallCols || this.smallCols < 1 || this.smallCols > this.formCols) {
-          this.smallCols = this.formCols; //default smallCols value
-        }
+        this.rows = this._setDefaultValue(this.rows, 1000, 1);
+        this.rowStart = this._setDefaultValue(this.rowStart, 1000, undefined);
+        this.rowEnd = this._setDefaultValue(this.rowEnd, 1000, undefined);
 
-        if (!this.cols || this.cols < 1 || this.cols > this.formCols) {
-          this.cols = this.formCols / 2; //default cols value
-        }
+        this.cols = this._setDefaultValue(this.cols, this.formCols, this.formCols);
+        this.colStart = this._setDefaultValue(this.colStart, this.formCols, undefined);
+        this.colEnd = this._setDefaultValue(this.colEnd, this.formCols, undefined);
 
-        if (this.colStart < 1 || this.colStart > this.formCols) {
-          this.colStart = undefined;
-        }
-
-        if (this.colEnd < 1 || this.colEnd > this.formCols) {
-          this.colEnd = undefined;
-        }
+        this.smallCols = this._setDefaultValue(this.smallCols, this.formCols, this.formCols);
+        this.smallColStart = this._setDefaultValue(this.smallColStart, this.formCols, undefined);
+        this.endColStart = this._setDefaultValue(this.endColStart, this.formCols, undefined);
 
         this.updateStyles({
+          '--rows': this.rows,
+          '--row-start': this.rowStart,
+          '--row-end': this.rowEnd + 1,
           '--cols': this.cols,
           '--col-start': this.colStart,
           //grid-column: 4 / 5 only fills square number 4
@@ -137,6 +164,13 @@
           '--small-col-end': this.smallColEnd + 1,
           '--form-cols': this.formCols
         });
+      }
+
+      _setDefaultValue(propertyValue, max, defaultValue) {
+        if (!propertyValue || propertyValue < 1 || propertyValue > max) {
+          return defaultValue;
+        }
+        return propertyValue;
       }
 
     }

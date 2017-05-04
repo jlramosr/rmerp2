@@ -30,12 +30,10 @@
 
         <rmerp-tmpl-form
           data="[[data]]"
+          model="[[model]]"
           columns="12"
-          fields="[[fields]]"
           small-screen="[[smallScreen]]"
-          medium-screen="[[mediumScreen]]">
-        
-        </rmerp-tmpl-form>
+          medium-screen="[[mediumScreen]]"></rmerp-tmpl-form>
 
       </div>
 
@@ -52,14 +50,24 @@
       static get properties() {
         return {
 
-          fields: {
+          model: {
             type: Array,
             value: _ => [
-              {name: 'name', label: "Nombre", readOnly: true, formView: { cols: 5, colStart: 2 } },
-              {name: 'address', label: "Direccion", formView: { cols: 1, colEnd: 12 } },
-              {name: 'phone', label: "Telefono", formView: { colStart: 1, colEnd: 7, smallCols: 6 } },
-              {name: 'email', label: 'Email', formView: { smallCols: 6 } },
-              {name: 'nomostrar', label: 'NoMostrar', formView: false }
+              {name: 'name', type: 'string', label: 'Nombre', icon: 'supervisor-account', readOnly: true, required: true, formView: { rowStart: 5, cols: 2 } },
+              {name: 'address', type: 'string', label: 'Direccion', required: true, formView: { rowStart: 2 } },
+              {name: 'nif', type: 'string', label: 'NIF', formView: { rowStart: 8} },
+              {name: 'contact', type: 'string', label: 'Contacto', formView: { rowStart: 9} },
+              {name: 'type', type: 'select', label: 'Tipo', formView: { rowStart: 10} },
+              {name: 'notes', type: 'text', label: 'Notas', formView: { rowStart: 11, rows: 3} },
+              {name: 'address2', type: 'string', label: 'Direccion2', formView: { rowStart: 3, cols: 2, colStart: 7 } },
+              {name: 'phone', type: 'string', label: 'Telefono', formView: { tab: 'facturacion', rowStart: 3, rows: 2, colStart: 3, cols: 3} },
+              {name: 'email', type: 'string', label: 'Email', formView: { tab:'facturacion', rowStart: 2} },
+              {name: 'dontshow', type: 'number', label: 'Don\'t Show', formView: false },
+              {
+                name: 'tab', type: 'tab', label: 'Facturación', 
+                tabs: [{name: 'facturacion', label: 'Facturación'}, {name: 'historial', label: 'Historial'}],
+                formView: { rowStart: 8, rowEnd: 13, cols: 6, colStart: 1} 
+              }
             ]
           },
 
