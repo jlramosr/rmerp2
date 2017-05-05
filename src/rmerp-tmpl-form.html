@@ -25,14 +25,29 @@
         align-items: stretch;
       }
 
-      .form-item {
+      .form-item__container {
+        position: relative
+      }
+
+      .form-item__icon {
+        position: absolute;
+        top: 28px;
+        left: 0;
+        color: var(--rmerp-primary-color);
+        opacity: 0.6;
+      }
+
+      .icon--without-label {
+        top: 7px;
+      }
+
+      .form-item__item {
         outline: none;
         --paper-input-container-color: #111;
-        --paper-input-container-input-color: var(--rmerp-primary-color);
+        --paper-input-container-input-color: var(--rmerp-primary-dark-color);
         --paper-input-container-focus-color: var(--rmerp-secondary-color);
         --paper-input-container-input: {
           font-size: 14px;
-          padding-left: 16px;
         }
         --paper-input-container-label: {
           font-size: 16px;
@@ -47,30 +62,20 @@
         } 
       }
 
-      .form-item__input-container {
-        position: relative
+      .item--with-icon {
+        --paper-input-container-input: {
+          padding-left: 14px;
+        }
       }
 
-      .form-item__input-icon {
-        position: absolute;
-        top: 28px; 
-        left: 0;
-        color: var(--rmerp-primary-color);
-        opacity: 0.6;
+      .item--input {
       }
 
-      .form-item__input {
-      }
-
-      .form-item__textarea-container {
-        position: relative;
-      }
-
-      .form-item__textarea {
+      .item--textarea {
         @apply --layout-fit;
       }
 
-      .form-item__tabs {
+      .item--tabs {
         @apply --layout-vertical;
         height: 100%;
         box-shadow: 0 4px 6px 1px rgba(0, 0, 0, 0.14),
@@ -91,7 +96,6 @@
       }
 
       .tabs__tab {
-        
       }
 
       .pages__form {
@@ -117,22 +121,26 @@
         hidden$="[[!field.formView]]">
 
         <template is="dom-if" if="[[_isInput(field.type)]]">
-          <div class="form-item__input-container">
-            <iron-icon icon$="rmerp-icons:[[field.icon]]" class="form-item__input-icon"></iron-icon>
+          <div class="form-item__container">
             <paper-input
               always-float-label
-              class="form-item form-item__input"
+              no-label-float$="[[_computeHideLabel(field.formView)]]"
+              class$="form-item__item item--input [[_computeClassInputWithIcon(field.icon, field.formView)]]"
               required="[[field.required]]"
               disabled="[[field.readOnly]]"
               label="[[field.label]]"
               value="{{_getValue(data, field.name)}}">
             </paper-input>
+            <iron-icon
+              icon$="rmerp-icons:[[field.icon]]"
+              class$="form-item__icon [[_computeClassIcon(field.formView)]]"
+              hidden$="[[_computeHideIcon(field.icon, field.formView)]]"></iron-icon>
           </div>
         </template>
 
         <template is="dom-if" if="[[_isSelect(field.type)]]">
           <paper-input always-float-label
-            class="form-item form-item__input"
+            class="form-item__item item--input"
             required="[[field.required]]"
             disabled="[[field.readOnly]]"
             label="[[field.label]]"
@@ -140,9 +148,9 @@
         </template>
 
         <template is="dom-if" if="[[_isText(field.type)]]">
-          <div class="form-item__textarea-container">
+          <div class="form-item__container">
             <paper-textarea always-float-label
-              class="form-item form-item__textarea"
+              class="form-item__item item--textarea"
               rows="[[field.formView.rows]]"
               max-rows="[[field.formView.rows]]"
               required="[[field.required]]"
@@ -153,7 +161,7 @@
         </template>
 
         <template is="dom-if" if="[[_isTab(field.type)]]">
-          <div class="form-item form-item__tabs">
+          <div class="form-item__item item--tabs">
             <paper-tabs selected="{{tabSelected}}" id="paperTabs" class="tabs__tabs">
               <template is="dom-repeat" items="{{field.tabs}}" as="tab">
                 <paper-tab class="tabs__tab">[[tab.label]]</paper-tab>
@@ -203,6 +211,11 @@
           tabSelected: {
             type: Number,
             value: 0
+          },
+
+          editMode: {
+            type: Boolean,
+            value: true
           },
 
           smallScreen: Boolean,
@@ -270,6 +283,22 @@
       _getValue(data, field){
         if (!data) return '';
         return data[field];
+      }
+
+      _computeHideIcon(icon, formView) {
+        return !icon || formView.showIcon === false;
+      }
+
+      _computeClassInputWithIcon(icon, formView) {
+        return (icon && formView.showIcon !== false) ? 'item--with-icon' : '';
+      }
+
+      _computeClassIcon(formView) {
+        return formView.showLabel === false ? 'icon--without-label' : '';
+      }
+
+      _computeHideLabel(formView) {
+        return formView.showLabel === false;
       }
 
       _isInput(type) { return type === 'string' || type === 'number'; }
