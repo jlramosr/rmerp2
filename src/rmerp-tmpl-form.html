@@ -21,12 +21,12 @@
         grid-template-columns: repeat(var(--columns), auto);
         grid-template-rows: repeat(auto-fill, 60px);
         grid-gap: 0px 0px;
-        justify-items: stretch;
+        justify-content: stretch;
         align-items: stretch;
       }
 
       .form-item__container {
-        position: relative
+        position: relative;
       }
 
       .form-item__icon {
@@ -43,7 +43,7 @@
 
       .form-item__item {
         outline: none;
-        --paper-input-container-color: #111;
+        --paper-input-container-color: var(--rmerp-primary-dark-color);
         --paper-input-container-input-color: var(--rmerp-primary-dark-color);
         --paper-input-container-focus-color: var(--rmerp-secondary-color);
         --paper-input-container-input: {
@@ -59,7 +59,23 @@
         --paper-input-container-underline-disabled: {
           background: var(--rmerp-primary-soft-color);
           border: 1px solid var(--rmerp-primary-soft-color);
+        }
+      }
+
+      :host(:not([edit-mode])) .form-item__item {
+        --paper-input-container-disabled: {
+          opacity: 1;
+          color: var(--rmerp-primary-soft-color);
+        }
+        --paper-input-container-underline-disabled: {
+          background: var(--rmerp-primary-soft-color);
+          border: 1px solid var(--rmerp-primary-soft-color);
+          opacity: 0.15;
         } 
+      }
+
+      :host(:not([edit-mode])) .form-item__icon {
+        opacity: 1;
       }
 
       .item--with-icon {
@@ -107,39 +123,41 @@
     <template is="dom-repeat" items="{{_fields}}" as="field">
 
       <rmerp-tmpl-form-item
-        rows="[[field.formView.rows]]"
-        row-start="[[field.formView.rowStart]]"
-        row-end="[[field.formView.rowEnd]]"
-        cols="[[field.formView.cols]]"
-        col-start="[[field.formView.colStart]]"
-        col-end="[[field.formView.colEnd]]"
-        small-cols="[[field.formView.smallCols]]"
-        small-col-start="[[field.formView.smallColStart]]"
-        small-col-end="[[field.formView.smallColEnd]]"
+        rows="[[_getViewProperty(editMode, field.showView.rows, field.editView.rows)]]"
+        row-start="[[_getViewProperty(editMode, field.showView.rowStart, field.editView.rowStart)]]"
+        row-end="[[_getViewProperty(editMode, field.showView.rowEnd, field.editView.rowEnd)]]"
+        cols="[[_getViewProperty(editMode, field.showView.cols, field.editView.cols)]]"
+        col-start="[[_getViewProperty(editMode, field.showView.colStart, field.editView.colStart)]]"
+        col-end="[[_getViewProperty(editMode, field.showView.colEnd, field.editView.colEnd)]]"
+        small-cols="[[_getViewProperty(editMode, field.showView.smallCols, field.editView.smallCols)]]"
+        small-col-start="[[_getViewProperty(editMode, field.showView.smallColStart, field.editView.smallColStart)]]"
+        small-col-end="[[_getViewProperty(editMode, field.showView.smallColEnd, field.editView.smallColEnd)]]"
         small-screen="[[smallScreen]]"
         form-cols="[[columns]]"
-        hidden$="[[!field.formView]]">
+        hidden$="[[_computeHideItem(editMode, field.editView, field.showView)]]">
 
         <template is="dom-if" if="[[_isInput(field.type)]]">
+          
           <div class="form-item__container">
             <paper-input
               always-float-label
-              no-label-float$="[[_computeHideLabel(field.formView)]]"
-              class$="form-item__item item--input [[_computeClassInputWithIcon(field.icon, field.formView)]]"
+              no-label-float$="[[_computeHideLabel(field.editView)]]"
+              class$="form-item__item item--input [[_computeClassInputWithIcon(field.icon, field.editView)]]"
               required="[[field.required]]"
-              disabled="[[field.readOnly]]"
+              disabled="[[_computeDisabledInput(field.readOnly, editMode)]]"
               label="[[field.label]]"
-              value="{{_getValue(data, field.name)}}">
-            </paper-input>
+              value="{{_getValue(data, field.name)}}"></paper-input>
             <iron-icon
               icon$="rmerp-icons:[[field.icon]]"
-              class$="form-item__icon [[_computeClassIcon(field.formView)]]"
-              hidden$="[[_computeHideIcon(field.icon, field.formView)]]"></iron-icon>
+              class$="form-item__icon [[_computeClassIcon(field.editView)]]"
+              hidden$="[[_computeHideIcon(field.icon, field.editView)]]"></iron-icon>
           </div>
+
         </template>
 
         <template is="dom-if" if="[[_isSelect(field.type)]]">
-          <paper-input always-float-label
+          <paper-input
+            always-float-label
             class="form-item__item item--input"
             required="[[field.required]]"
             disabled="[[field.readOnly]]"
@@ -151,8 +169,8 @@
           <div class="form-item__container">
             <paper-textarea always-float-label
               class="form-item__item item--textarea"
-              rows="[[field.formView.rows]]"
-              max-rows="[[field.formView.rows]]"
+              rows="[[field.editView.rows]]"
+              max-rows="[[field.editView.rows]]"
               required="[[field.required]]"
               disabled="[[field.readOnly]]"
               label="[[field.label]]"
@@ -162,17 +180,20 @@
 
         <template is="dom-if" if="[[_isTab(field.type)]]">
           <div class="form-item__item item--tabs">
+                      <div class="form-item__container">
             <paper-tabs selected="{{tabSelected}}" id="paperTabs" class="tabs__tabs">
               <template is="dom-repeat" items="{{field.tabs}}" as="tab">
                 <paper-tab class="tabs__tab">[[tab.label]]</paper-tab>
               </template>
             </paper-tabs>
+            </div>
 
             <iron-pages selected="{{tabSelected}}" class="tabs__pages">
               <template is="dom-repeat" items="{{field.tabs}}" as="tab">
 
                 <rmerp-tmpl-form
                   class="pages__form"
+                  edit-mode="[[editMode"]]
                   data="[[data]]"
                   model="[[tab.items]]"
                   columns="[[columns]]"
@@ -215,7 +236,8 @@
 
           editMode: {
             type: Boolean,
-            value: true
+            value: false,
+            reflectToAttribute: true
           },
 
           smallScreen: Boolean,
@@ -252,7 +274,7 @@
         //https://gist.github.com/chad3814/2924672.
         for (let itemIndex = _fields.length - 1; itemIndex >= 0; itemIndex -= 1) {
           let itemModel = _fields[itemIndex];
-          const itemTabName = itemModel.formView.tab;
+          const itemTabName = itemModel.editView.tab;
           if (itemTabName) { 
 
             //item goes within a tab.
@@ -285,20 +307,34 @@
         return data[field];
       }
 
-      _computeHideIcon(icon, formView) {
-        return !icon || formView.showIcon === false;
+      _computeHideIcon(icon, editView) {
+        return !icon || editView.showIcon === false;
       }
 
-      _computeClassInputWithIcon(icon, formView) {
-        return (icon && formView.showIcon !== false) ? 'item--with-icon' : '';
+      _computeClassInputWithIcon(icon, editView) {
+        return (icon && editView.showIcon !== false) ? 'item--with-icon' : '';
       }
 
-      _computeClassIcon(formView) {
-        return formView.showLabel === false ? 'icon--without-label' : '';
+      _computeClassIcon(editView) {
+        return editView.showLabel === false ? 'icon--without-label' : '';
       }
 
-      _computeHideLabel(formView) {
-        return formView.showLabel === false;
+      _computeHideLabel(editView) {
+        return editView.showLabel === false;
+      }
+
+      _computeDisabledInput(fieldReadOnly, editMode) {
+        return fieldReadOnly || !editMode;
+      }
+
+      _computeHideItem(editMode, fieldEditView, fieldShowView) {
+        return (!fieldEditView && !fieldShowView) || 
+               (editMode && !fieldEditView) || 
+               (!editMode && !fieldShowView)
+      }
+
+      _getViewProperty(editMode, showModeProperty, editModeProperty) {
+        return !editMode ? showModeProperty : editModeProperty;
       }
 
       _isInput(type) { return type === 'string' || type === 'number'; }

@@ -22,9 +22,15 @@
         icon="visibility"
         small="[[smallScreen]]"></rmerp-button>
 
-      <div slot="content" class="content__form">
+      <div slot="content" class="content__page">
 
-        SETTINGS {{data.id}}
+        <rmerp-tmpl-form
+          data="[[data]]"
+          model="[[model]]"
+          edit-mode
+          columns="12"
+          small-screen="[[smallScreen]]"
+          medium-screen="[[mediumScreen]]"></rmerp-tmpl-form>
 
       </div>
 
