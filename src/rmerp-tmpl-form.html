@@ -19,8 +19,9 @@
         display: grid;
         grid-auto-flow: row;
         grid-template-columns: repeat(var(--columns), auto);
-        grid-template-rows: repeat(auto-fill, 60px);
+        grid-template-rows: repeat(auto-fill, 52px);
         grid-gap: 0px 0px;
+        align-items: end;
         justify-content: stretch;
         align-items: stretch;
       }
@@ -30,39 +31,54 @@
       }
 
       .form-item__icon {
-        position: absolute;
-        top: 28px;
-        left: 0;
+        z-index: 1;
         color: var(--rmerp-primary-color);
-        opacity: 0.6;
-      }
-
-      .icon--without-label {
-        top: 7px;
+        opacity: 0.7;
       }
 
       .form-item__item {
         outline: none;
-        --paper-input-container-color: var(--rmerp-primary-dark-color);
-        --paper-input-container-input-color: var(--rmerp-primary-dark-color);
-        --paper-input-container-focus-color: var(--rmerp-secondary-color);
-        --paper-input-container-input: {
-          font-size: 14px;
-        }
+        --paper-input-container: { }
+        --paper-input-container-color: var(--rmerp-primary-light-color);
         --paper-input-container-label: {
-          font-size: 16px;
+          color: var(--rmerp-primary-dark-color) !important;
+          font-size: 16px !important;
         }
+        --paper-input-container-input: {
+          margin-left: -2px;
+          border: 1px solid #eee;
+          border-bottom: 0px;
+          border-radius: 2px;
+          padding-left: 2px;
+          background: #fff;
+          font-size: 14px !important;
+        }
+        --paper-input-container-underline: {
+          margin-left: 2px;
+          background: #eee !important;
+          color: var(--rmerp-primary-soft-color) !important;
+        }
+
+        --paper-input-container-focus-color: var(--rmerp-secondary-color);
+        --paper-input-container-underline-focus: {
+          margin-left: 2px;
+        }
+
         --paper-input-container-disabled: {
-          opacity: 0.66;
           color: var(--rmerp-primary-soft-color);
+          opacity: 0.66;
         }
         --paper-input-container-underline-disabled: {
+          margin-left: 2px !important;
+          border: 1px solid var(--rmerp-primary-light-color);
           background: var(--rmerp-primary-soft-color);
-          border: 1px solid var(--rmerp-primary-soft-color);
         }
       }
 
       :host(:not([edit-mode])) .form-item__item {
+        --paper-input-container-input: {
+          background: transparent;
+        }
         --paper-input-container-disabled: {
           opacity: 1;
           color: var(--rmerp-primary-soft-color);
@@ -75,13 +91,20 @@
       }
 
       :host(:not([edit-mode])) .form-item__icon {
-        opacity: 1;
+        opacity: 0.7;
       }
 
       .item--with-icon {
         --paper-input-container-input: {
-          padding-left: 14px;
+          font-size: 14px !important;
+          margin-left: -26px;
+          padding-left: 26px;
+          background: #fff;
+          border: 1px solid #eee;
+          border-bottom: 0px;
+          border-radius: 2px;
         }
+
       }
 
       .item--input {
@@ -146,11 +169,13 @@
               required="[[field.required]]"
               disabled="[[_computeDisabledInput(field.readOnly, editMode)]]"
               label="[[field.label]]"
-              value="{{_getValue(data, field.name)}}"></paper-input>
-            <iron-icon
-              icon$="rmerp-icons:[[field.icon]]"
-              class$="form-item__icon [[_computeClassIcon(field.editView)]]"
-              hidden$="[[_computeHideIcon(field.icon, field.editView)]]"></iron-icon>
+              value="{{_getValue(data, field.name)}}">
+              <iron-icon
+                slot="prefix"
+                icon$="rmerp-icons:[[field.icon]]"
+                class="form-item__icon"
+                hidden$="[[_computeHideIcon(field.icon, field.editView)]]"></iron-icon>
+            </paper-input>
           </div>
 
         </template>
@@ -313,10 +338,6 @@
 
       _computeClassInputWithIcon(icon, editView) {
         return (icon && editView.showIcon !== false) ? 'item--with-icon' : '';
-      }
-
-      _computeClassIcon(editView) {
-        return editView.showLabel === false ? 'icon--without-label' : '';
       }
 
       _computeHideLabel(editView) {
