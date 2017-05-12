@@ -8,6 +8,7 @@
 <link rel="import" href="rmerp-styles.html">
 <link rel="import" href="rmerp-common.html">
 <link rel="import" href="rmerp-tmpl-form-item.html">
+<link rel="import" href="rmerp-tmpl-searchable-field.html">
 
 <dom-module id="rmerp-tmpl-form">
   <template>
@@ -87,7 +88,7 @@
           background: var(--rmerp-primary-soft-color);
           border: 1px solid var(--rmerp-primary-soft-color);
           opacity: 0.15;
-        } 
+        }
       }
 
       :host(:not([edit-mode])) .form-item__icon {
@@ -104,7 +105,6 @@
           border-bottom: 0px;
           border-radius: 2px;
         }
-
       }
 
       .item--input {
@@ -146,26 +146,25 @@
     <template is="dom-repeat" items="{{_fields}}" as="field">
 
       <rmerp-tmpl-form-item
-        rows="[[_getViewProperty(editMode, field.showView.rows, field.editView.rows)]]"
-        row-start="[[_getViewProperty(editMode, field.showView.rowStart, field.editView.rowStart)]]"
-        row-end="[[_getViewProperty(editMode, field.showView.rowEnd, field.editView.rowEnd)]]"
-        cols="[[_getViewProperty(editMode, field.showView.cols, field.editView.cols)]]"
-        col-start="[[_getViewProperty(editMode, field.showView.colStart, field.editView.colStart)]]"
-        col-end="[[_getViewProperty(editMode, field.showView.colEnd, field.editView.colEnd)]]"
-        small-cols="[[_getViewProperty(editMode, field.showView.smallCols, field.editView.smallCols)]]"
-        small-col-start="[[_getViewProperty(editMode, field.showView.smallColStart, field.editView.smallColStart)]]"
-        small-col-end="[[_getViewProperty(editMode, field.showView.smallColEnd, field.editView.smallColEnd)]]"
+        rows="[[_getViewProperty(field, 'rows')]]"
+        row-start="[[_getViewProperty(field, 'rowStart')]]"
+        row-end="[[_getViewProperty(field, 'rowEnd')]]"
+        cols="[[_getViewProperty(field, 'cols')]]"
+        col-start="[[_getViewProperty(field, 'colStart')]]"
+        col-end="[[_getViewProperty(field, 'colEnd')]]"
+        small-cols="[[_getViewProperty(field, 'smallCols')]]"
+        small-col-start="[[_getViewProperty(field, 'smallColStart')]]"
+        small-col-end="[[_getViewProperty(field, 'smallColEnd')]]"
         small-screen="[[smallScreen]]"
         form-cols="[[columns]]"
-        hidden$="[[_computeHideItem(editMode, field.editView, field.showView)]]">
+        hidden$="[[_computeHideItem(field)]]">
 
         <template is="dom-if" if="[[_isInput(field.type)]]">
           
           <div class="form-item__container">
             <paper-input
               always-float-label
-              no-label-float$="[[_computeHideLabel(field.editView)]]"
-              class$="form-item__item item--input [[_computeClassInputWithIcon(field.icon, field.editView)]]"
+              class$="form-item__item item--input [[_computeInputWithIconClass(field)]]"
               required="[[field.required]]"
               disabled="[[_computeDisabledInput(field.readOnly, editMode)]]"
               label="[[field.label]]"
@@ -174,25 +173,28 @@
                 slot="prefix"
                 icon$="rmerp-icons:[[field.icon]]"
                 class="form-item__icon"
-                hidden$="[[_computeHideIcon(field.icon, field.editView)]]"></iron-icon>
+                hidden$="[[_computeHideIcon(field.icon, field.editView, field.showView, editMode)]]"></iron-icon>
             </paper-input>
           </div>
 
         </template>
 
         <template is="dom-if" if="[[_isSelect(field.type)]]">
-          <paper-input
-            always-float-label
-            class="form-item__item item--input"
-            required="[[field.required]]"
-            disabled="[[field.readOnly]]"
-            label="[[field.label]]"
-            value="{{_getValue(data, field.name)}}"></paper-input>
+          <rmerp-tmpl-searchable-field
+            id="fieldSelect"
+            items="[[field.options]]"
+            placeholder="Select a item"
+            on-value-changed="_optionSelected"
+            attr-for-value="nombre_cliente"
+            norequired="">
+          </rmerp-tmpl-searchable-field>
         </template>
 
         <template is="dom-if" if="[[_isText(field.type)]]">
           <div class="form-item__container">
-            <paper-textarea always-float-label
+            <paper-textarea
+              always-float-label
+              no-label-float="[[_computeHideLabel(field.editView, field.showView, editMode)]]"
               class="form-item__item item--textarea"
               rows="[[field.editView.rows]]"
               max-rows="[[field.editView.rows]]"
@@ -205,20 +207,19 @@
 
         <template is="dom-if" if="[[_isTab(field.type)]]">
           <div class="form-item__item item--tabs">
-                      <div class="form-item__container">
+                      
             <paper-tabs selected="{{tabSelected}}" id="paperTabs" class="tabs__tabs">
               <template is="dom-repeat" items="{{field.tabs}}" as="tab">
                 <paper-tab class="tabs__tab">[[tab.label]]</paper-tab>
               </template>
             </paper-tabs>
-            </div>
 
             <iron-pages selected="{{tabSelected}}" class="tabs__pages">
               <template is="dom-repeat" items="{{field.tabs}}" as="tab">
 
                 <rmerp-tmpl-form
                   class="pages__form"
-                  edit-mode="[[editMode"]]
+                  edit-mode="[[editMode]]"
                   data="[[data]]"
                   model="[[tab.items]]"
                   columns="[[columns]]"
@@ -265,6 +266,8 @@
             reflectToAttribute: true
           },
 
+          viewName: String,
+
           smallScreen: Boolean,
 
           mediumScreen: Boolean,
@@ -299,8 +302,8 @@
         //https://gist.github.com/chad3814/2924672.
         for (let itemIndex = _fields.length - 1; itemIndex >= 0; itemIndex -= 1) {
           let itemModel = _fields[itemIndex];
-          const itemTabName = itemModel.editView.tab;
-          if (itemTabName) { 
+          const itemTabName = itemModel[this.viewName].tab;
+          if (itemTabName) {
 
             //item goes within a tab.
             _fields.forEach(itemModelSearch => {
@@ -332,30 +335,44 @@
         return data[field];
       }
 
-      _computeHideIcon(icon, editView) {
-        return !icon || editView.showIcon === false;
+      _optionSelected(event) {
+        //console.log(event);
       }
 
-      _computeClassInputWithIcon(icon, editView) {
-        return (icon && editView.showIcon !== false) ? 'item--with-icon' : '';
+      _computeHideItem(field) {
+        return !field[this.viewName];
       }
 
-      _computeHideLabel(editView) {
-        return editView.showLabel === false;
+      _computeAlwaysFloatLabel(fieldSearchView) {
+        return true;
+      }
+
+      _computeHideIcon(icon, fieldEditView, fieldShowView, editMode) {
+        return !icon ||
+              (editMode && fieldEditView.showIcon === false) || 
+              (!editMode && fieldShowView.showIcon === false);
+      }
+
+      _computeInputWithIconClass(field) {
+        return (field.icon && field[this.viewName].showIcon !== false)
+                ? 'item--with-icon'
+                : '';
+      }
+
+      _computeHideLabel(fieldEditView, fieldShowView, editMode) {
+        return (fieldShowView.showLabel === false && !editMode) ||
+               (fieldEditView.showLabel === false && editMode);
       }
 
       _computeDisabledInput(fieldReadOnly, editMode) {
         return fieldReadOnly || !editMode;
       }
 
-      _computeHideItem(editMode, fieldEditView, fieldShowView) {
-        return (!fieldEditView && !fieldShowView) || 
-               (editMode && !fieldEditView) || 
-               (!editMode && !fieldShowView)
-      }
-
-      _getViewProperty(editMode, showModeProperty, editModeProperty) {
-        return !editMode ? showModeProperty : editModeProperty;
+      _getViewProperty(field, property) {
+        if (field[this.viewName]) {
+          return field[this.viewName][property];
+        }
+        return undefined;
       }
 
       _isInput(type) { return type === 'string' || type === 'number'; }

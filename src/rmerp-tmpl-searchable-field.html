@@ -1,0 +1,347 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/iron-list/iron-list.html">
+
+<dom-module id="rmerp-tmpl-searchable-field">
+  <template>
+    <style include="">
+      :host {
+        display: block;
+        position: relative;
+        outline: 0;
+      }
+
+      :host([disabled]) {
+        pointer-events: none;
+      }
+
+      :host([disabled]) #input {
+        background: var(--paper-grey-100);
+        color: var(--paper-grey-600);
+      }
+
+      :host([invalid]) #input {
+        border: 1px solid var(--paper-red-500);
+      }
+
+      #input {
+        background: linear-gradient(to bottom,  #ffffff 0%, var(--paper-grey-100) 100%);
+        cursor: pointer;
+      }
+
+      #input iron-icon {
+        bottom: 0;
+        margin: auto;
+        position: absolute;
+        right: 10px;
+        top: 0;
+        z-index: 2;
+        pointer-events: none;
+        color: var(--paper-grey-800);
+      }
+
+      #dropdown {
+        background: white;
+        border-top: 0;
+        left: 0;
+        position: absolute;
+        right: 0;
+        top: 0;
+        z-index: 1;
+      }
+
+      #searchInput {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+
+      #searchInput:focus {
+        box-shadow: none !important;
+      }
+
+      #items {
+        box-shadow: 0 2px 2px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.12);
+        list-style: none;
+        margin-top: 1px;
+        margin: 0;
+        max-height: 200px;
+        overflow-y: auto;
+        padding: 0;
+        outline: 0;
+      }
+
+      #items li {
+        cursor: pointer;
+        padding: 6px 10px;
+      }
+
+      #items li.selected {
+        background: var(--rmerp-primary-color);
+        color: white;
+      }
+    </style>
+
+    <div id="input" class="input" on-click="toggle" tabindex="0">
+      <div>[[_computeValue(value, placeholder)]]</div>
+      <iron-icon icon$="rmerp-icons:[[_computeArrowIcon(opened)]]"></iron-icon>
+    </div>
+
+    <div id="dropdown" hidden$="[[_computeDropdownHidden(opened)]]">
+      <input
+          id="searchInput"
+          class="input"
+          disabled="[[disabled]]"
+          on-keyup="_inputKeyup"
+          on-down="_searchInputDown"
+          on-blur="_searchInputBlur"
+          placeholder$=[[placeholder]]
+          autocomplete="off">
+      
+      <ul id="items" on-tap="_itemsTapped" tabindex="-1"></ul>
+    </div>
+
+  </template>
+
+  <script>
+
+    class RMERPTmplSearchableField extends Polymer.Element {
+
+      static get is() { return 'rmerp-tmpl-searchable-field'; }
+
+      static get properties() {
+        return {
+
+          value: {
+            type: String,
+            notify: true,
+            value: ''
+          },
+
+          opened: {
+            type: Boolean,
+            value: false,
+            observer: '_openedChanged'
+          },
+
+          disabled: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: true
+          },
+
+          attrForValue: String,
+
+          placeholder: {
+            type: String,
+            value: ''
+          },
+
+          items: {
+            type: Array,
+            observer: '_itemsChanged'
+          },
+
+          selectedItem: {
+            type: Object,
+            readOnly: true,
+            observer: '_selectedItemChanged'
+          },
+
+          invalid: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: true
+          },
+          
+          norequired: {
+            type: Boolean,
+            value: false
+          },
+
+          _elementItems: Object
+
+        }
+      }
+
+      connectedCallback() {
+        super.connectedCallback();
+        this._toggleListeners({enable: true});
+      }
+
+      disconnectedCallback() {
+        super.disconnectedCallback();
+        this._toggleListeners({enable: false});
+      }
+
+      _toggleListeners({enable}) {
+        const m = enable ? 'addEventListener' : 'removeEventListener';
+        document[m]('keydown', this._onKeydown);
+      }
+
+      toggle() {
+        this.opened = !this.opened;
+      }
+
+      close() {
+        this.opened = false;
+      }
+
+      getValueModel() {
+        return this.getItemFromElement(this.selectedItem);
+      }
+
+      getItemFromElement(element) {
+        if (this._elementItems) {
+          return this._elementItems.get(element);
+        }
+      }
+
+      validate() {
+        if (!this.norequired) {
+          this.invalid = !this.value.length;
+        } else {
+          this.invalid = false;
+        }
+        return !this.invalid;
+      }
+
+      _openedChanged(opened) {
+        if (opened) {
+          this.$.searchInput.focus();
+          this._renderItems({selectValue: true});
+        } else {
+          this.$.items.innerHTML = '';
+        }
+      }
+
+      _itemsChanged() {
+        if (this.opened) {
+          this._renderItems();
+        }
+      }
+
+      _computeArrowIcon(opened) {
+        if (opened) {
+          return 'menu-up';
+        }
+        return 'menu-down';
+      }
+
+      _computeDropdownHidden(opened) {
+        return !opened;
+      }
+
+      _searchInputDown(event) {
+        if (Polymer.dom(this.root).activeElement === event.target) {
+          this.opened = false;
+        }
+      }
+
+      _searchInputBlur(event) {
+        Polymer.Async.timeOut.run(_ => {
+          const activeElement = Polymer.dom(this.root).activeElement;
+          if (!activeElement || !activeElement.matches('#items')) {
+            this.opened = false;
+          }
+        }, 10);
+      }
+
+      _itemsTapped(event) {
+        const item = this.getItemFromElement(event.target);
+
+        if (item) {
+          this._setSelectedItem(event.target);
+          this.value = item[this.attrForValue];
+          this.validate();
+          this.opened = false;
+        }
+      }
+
+      _inputKeyup() {
+        this._renderItems();
+      }
+
+      _renderItems({selectValue = false} = {}) {
+        const searchValue = this.$.searchInput.value;
+        let filteredItems;
+
+        if (searchValue && searchValue.length) {
+          filteredItems = fuzzaldrinPlus.filter(
+            this.items, searchValue, {key: this.attrForValue});
+        } else {
+          filteredItems = this.items || [];
+        }
+
+        const fragment = document.createDocumentFragment();
+        const li = document.createElement('li');
+        let selectedItem;
+
+        this._elementItems = new WeakMap();
+
+        filteredItems.forEach((item, index) => {
+          const el = li.cloneNode();
+          const value = item[this.attrForValue];
+
+          el.innerText = value;
+          fragment.appendChild(el);
+          this._elementItems.set(el, item);
+
+          if (selectValue && value === this.value) {
+            selectedItem = el;
+          }
+        });
+
+        this.$.items.innerHTML = '';
+        this.$.items.scrollTop = 0;
+
+        Polymer.dom(this.$.items).appendChild(fragment);
+
+        if (selectedItem) {
+          this._setSelectedItem(selectedItem);
+        }
+      }
+
+      _computeValue(value, placeholder) {
+        return value || placeholder || '-';
+      }
+
+      _selectedItemChanged(selectedItem, old) {
+        let newValue; 
+        if (selectedItem) {
+          newValue = selectedItem.textContent;
+          selectedItem.classList.add('selected');
+          selectedItem.scrollIntoView();
+        }
+
+        let oldValue;
+        if (old) {
+          oldValue = old.textContent;
+          old.classList.remove('selected');
+        }
+
+        if (newValue != oldValue) {
+          this.dispatchEvent(new CustomEvent('item-selected', {
+            'name': selectedItem.textContent
+          }));
+        }
+      }
+
+      _onKeydown(event) {
+        const escKey = 27;
+        const enterKey = 13;
+
+        if (this.opened && event.keyCode === escKey) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.opened = false;
+          this.$.input.focus();
+        } else if (!this.opened && event.keyCode === enterKey) {
+          this.opened = true;
+        }
+      }
+
+    }
+
+    window.customElements.define(RMERPTmplSearchableField.is, RMERPTmplSearchableField);
+
+  </script>
+</dom-module>

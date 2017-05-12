@@ -3,6 +3,7 @@
 
 <link rel="import" href="rmerp-styles.html">
 <link rel="import" href="rmerp-tmpl-header-layout.html">
+
 <link rel="import" href="rmerp-button.html">
 
 <dom-module id="rmerp-clients-list">
@@ -23,6 +24,15 @@
         small="[[smallScreen]]"></rmerp-button>
 
       <div slot="content" class="content__list">
+
+        <!--<rmerp-tmpl-form
+          data="[[data]]"
+          model="[[model]]"
+          view-name="editView"
+          edit-mode
+          columns="12"
+          small-screen="[[smallScreen]]"
+          medium-screen="[[mediumScreen]]"></rmerp-tmpl-form>-->
 
         <div class="search">
           <input id="searchInput" class="search__input" on-keyup="_searchInputKeyup" value="{{searchValue}}" placeholder="Buscar">

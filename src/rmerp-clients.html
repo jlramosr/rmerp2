@@ -60,8 +60,9 @@
                 showView: { showIcon: false, rowStart: 5, cols: 2 }
               },
               {name: 'address', type: 'string', label: 'Direccion', icon: 'place', required: true,
-                editView: { rowStart: 2, showLabel: false },
-                showView: { rowStart: 2, showLabel: false }
+                editView: { rowStart: 2, rows:2, showLabel: false },
+                showView: { rowStart: 2, showLabel: false },
+                searchView:  { rowStart: 1, showLabel: false },
               },
               {name: 'nif', type: 'string', label: 'NIF',
                 editView: { rowStart: 8 },
@@ -73,9 +74,10 @@
               },
               {name: 'type', type: 'select', label: 'Tipo',
                 editView: { rowStart: 10 },
-                showView: { rowStart: 10 }
+                showView: { rowStart: 10 },
+                options: ['hola1','hola2']
               },
-              {name: 'notes', type: 'text', label: 'Notas',
+              {name: 'notes', type: 'text', label: 'Notas', icon: 'edit',
                 editView: { rowStart: 11, rows: 3 },
                 showView: { rowStart: 11, rows: 3 }
               },
@@ -88,16 +90,16 @@
                 showView: { tab: 'facturacion', rowStart: 3, rows: 2, colStart: 3, cols: 3 }
               },
               {name: 'email', type: 'string', label: 'Email', icon: 'local-post-office',
-                editView: { tab: 'facturacion', rowStart: 2 },
-                showView: { tab: 'facturacion', rowStart: 2 }
+                editView: { tab: 'facturacion', rowStart: 2, showLabel: false, showIcon: false },
+                showView: { tab: 'facturacion', rowStart: 2, showLabel: false, showIcon: false }
               },
               {name: 'dontshowedit', type: 'number', label: 'Don\'t Show In Edit View',
                 editView: false,
                 showView: { rowStart: 1, cols: 6 }
               },
               {name: 'dontshowview', type: 'number', label: 'Don\'t Show In Show View',
-                editView: false,
-                editView: { rowStart: 1, cols: 6 }
+                editView: { rowStart: 1, cols: 6 },
+                showView: false
               },
               {name: 'tab', type: 'tab', label: 'Facturación',
                 tabs: [{name: 'facturacion', label: 'Facturación'}, {name: 'historial', label: 'Historial'}],
